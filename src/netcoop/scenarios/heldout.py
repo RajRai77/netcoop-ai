@@ -36,8 +36,14 @@ CONDITIONS = {
 
 
 def knowledge_fingerprint() -> dict:
+    """SHA-256 of the canonical JSON content (independent of line endings / checkout OS)."""
+    import json
+
+    from netcoop.evidence.ids import canonical_json
+
     kdir = Path(_kfile).resolve().parent
-    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(kdir.glob("*.json"))}
+    return {p.name: hashlib.sha256(canonical_json(json.loads(p.read_text(encoding="utf-8"))).encode()).hexdigest()
+            for p in sorted(kdir.glob("*.json"))}
 
 
 def _location(rng: random.Random, fault: str) -> str:
