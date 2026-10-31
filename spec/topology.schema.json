@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:netcoop:topology:1.0.0",
-  "title": "Network topology snapshot (draft)",
+  "$id": "urn:netcoop:topology:1.1.0",
+  "title": "Network topology snapshot v1.1.0 (draft)",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,7 +15,10 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "topology_snapshot_id": {
       "type": "string",
@@ -54,6 +57,20 @@
               "segment",
               "host"
             ]
+          },
+          "role": {
+            "enum": [
+              "core",
+              "distribution",
+              "access",
+              "edge",
+              "server",
+              "client"
+            ],
+            "description": "Optional. Nodes with role 'core' are the upstream roots for impact-scope computation."
+          },
+          "label": {
+            "type": "string"
           }
         }
       }
@@ -89,6 +106,15 @@
           },
           "directed": {
             "type": "boolean"
+          },
+          "from_interface": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Interface on the 'from' device carrying this link."
+          },
+          "to_interface": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

@@ -17,6 +17,7 @@ from netcoop.evidence.models import Finding, NormalizedObservation, RawRecord, S
 from netcoop.evidence.normalize import NormalizedBatch
 from netcoop.evidence.timeutil import to_canonical
 from netcoop.storage import migrate
+from netcoop.storage.investigation import InvestigationStoreMixin
 from netcoop.storage.repository import (
     Incident,
     IngestionReport,
@@ -39,7 +40,7 @@ from netcoop.storage.tables import (
 STATUSES = ("accepted", "quarantined", "partially_rejected", "rejected", "duplicate", "conflict")
 
 
-class SqlEvidenceStore:
+class SqlEvidenceStore(InvestigationStoreMixin):
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -58,9 +59,10 @@ class SqlEvidenceStore:
         ))
 
     # -- incidents -------------------------------------------------------------
-    def create_incident(self, incident_id, data_mode, *, created_at, topology_snapshot_id=None, title=None) -> Incident:
+    def create_incident(self, incident_id, data_mode, *, created_at, topology_snapshot_id=None, title=None,
+                        archive_ref=None, scenario_id=None) -> Incident:
         inc = Incident(incident_id=incident_id, data_mode=data_mode, topology_snapshot_id=topology_snapshot_id,
-                       title=title, created_at=created_at)
+                       title=title, created_at=created_at, archive_ref=archive_ref, scenario_id=scenario_id)
         with self.engine.begin() as conn:
             if topology_snapshot_id is not None and conn.execute(
                 select(topology_snapshots.c.topology_snapshot_id).where(
@@ -71,7 +73,8 @@ class SqlEvidenceStore:
             try:
                 conn.execute(incidents.insert().values(
                     incident_id=incident_id, data_mode=inc.data_mode, topology_snapshot_id=topology_snapshot_id,
-                    title=title, created_at=to_canonical(inc.created_at),
+                    title=title, created_at=to_canonical(inc.created_at), archive_ref=archive_ref,
+                    scenario_id=scenario_id,
                 ))
             except IntegrityError:
                 raise EvidenceError.single(IssueCode.SCHEMA_INVALID,
@@ -79,6 +82,11 @@ class SqlEvidenceStore:
             self._audit(conn, incident_id, "incident_created",
                         {"data_mode": data_mode, "topology_snapshot_id": topology_snapshot_id}, inc.created_at)
         return inc
+
+    def list_incidents(self, limit: int = 100) -> list[Incident]:
+        q = select(incidents).order_by(incidents.c.created_at.desc(), incidents.c.incident_id).limit(limit)
+        with self.engine.connect() as conn:
+            return [Incident.model_validate(dict(r)) for r in conn.execute(q).mappings()]
 
     def get_incident(self, incident_id: str) -> Incident | None:
         with self.engine.connect() as conn:

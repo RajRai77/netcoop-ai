@@ -32,7 +32,7 @@ def finding(fid, obs_refs, agent="performance-agent", supersedes=None, created="
 # --- migrations -----------------------------------------------------------------------
 
 def test_schema_at_head(store):
-    assert store.schema_revision() == migrate.head_revision() == "0001"
+    assert store.schema_revision() == migrate.head_revision() == "0002"
 
 
 def test_migration_matches_table_metadata(store):
@@ -52,7 +52,7 @@ def test_downgrade_then_upgrade_is_repeatable(db_url):
         migrate.downgrade(engine, "base")
         assert migrate.current_revision(engine) is None
         migrate.upgrade(engine)
-        assert migrate.current_revision(engine) == "0001"
+        assert migrate.current_revision(engine) == "0002"
     finally:
         engine.dispose()
 
@@ -157,14 +157,37 @@ def test_append_only_tables_reject_update_and_delete(store, table):
     obs = store.list_observations("INC-1")
     store.put_finding(finding("F1", [obs[0].observation_id]), stored_at=NOW)
     store.put_topology(TopologySnapshot.model_validate(example("topology")), stored_at=NOW)
+    _seed_investigation_rows(store, obs)
     for stmt in (f"UPDATE {table} SET {_any_text_column(table)} = {_any_text_column(table)}", f"DELETE FROM {table}"):
         with pytest.raises(DBAPIError, match="append-only"):
             with store.engine.begin() as conn:
                 conn.execute(text(stmt))
 
 
+def _seed_investigation_rows(store, obs):
+    from netcoop.evidence.counters import CounterRate
+    store.put_derived_rates("INC-1", [CounterRate("device=SW-01", "crc_errors", "crc_errors_rate", 1.0, "count/s",
+                                                  NOW, later(60), (obs[0].observation_id, obs[1].observation_id),
+                                                  (obs[0].lineage_group,))])
+    store.append_event("INC-1", "RUN-1", "INVESTIGATING", "coordinator", {}, NOW)
+    store.record_attempt({"attempt_id": "AT-1", "task_id": "T-1", "attempt_no": 1, "incident_id": "INC-1",
+                          "run_id": "RUN-1", "agent_id": "performance-agent", "task_type": "investigate",
+                          "transport": "a2a", "outcome": "completed", "started_at": "2026-10-31T10:00:05.000000Z",
+                          "finished_at": "2026-10-31T10:00:06.000000Z"})
+    ch = example("challenge")
+    ch["incident_id"] = "INC-1"
+    store.put_challenge(ch, "RUN-1", NOW)
+    store.put_challenge_outcome(ch["challenge_id"], "unavailable", {}, NOW)
+    sid = store.put_snapshot("INC-1", {"observation_ids": [o.observation_id for o in obs]}, NOW)
+    rep = example("report")
+    rep.update(incident_id="INC-1", evidence_snapshot_id=sid)
+    store.put_report(rep, NOW)
+
+
 def _any_text_column(table: str) -> str:
     return {
+        "derived_rates": "body", "workflow_events": "detail", "agent_task_attempts": "detail",
+        "challenges": "body", "challenge_outcomes": "detail", "evidence_snapshots": "body", "reports": "body",
         "topology_snapshots": "body", "raw_records": "content", "observations": "body", "ingestions": "summary",
         "ingestion_issues": "message", "findings": "body", "finding_observation_refs": "observation_id",
         "audit_events": "detail",
@@ -270,7 +293,7 @@ def test_evidence_survives_engine_restart(db_url):
     e2 = make_engine(db_url)
     try:
         s2 = SqlEvidenceStore(e2)
-        assert s2.schema_revision() == "0001"
+        assert s2.schema_revision() == "0002"
         assert s2.get_incident("INC-1").data_mode == "synthetic"
         assert s2.list_observations("INC-1") == before
         assert len(before) == rep.observations_added == 3

@@ -86,7 +86,13 @@ def cmd_incident_create(args) -> int:
 def cmd_ingest(args) -> int:
     from netcoop.ledger import ingest_telemetry
 
-    report = ingest_telemetry(_store(args), args.incident_id, Path(args.file).read_bytes())
+    from netcoop.evidence.adapters import builtin_profile, validate_profile
+
+    profile = None
+    if args.profile:
+        p = Path(args.profile)
+        profile = validate_profile(json.loads(p.read_text(encoding="utf-8"))) if p.suffix == ".json" and p.is_file()             else builtin_profile(args.profile)
+    report = ingest_telemetry(_store(args), args.incident_id, Path(args.file).read_bytes(), profile=profile)
     _print(report.model_dump(mode="json"))
     return EXIT_OK
 
@@ -123,6 +129,7 @@ def build_parser() -> argparse.ArgumentParser:
     ing = sub.add_parser("ingest", help="ingest a TelemetryBatch JSON file")
     ing.add_argument("incident_id")
     ing.add_argument("file")
+    ing.add_argument("--profile", help="built-in source profile id, or path to a profile JSON (for CSV/vendor input)")
     ing.set_defaults(func=cmd_ingest)
 
     ev = sub.add_parser("evidence", help="print stored observations and issues")

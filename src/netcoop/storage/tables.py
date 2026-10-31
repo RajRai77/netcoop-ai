@@ -32,6 +32,9 @@ incidents = Table(
     Column("topology_snapshot_id", String(ID), ForeignKey("topology_snapshots.topology_snapshot_id"), nullable=True),
     Column("title", String(500), nullable=True),
     Column("created_at", String(TS), nullable=False),
+    # Added in 0002: recorded-archive reference for evidence seeking, e.g. "scenario:S11".
+    Column("archive_ref", String(ID), nullable=True),
+    Column("scenario_id", String(ID), nullable=True),
 )
 
 topology_snapshots = Table(
@@ -141,8 +144,91 @@ audit_events = Table(
     Column("detail", Text, nullable=False),
 )
 
+# --- Migration 0002: investigation ledger -------------------------------------------------
+
+derived_rates = Table(
+    "derived_rates", metadata,
+    Column("derived_id", String(80), primary_key=True),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("metric", String(100), nullable=False),
+    Column("subject_key", String(1000), nullable=False),
+    Column("window_end", String(TS), nullable=False),
+    Column("body", Text, nullable=False),
+)
+Index("ix_rate_incident", derived_rates.c.incident_id)
+
+workflow_events = Table(
+    "workflow_events", metadata,
+    Column("event_pk", Integer, primary_key=True, autoincrement=True),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("run_id", String(80), nullable=False),
+    Column("state", String(40), nullable=False),
+    Column("actor", String(ID), nullable=False),
+    Column("created_at", String(TS), nullable=False),
+    Column("detail", Text, nullable=False),
+)
+Index("ix_wf_incident", workflow_events.c.incident_id)
+
+agent_task_attempts = Table(
+    "agent_task_attempts", metadata,
+    Column("attempt_id", String(80), primary_key=True),
+    Column("task_id", String(ID), nullable=False),
+    Column("attempt_no", Integer, nullable=False),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("run_id", String(80), nullable=False),
+    Column("agent_id", String(ID), nullable=False),
+    Column("task_type", String(20), nullable=False),
+    Column("transport", String(20), nullable=False),
+    Column("outcome", String(20), nullable=False),
+    Column("started_at", String(TS), nullable=False),
+    Column("finished_at", String(TS), nullable=False),
+    Column("detail", Text, nullable=False),
+)
+Index("ix_task_incident", agent_task_attempts.c.incident_id)
+
+challenges = Table(
+    "challenges", metadata,
+    Column("challenge_id", String(ID), primary_key=True),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("run_id", String(80), nullable=False),
+    Column("created_at", String(TS), nullable=False),
+    Column("body", Text, nullable=False),
+)
+Index("ix_challenge_incident", challenges.c.incident_id)
+
+challenge_outcomes = Table(
+    "challenge_outcomes", metadata,
+    Column("outcome_pk", Integer, primary_key=True, autoincrement=True),
+    Column("challenge_id", String(ID), ForeignKey("challenges.challenge_id"), nullable=False),
+    Column("outcome", String(20), nullable=False),
+    Column("created_at", String(TS), nullable=False),
+    Column("detail", Text, nullable=False),
+)
+
+evidence_snapshots = Table(
+    "evidence_snapshots", metadata,
+    Column("snapshot_id", String(80), primary_key=True),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("created_at", String(TS), nullable=False),
+    Column("body", Text, nullable=False),
+)
+
+reports = Table(
+    "reports", metadata,
+    Column("report_pk", Integer, primary_key=True, autoincrement=True),
+    Column("incident_id", String(ID), ForeignKey("incidents.incident_id"), nullable=False),
+    Column("revision", Integer, nullable=False),
+    Column("status", String(30), nullable=False),
+    Column("evidence_snapshot_id", String(80), ForeignKey("evidence_snapshots.snapshot_id"), nullable=False),
+    Column("created_at", String(TS), nullable=False),
+    Column("body", Text, nullable=False),
+    UniqueConstraint("incident_id", "revision", name="uq_report_revision"),
+)
+
 # Tables whose rows may never be updated or deleted (enforced by DB triggers).
 APPEND_ONLY_TABLES = (
     "topology_snapshots", "raw_records", "observations", "ingestions", "ingestion_issues",
     "findings", "finding_observation_refs", "audit_events",
+    "derived_rates", "workflow_events", "agent_task_attempts", "challenges", "challenge_outcomes",
+    "evidence_snapshots", "reports",
 )

@@ -179,6 +179,11 @@ class Finding(_Model):
 class TopologyNode(_Model):
     id: str
     type: Literal["device", "service", "ap", "segment", "host"]
+    role: Literal["core", "distribution", "access", "edge", "server", "client"] | None = None
+    label: str | None = None
+
+    def to_json_dict(self) -> dict:
+        return self.model_dump(mode="json", exclude_none=True)
 
 
 class TopologyLink(_Model):
@@ -189,13 +194,15 @@ class TopologyLink(_Model):
     to: str
     type: Literal["physical", "logical", "dependency", "routing"]
     directed: bool | None = None
+    from_interface: NonEmpty | None = None
+    to_interface: NonEmpty | None = None
 
     def to_json_dict(self) -> dict:
         return self.model_dump(mode="json", by_alias=True, exclude_none=True)
 
 
 class TopologySnapshot(_Model):
-    schema_version: Literal["1.0.0"] = NDEP_SCHEMA_VERSION
+    schema_version: Literal["1.0.0", "1.1.0"] = "1.1.0"
     topology_snapshot_id: NonEmpty
     kind: Literal["intended", "observed", "modeled", "synthetic"]
     observed_at: Timestamp
@@ -205,7 +212,7 @@ class TopologySnapshot(_Model):
 
     def to_json_dict(self) -> dict:
         d = self.model_dump(mode="json", exclude={"nodes", "links", "limitations"})
-        d["nodes"] = [n.model_dump(mode="json") for n in self.nodes]
+        d["nodes"] = [n.to_json_dict() for n in self.nodes]
         d["links"] = [link.to_json_dict() for link in self.links]
         d["limitations"] = list(self.limitations)
         return d

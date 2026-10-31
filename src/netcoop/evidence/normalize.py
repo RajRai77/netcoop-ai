@@ -128,7 +128,13 @@ def normalize_batch(
     topology: TopologySnapshot | None = None,
     expected_data_mode: str | None = None,
     limits: Limits = Limits(),
+    originals: list[dict] | None = None,
+    source_schema: str = BATCH_SOURCE_SCHEMA,
+    pre_issues: list[Issue] | None = None,
+    batch_id: str | None = None,
 ) -> NormalizedBatch:
+    """originals: when a source-profile adapter produced the batch, the vendor rows
+    (same order as records). They become the immutable raw record content."""
     registry = registry or default_registry()
     doc = parse_payload(payload, limits)
 
@@ -156,9 +162,12 @@ def normalize_batch(
             f"batch data_mode {source.data_mode!r} differs from incident data_mode {expected_data_mode!r}",
         )
 
-    ctx = _Ctx(incident_id, source, ingested_at, registry, topology, doc.get("batch_id"))
+    if originals is not None and len(originals) != len(records):
+        raise ValueError("originals must align with records")
+    ctx = _Ctx(incident_id, source, ingested_at, registry, topology, batch_id or doc.get("batch_id"), source_schema)
+    ctx.issues.extend(pre_issues or [])
     for i, rec in enumerate(records):
-        ctx.record(i, rec, record_schema_errors.get(i, []))
+        ctx.record(i, rec, record_schema_errors.get(i, []), originals[i] if originals is not None else None)
     return NormalizedBatch(
         incident_id=incident_id,
         batch_id=ctx.batch_id,
@@ -173,7 +182,8 @@ def normalize_batch(
 
 
 class _Ctx:
-    def __init__(self, incident_id, source, ingested_at, registry, topology, batch_id):
+    def __init__(self, incident_id, source, ingested_at, registry, topology, batch_id, source_schema):
+        self.source_schema: str = source_schema
         self.incident_id: str = incident_id
         self.source: SourceRef = source
         self.ingested_at: datetime = ingested_at
@@ -200,9 +210,11 @@ class _Ctx:
         return issue
 
     # -- per record --------------------------------------------------------------
-    def record(self, i: int, rec: Any, schema_errs: list[tuple[list, str]]) -> None:
-        content = canonical_json(rec)
-        content_hash = sha256_hex(canonical_json({"source_id": self.source.source_id, "record": rec}))
+    def record(self, i: int, rec: Any, schema_errs: list[tuple[list, str]], original: Any = None) -> None:
+        raw_obj = rec if original is None else original
+        content = canonical_json(raw_obj)
+        content_hash = sha256_hex(canonical_json(
+            {"source_id": self.source.source_id, "source_schema": self.source_schema, "record": raw_obj}))
         raw_id = derive_id("RAW", self.incident_id, content_hash)
         rid = rec.get("record_id") if isinstance(rec, dict) and isinstance(rec.get("record_id"), str) else None
 
@@ -214,7 +226,7 @@ class _Ctx:
         self._hash_seen[content_hash] = raw_id
         self.raws.append(RawRecord(
             raw_id=raw_id, incident_id=self.incident_id, content_hash=content_hash, source=self.source,
-            source_schema=BATCH_SOURCE_SCHEMA, source_record_id=rid, batch_id=self.batch_id,
+            source_schema=self.source_schema, source_record_id=rid, batch_id=self.batch_id,
             received_at=self.ingested_at, content=content,
         ))
         if rid is not None and rid in self._record_ids:

@@ -17,6 +17,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from netcoop import __version__
 from netcoop.api.health import CheckResult, check_database
 from netcoop.config import Settings
+from netcoop.evidence.adapters import builtin_profile, list_builtin_profiles
 from netcoop.evidence.errors import EvidenceError, IssueCode
 from netcoop.evidence.models import DataMode, TopologySnapshot
 from netcoop.evidence.normalize import Limits
@@ -129,7 +130,8 @@ def create_app(
                 "diagnosis": "not implemented (Gate 2)"}
 
     @app.post("/api/incidents/{incident_id}/telemetry", dependencies=api)
-    async def post_telemetry(incident_id: str, request: Request, s: SqlEvidenceStore = Depends(require_store)):
+    async def post_telemetry(incident_id: str, request: Request, profile: str | None = None,
+                             s: SqlEvidenceStore = Depends(require_store)):
         declared = request.headers.get("content-length")
         if declared is not None and declared.isdigit() and int(declared) > limits.max_payload_bytes:
             raise EvidenceError.single(IssueCode.PAYLOAD_TOO_LARGE,
@@ -140,7 +142,8 @@ def create_app(
             if len(payload) > limits.max_payload_bytes:
                 raise EvidenceError.single(IssueCode.PAYLOAD_TOO_LARGE,
                                            f"payload exceeds {limits.max_payload_bytes} bytes")
-        report = ingest_telemetry(s, incident_id, bytes(payload), limits=limits)
+        prof = builtin_profile(profile) if profile else None
+        report = ingest_telemetry(s, incident_id, bytes(payload), limits=limits, profile=prof)
         return report.model_dump(mode="json")
 
     @app.get("/api/incidents/{incident_id}", dependencies=api)
@@ -163,6 +166,10 @@ def create_app(
             "observations": [o.to_json_dict() for o in obs],
             "issues": [i.model_dump(mode="json") for i in s.list_issues(incident_id)],
         }
+
+    @app.get("/api/profiles", dependencies=api)
+    def profiles() -> dict:
+        return {"profiles": [builtin_profile(p) for p in list_builtin_profiles()]}
 
     @app.get("/api/raw-records/{raw_id}", dependencies=api)
     def get_raw(raw_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
