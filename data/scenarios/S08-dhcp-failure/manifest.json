@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S08-dhcp-failure",
-   "title": "DHCP service failure (new leases fail)",
-   "seed": 108,
-   "faults": [
-    {
-     "type": "DHCP_FAILURE",
-     "location": "DHCP-1"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "service"
-   ]
-  }
+  "seed": 108
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

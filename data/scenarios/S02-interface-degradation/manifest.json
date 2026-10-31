@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S02-interface-degradation",
-   "title": "CRC errors on DIST-1 -> ACC-1-2",
-   "seed": 102,
-   "faults": [
-    {
-     "type": "INTERFACE_DEGRADATION",
-     "location": "DIST-1:ge0/2"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "interface"
-   ]
-  }
+  "seed": 102
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

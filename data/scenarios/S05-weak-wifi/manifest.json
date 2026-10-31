@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S05-weak-wifi",
-   "title": "Weak Wi-Fi signal at AP-2-1 (hostel)",
-   "seed": 105,
-   "faults": [
-    {
-     "type": "WEAK_WIFI_SIGNAL",
-     "location": "AP-2-1"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "wireless"
-   ]
-  }
+  "seed": 105
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

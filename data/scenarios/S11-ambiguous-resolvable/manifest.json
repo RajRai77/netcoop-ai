@@ -22,31 +22,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S11-ambiguous-resolvable",
-   "title": "Loss on ACC-2-2 branch; device counters only in archive",
-   "seed": 111,
-   "faults": [
-    {
-     "type": "INTERFACE_DEGRADATION",
-     "location": "DIST-2:ge0/2"
-    }
-   ],
-   "initial_sources": [
-    "probe-collector"
-   ],
-   "archive_sources": [
-    "snmp-poller",
-    "wlc",
-    "nms"
-   ],
-   "expected_status": "diagnosed",
-   "expected_status_without_verification": "ambiguous",
-   "tags": [
-    "ambiguous",
-    "verification"
-   ]
-  }
+  "seed": 111
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

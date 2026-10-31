@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S01-congestion",
-   "title": "Uplink congestion DIST-2 -> ACC-2-1",
-   "seed": 101,
-   "faults": [
-    {
-     "type": "LINK_CONGESTION",
-     "location": "DIST-2:ge0/1"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "congestion"
-   ]
-  }
+  "seed": 101
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

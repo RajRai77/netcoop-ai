@@ -22,23 +22,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S17-transient-spike",
-   "title": "Healthy campus with one latency spike",
-   "seed": 117,
-   "faults": [],
-   "spikes": [
-    {
-     "node": "ACC-1-1",
-     "step": 4
-    }
-   ],
-   "expected_status": "healthy",
-   "tags": [
-    "healthy",
-    "robustness"
-   ]
-  }
+  "seed": 117
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

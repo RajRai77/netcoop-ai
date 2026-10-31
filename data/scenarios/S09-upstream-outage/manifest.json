@@ -23,32 +23,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S09-upstream-outage",
-   "title": "Distribution switch DIST-2 down; only probes uploaded",
-   "seed": 109,
-   "faults": [
-    {
-     "type": "DEVICE_DOWN",
-     "location": "DIST-2"
-    }
-   ],
-   "initial_sources": [
-    "probe-collector",
-    "reachability-prober"
-   ],
-   "archive_sources": [
-    "snmp-poller",
-    "nms"
-   ],
-   "expected_status": "diagnosed",
-   "expected_status_without_verification": "ambiguous",
-   "tags": [
-    "outage",
-    "verification",
-    "upstream"
-   ]
-  }
+  "seed": 109
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

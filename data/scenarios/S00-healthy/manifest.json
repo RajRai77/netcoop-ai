@@ -21,16 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S00-healthy",
-   "title": "Healthy campus under full monitoring",
-   "seed": 100,
-   "faults": [],
-   "expected_status": "healthy",
-   "tags": [
-    "healthy"
-   ]
-  }
+  "seed": 100
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

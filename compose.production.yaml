@@ -25,6 +25,17 @@ services:
     logging: *logging
     restart: always
 
+  agent-performance: &prod-agent
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging
+    restart: always
+
+  agent-infrastructure: *prod-agent
+
+  agent-connectivity: *prod-agent
+
   proxy:
     image: caddy:2.10-alpine
     environment:

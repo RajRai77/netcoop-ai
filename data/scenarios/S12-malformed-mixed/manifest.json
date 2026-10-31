@@ -21,28 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S12-malformed-mixed",
-   "title": "Congestion plus malformed, stale and unknown-device records",
-   "seed": 112,
-   "faults": [
-    {
-     "type": "LINK_CONGESTION",
-     "location": "DIST-1:ge0/2"
-    }
-   ],
-   "malformed": true,
-   "spikes": [
-    {
-     "node": "ACC-2-2",
-     "step": 6
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "robustness"
-   ]
-  }
+  "seed": 112
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

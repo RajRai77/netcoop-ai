@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S07-dns-failure",
-   "title": "DNS service failure affecting all segments",
-   "seed": 107,
-   "faults": [
-    {
-     "type": "DNS_FAILURE",
-     "location": "DNS-1"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "service"
-   ]
-  }
+  "seed": 107
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

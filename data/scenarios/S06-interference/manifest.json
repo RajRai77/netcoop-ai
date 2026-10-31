@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S06-interference",
-   "title": "Wireless interference at AP-1-2 (good RSSI, low SNR)",
-   "seed": 106,
-   "faults": [
-    {
-     "type": "WIRELESS_INTERFERENCE",
-     "location": "AP-1-2"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "wireless"
-   ]
-  }
+  "seed": 106
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

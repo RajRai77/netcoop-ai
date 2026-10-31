@@ -22,23 +22,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S13-csv-vendor-profile",
-   "title": "Congestion seen through a vendor CSV export (ratios, Mbps, IST)",
-   "seed": 113,
-   "faults": [
-    {
-     "type": "LINK_CONGESTION",
-     "location": "DIST-2:ge0/2"
-    }
-   ],
-   "csv_profile": "campus-snmp-csv",
-   "expected_status": "diagnosed",
-   "tags": [
-    "interop",
-    "csv"
-   ]
-  }
+  "seed": 113
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S04-device-down",
-   "title": "Access switch ACC-1-1 down",
-   "seed": 104,
-   "faults": [
-    {
-     "type": "DEVICE_DOWN",
-     "location": "ACC-1-1"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "outage"
-   ]
-  }
+  "seed": 104
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

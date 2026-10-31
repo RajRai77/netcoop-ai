@@ -328,7 +328,8 @@ def write_scenario(out_dir: Path, spec: dict, split: str = "dev") -> Path:
     gt = {"scenario_id": sid, "faults": [{"fault_type": f["type"], "location": f["location"]} for f in spec.get("faults", [])],
           "expected_status": spec["expected_status"],
           "expected_status_without_verification": spec.get("expected_status_without_verification", spec["expected_status"]),
-          "notes": spec.get("notes", ""), "generator": GENERATOR_VERSION, "seed": spec["seed"]}
+          "notes": spec.get("notes", ""), "generator": GENERATOR_VERSION, "seed": spec["seed"],
+          **spec.get("ground_truth_extra", {})}
     (d / "ground_truth.json").write_text(json.dumps(gt, indent=1), encoding="utf-8")
     manifest = {
         "schema_version": "1.1.0", "scenario_id": sid, "title": spec["title"], "data_mode": "synthetic",
@@ -339,7 +340,9 @@ def write_scenario(out_dir: Path, spec: dict, split: str = "dev") -> Path:
         "time_window": {"start": _ts(t0, 0), "end": _ts(t0, STEPS - 1)},
         "reference_time": (t_end + timedelta(seconds=5)).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "seed": spec["seed"], "split": split, "tags": spec.get("tags", []),
-        "generator": {"version": GENERATOR_VERSION, "spec": {k: v for k, v in spec.items() if k != "notes"}},
+        # The generator spec is NOT copied here: it contains the injected faults (labels),
+        # and the manifest is readable by the diagnosis side. Labels live only in ground_truth.json.
+        "generator": {"version": GENERATOR_VERSION, "seed": spec["seed"]},
         "limitations": ["Synthetic data; values and fault signatures follow the generator's model",
                         "Generator and diagnosis engine were written by the same team (not an independent benchmark)"]
                        + spec.get("limitations", []),

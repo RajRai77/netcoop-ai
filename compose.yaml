@@ -1,5 +1,22 @@
 # Development / base stack. Production overrides: compose.production.yaml
+#
+#   web (FastAPI + UI + coordinator) --A2A JSON-RPC--> agent-performance
+#                                                    -> agent-infrastructure
+#                                                    -> agent-connectivity
+#   web --> db (PostgreSQL)
+# Agents and DB are only on internal networks; web is published on 127.0.0.1 in dev.
 name: netcoop
+
+x-agent: &agent
+  image: netcoop-app:local
+  environment: &agent-env
+    NETCOOP_AGENT_TOKEN: ${NETCOOP_AGENT_TOKEN:?set NETCOOP_AGENT_TOKEN in .env}
+    NETCOOP_SCENARIOS_DIR: /app/data/scenarios
+    NETCOOP_ARCHIVE_UPLOADS_DIR: /app/var/archives
+  volumes:
+    - archives:/app/var/archives:ro
+  networks: [agents]
+  restart: unless-stopped
 
 services:
   db:
@@ -21,30 +38,69 @@ services:
 
   web:
     build: .
-    image: netcoop-web:local
+    image: netcoop-app:local
     environment:
       NETCOOP_ENV: ${NETCOOP_ENV:-development}
-      # Service DNS name "db", never localhost. Use a hex password (no URL escaping needed).
+      # Service DNS names, never localhost. Use a hex password (no URL escaping needed).
       NETCOOP_DATABASE_URL: "postgresql://${POSTGRES_USER:-netcoop}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-netcoop}"
       NETCOOP_API_TOKEN: ${NETCOOP_API_TOKEN:-}
+      NETCOOP_AGENT_TOKEN: ${NETCOOP_AGENT_TOKEN:?set NETCOOP_AGENT_TOKEN in .env}
+      NETCOOP_AGENTS: '{"performance-agent": "http://agent-performance:8101/", "infrastructure-agent": "http://agent-infrastructure:8102/", "connectivity-agent": "http://agent-connectivity:8103/"}'
+    volumes:
+      - archives:/app/var/archives
     depends_on:
       db:
         condition: service_healthy
-    networks: [backend, frontend]
+    networks: [backend, agents, frontend]
     ports:
       - "127.0.0.1:${NETCOOP_WEB_PORT:-8000}:8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2).status == 200 else 1)"]
       interval: 10s
       timeout: 3s
-      start_period: 10s
-      retries: 5
+      start_period: 15s
+      retries: 6
     restart: unless-stopped
+
+  agent-performance:
+    <<: *agent
+    command: ["python", "-m", "netcoop.agents.server", "--agent", "performance-agent", "--host", "0.0.0.0",
+              "--port", "8101", "--public-url", "http://agent-performance:8101/"]
+    healthcheck: &agent-health
+      test: ["CMD", "python", "-c", "import os,urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:' + os.environ['AGENT_PORT'] + '/health', timeout=2).status == 200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 6
+    environment:
+      <<: *agent-env
+      AGENT_PORT: "8101"
+
+  agent-infrastructure:
+    <<: *agent
+    command: ["python", "-m", "netcoop.agents.server", "--agent", "infrastructure-agent", "--host", "0.0.0.0",
+              "--port", "8102", "--public-url", "http://agent-infrastructure:8102/"]
+    healthcheck: *agent-health
+    environment:
+      <<: *agent-env
+      AGENT_PORT: "8102"
+
+  agent-connectivity:
+    <<: *agent
+    command: ["python", "-m", "netcoop.agents.server", "--agent", "connectivity-agent", "--host", "0.0.0.0",
+              "--port", "8103", "--public-url", "http://agent-connectivity:8103/"]
+    healthcheck: *agent-health
+    environment:
+      <<: *agent-env
+      AGENT_PORT: "8103"
 
 networks:
   backend:
+    internal: true
+  agents:
     internal: true
   frontend: {}
 
 volumes:
   pgdata: {}
+  archives: {}

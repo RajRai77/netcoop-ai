@@ -26,6 +26,21 @@ jobs:
       - run: uv run pytest
       - run: uv run python scripts/run_local.py --check --port auto
 
+  evaluation:
+    runs-on: ubuntu-24.04
+    needs: test-linux
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.24"
+      - run: uv sync --locked
+      - run: uv run python scripts/evaluate.py --out eval-ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-results
+          path: eval-ci/
+
   test-postgres:
     runs-on: ubuntu-24.04
     services:
@@ -61,10 +76,20 @@ jobs:
           cp .env.example .env
           sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
           sed -i "s/^NETCOOP_API_TOKEN=.*/NETCOOP_API_TOKEN=$(openssl rand -hex 24)/" .env
+          sed -i "s/^NETCOOP_AGENT_TOKEN=.*/NETCOOP_AGENT_TOKEN=$(openssl rand -hex 24)/" .env
       - run: docker compose version
       - run: docker compose config --quiet
       - run: docker compose -f compose.yaml -f compose.production.yaml config --quiet
-      - run: docker compose up -d --build --wait --wait-timeout 180
+      - run: docker compose up -d --build --wait --wait-timeout 240
+      - name: Only the web port is published (agents and DB are internal)
+        run: |
+          docker compose ps
+          for pair in db:5432 agent-performance:8101 agent-infrastructure:8102 agent-connectivity:8103; do
+            out=$(docker compose port "${pair%%:*}" "${pair##*:}" 2>/dev/null || true)
+            echo "$pair published as: '${out}'"
+            case "$out" in *:[1-9]*) echo "internal service is published"; exit 1;; esac
+          done
+          docker compose port web 8000
       - run: NETCOOP_API_TOKEN=$(grep '^NETCOOP_API_TOKEN=' .env | cut -d= -f2) BASE_URL=http://127.0.0.1:8000 sh scripts/smoke.sh
       - name: Evidence survives container restart
         run: |
@@ -72,7 +97,8 @@ jobs:
           docker compose up -d --wait --wait-timeout 120
           TOKEN=$(grep '^NETCOOP_API_TOKEN=' .env | cut -d= -f2)
           n=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from observations")
-          echo "observations after restart: $n"; test "$n" -ge 3
+          r=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from reports")
+          echo "observations after restart: $n, reports: $r"; test "$n" -ge 3 && test "$r" -ge 1
       - name: Readiness drops when DB stops
         run: |
           docker compose stop db

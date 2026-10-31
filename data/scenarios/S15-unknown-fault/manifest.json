@@ -21,21 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S15-unknown-fault",
-   "title": "Persistent loss/latency on ACC-1-2 with every modeled cause normal",
-   "seed": 115,
-   "faults": [
-    {
-     "type": "UNMODELED_PATH_ISSUE",
-     "location": "ACC-1-2"
-    }
-   ],
-   "expected_status": "unknown_fault",
-   "tags": [
-    "unknown"
-   ]
-  }
+  "seed": 115
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",

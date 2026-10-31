@@ -21,25 +21,7 @@
  ],
  "generator": {
   "version": "netcoop-scengen/1",
-  "spec": {
-   "id": "S10-compound",
-   "title": "Concurrent congestion (DIST-1) and weak Wi-Fi (AP-2-2)",
-   "seed": 110,
-   "faults": [
-    {
-     "type": "LINK_CONGESTION",
-     "location": "DIST-1:ge0/1"
-    },
-    {
-     "type": "WEAK_WIFI_SIGNAL",
-     "location": "AP-2-2"
-    }
-   ],
-   "expected_status": "diagnosed",
-   "tags": [
-    "multi-fault"
-   ]
-  }
+  "seed": 110
  },
  "limitations": [
   "Synthetic data; values and fault signatures follow the generator's model",
