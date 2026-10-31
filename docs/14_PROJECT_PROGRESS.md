@@ -89,9 +89,9 @@ Independent A2A processes/transport checked: SDK probe only (2 processes, JSON-R
 Docker Compose build/health/restart/backup status: NOT RUN (no Docker)
 Public deployment address/status: none
 Open failures/blockers: no PostgreSQL or Docker execution yet (high); CI never run (needs push authorization)
-What is NOT yet implemented/verified: see "Remaining Gate 1 work" and "Not implemented" below
-Next single most valuable, testable task: run CI (PostgreSQL + Compose) once a push is authorized;
-  then finish G1 source-profile/CSV adapter; then Gate 2 (awaiting user authorization)
+What is NOT yet implemented/verified: see "Remaining Gate 1 carry-over" and "Not implemented" below
+Next single most valuable, testable task: CI now green (run 41213586252). Next: G1 carry-over
+  source-profile/CSV adapter, then Gate 2 (awaiting user authorization)
 ADR/spec updates required: none to ADRs. Spec draft changes logged in docs/13 (registry 1.1.0, telemetry-batch schema).
 ```
 
