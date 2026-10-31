@@ -117,9 +117,9 @@ export function CommandCenter() {
       </section>
 
       <div className="kpis">
-        <Kpi icon={<Users size={24} />} value={`${online}`} unit={`/ ${agents.length || 3}`} label="Specialist agents online (A2A)"
+        <Kpi icon={<Users size={24} />} value={`${online}`} unit={`/ ${agents.length}`} label="Specialist agents online (A2A)"
              title={agents.map((x) => `${x.agent_id}: ${x.status}`).join('\n')} />
-        <Kpi icon={<Router size={24} />} tone="violet" value={devices || '—'} label={topo ? 'Network nodes in topology' : 'No topology snapshot'}
+        <Kpi icon={<Router size={24} />} tone="violet" value={devices || '—'} label={topo ? `Devices & hosts · ${topo.nodes.length - devices} segments not counted` : 'No topology snapshot'}
              title={topo ? topo.topology_snapshot_id + ' (' + topo.kind + ') · excludes logical segments' : undefined} />
         <Kpi icon={<FileSearch size={24} />} tone="green" value={d.evidence_counts.findings} unit={'· ' + present + ' anomalies'}
              label={'Findings from ' + d.evidence_counts.observations.toLocaleString() + ' observations'} />
