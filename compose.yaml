@@ -1,0 +1,49 @@
+# Development / base stack. Production overrides: compose.production.yaml
+name: netcoop
+
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-netcoop}
+      POSTGRES_DB: ${POSTGRES_DB:-netcoop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    # No ports: PostgreSQL is never published to the host.
+
+  web:
+    build: .
+    image: netcoop-web:local
+    environment:
+      NETCOOP_ENV: ${NETCOOP_ENV:-development}
+      # libpq key=value form; service DNS name "db", never localhost.
+      NETCOOP_DATABASE_URL: "host=db port=5432 dbname=${POSTGRES_DB:-netcoop} user=${POSTGRES_USER:-netcoop} password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [backend, frontend]
+    ports:
+      - "127.0.0.1:${NETCOOP_WEB_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2).status == 200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  backend:
+    internal: true
+  frontend: {}
+
+volumes:
+  pgdata: {}

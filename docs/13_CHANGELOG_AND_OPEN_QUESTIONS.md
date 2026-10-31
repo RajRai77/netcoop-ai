@@ -10,6 +10,12 @@
 - Added executable gates, deployment smoke/backup requirements, and scientific baseline/ablation evaluation.
 - This pack is **documentation only**. No software/deployment/test claims are implied.
 
+## 2026-10-31 — Gate 0 session 1 (no ADR change)
+
+- Added Gate 0 skeleton (uv project, FastAPI health endpoints, placeholder UI, Dockerfile, Compose files, Caddy, CI). No architecture decision changed.
+- Open question 1 partly answered: dev machine is Windows 11, 12 logical CPUs, ~15.7 GB RAM, **no Docker, no WSL, CPU virtualization disabled in firmware**. VPS provider/domain still unknown.
+- Open question 3 partly answered: PyPI `a2a-sdk` latest is 1.3.0 (requires Python >=3.10). Not installed or pinned yet; binding/Inspector compatibility still unverified (Gate 4).
+
 ## Unresolved, must verify before irreversible implementation
 
 1. Host OS, CPU/RAM, Docker availability, public domain and VPS provider/budget. No assumption of campus privileges.

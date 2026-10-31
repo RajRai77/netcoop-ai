@@ -1,0 +1,41 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.24"
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  compose-smoke:
+    runs-on: ubuntu-24.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create CI-only env file
+        run: |
+          cp .env.example .env
+          sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
+      - run: docker compose version
+      - run: docker compose config --quiet
+      - run: docker compose -f compose.yaml -f compose.production.yaml config --quiet
+      - run: docker compose up -d --build --wait --wait-timeout 180
+      - run: BASE_URL=http://127.0.0.1:8000 sh scripts/smoke.sh
+      - name: Readiness drops when DB stops
+        run: |
+          docker compose stop db
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/health/ready)
+          echo "ready after db stop: $code"; test "$code" = 503
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - run: docker compose down -v
+        if: always()

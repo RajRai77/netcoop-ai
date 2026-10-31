@@ -1,0 +1,49 @@
+# Production override:
+#   docker compose -f compose.yaml -f compose.production.yaml up -d --build --wait
+# Only Caddy is public. Needs Docker Compose v2.24+ for !reset.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  db:
+    logging: *logging
+    restart: always
+
+  web:
+    environment:
+      NETCOOP_ENV: production
+    ports: !reset []
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging
+    restart: always
+
+  proxy:
+    image: caddy:2.10-alpine
+    environment:
+      NETCOOP_DOMAIN: ${NETCOOP_DOMAIN:?set NETCOOP_DOMAIN in .env}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+    networks: [frontend]
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging
+    restart: always
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}
