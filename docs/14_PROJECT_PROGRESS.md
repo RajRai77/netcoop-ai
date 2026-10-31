@@ -1,6 +1,6 @@
 # CURRENT IMPLEMENTATION STATUS — UPDATE EVERY CLAUDE CODE SESSION
 
-**Last updated:** 2026-11-01 (backend completion checkpoint)
+**Last updated:** 2026-11-01 (frontend redesign and integration checkpoint)
 **State:** Backend complete for the approved local/CI scope. Telemetry → validated evidence → 3 independent A2A specialist processes → competing hypotheses → spatio-temporal, topology-aware reasoning → bounded evidence-seeking verification → evidence-backed JSON report → API/SSE/UI. No LLM is used, and all data is synthetic. **Ready for frontend integration** (see "Readiness").
 **Branch:** `gate0-skeleton` (pushed, user-authorized; `main` untouched). Latest commit and CI: see "CI".
 **Deployed URL:** NONE. VPS/HTTPS deployment is out of the current scope (owner decision).
@@ -83,6 +83,19 @@ v3 provenance: `95e3e6e` plus uncommitted persistence-only changes. A targeted r
 
 READY FOR FRONTEND INTEGRATION — contract in `docs/25_FRONTEND_INTEGRATION.md` and `docs/openapi.json`, plus a recorded real workflow. Conditions: run the backend with `--cors-origin <frontend origin>` (or a Vite proxy); show `data_mode`, `limitations` and the support category (not a probability).
 
+## Frontend (2026-11-01)
+
+The UI was rebuilt in `frontend/` as a glassmorphism operator UI wired to the real API: 10 routes, typed client, SSE with resume/dedup, and a labeled recorded PREVIEW mode. Backend code, schemas and tests were not changed. The previous mock UI is backed up outside the repo (`E:/netcoop-ai-frontend-backup-20261101-042334/`). Details: `frontend/README.md`.
+
+Executed on Windows 11 / Chrome 157, with the backend on port 8010 and Vite on 5173:
+- `npm ci` in a clean copy, `tsc --noEmit` and `npm run build`: OK. `npm run lint` (oxlint): exit 0, warnings only.
+- `node scripts/e2e-s19.mjs`: **16/16 checks passed** (`frontend/docs/e2e-s19/result.json`). The UI ran S19 on the live backend; the first round was ambiguous; the A2A verify challenge to infrastructure-agent for device_status of AP-2-1 was obtained (20 observations); the result was DEVICE_DOWN at AP-2-1, high_support; the exported JSON equals `GET /report`.
+- `node scripts/e2e-modes.mjs`: 13/13 checks passed (preview is labeled with no API calls; offline state is explicit).
+- `node scripts/a11y-check.mjs`: 10/10 routes passed (basic checks only; not a WCAG audit).
+- Screenshots at 1920/1536/1366/390 px: no horizontal overflow.
+
+Not done: a frontend CI job (the browser scripts need a local Chrome and a running backend), a full axe/WCAG audit, and Compose serving of the new `dist/`.
+
 ## Repository hygiene note
 
 Commit `538e59c` (pushed) unintentionally included part of the separate `frontend/` work via `git add -A`. History is not rewritten; the owner decides. Since then, backend commits stage explicit paths only.
@@ -91,4 +104,4 @@ Commit `538e59c` (pushed) unintentionally included part of the separate `fronten
 
 - This file is **what is actually true**; if it says not verified, Claude may not claim otherwise.
 - Never tune on a held-out set; after a knowledge change, freeze, generate a new seed, evaluate, and keep old results.
-- Never stage `frontend/` (owned by another agent). Never use `git add -A`.
+- Stage explicit paths only; never use `git add -A`. Frontend commits touch only `frontend/` (plus this progress file).
