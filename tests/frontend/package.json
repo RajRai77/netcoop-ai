@@ -1,0 +1,7 @@
+{
+  "name": "netcoop-frontend-smoke",
+  "private": true,
+  "description": "Runs the real src/netcoop/web/app.js in jsdom against a running NetCoop server",
+  "scripts": {"smoke": "node ui_smoke.mjs"},
+  "dependencies": {"jsdom": "26.1.0"}
+}

@@ -24,6 +24,25 @@
 - Batch `data_mode` must equal the incident's `data_mode` (`DATA_MODE_MISMATCH`), so modes cannot be mixed silently. Revisit if mixed-mode incidents are needed.
 - Open question 3 updated: a2a-sdk 1.3.0 JSON-RPC binding works on Windows between two processes (probe). gRPC binding not installed. Inspector not tried.
 
+## 2026-10-31 — Full implementation session (Phases A-H; no ADR change)
+
+Architecture unchanged (ADR-001..006). Implementation decisions recorded here:
+
+- **Spec additions (backward-compatible, draft):** metric registry 1.2.0 (`interface_status`); topology 1.1.0 (optional node `role`, `label`, `service_kind`; link `from_interface`/`to_interface`); report 1.1.0 (optional `root_causes`, `hypotheses`, `verification`, `coverage`, `agent_contributions`, `decision_basis`, `transport`, `explanation`, ...; all 1.0.0 required fields unchanged); scenario-manifest 1.1.0 (`archive_file`, `reference_time`, `telemetry_profile`, `split`); new `source-profile.schema.json` (declared vendor mappings incl. `empty_cell`), `agent-task.schema.json`, `agent-result.schema.json`.
+- **A2A wire encoding (open question 10 resolved):** NDEP JSON as an A2A text part with media type `application/vnd.netcoop.ndep+json`; data parts rejected because protobuf `Value` loses integer precision. Verified by test.
+- **Freshness reference:** incidents carry an optional declared `reference_time` (capture time of a recorded replay); staleness/future checks use it, ingestion time is still recorded truthfully.
+- **Support rule:** `high_support` requires >=2 independent *sources* (sources sharing a sample lineage are merged), not merely 2 samples.
+- **No specialist completed a task -> `operational_error`** (a system failure, not a network conclusion).
+- **Model fixes made after dev-set failures (disclosed in docs/21):** DNS/DHCP faults are localized only to services of the matching `service_kind`; interface degradation is contradicted by a fresh normal reading of any of its error counters (`signature_contradiction: any_absent`); symptoms no surviving hypothesis can explain yield `unknown_fault` when nothing is confirmed.
+- **Label hygiene:** scenario manifests no longer embed the generator spec (it contained the injected faults). Labels live only in `ground_truth.json`, which no diagnosis code reads.
+- **Knowledge freeze** for evaluation at commit `20b551b` (fingerprint method fixed to canonical JSON in `2ff9bca`); held-out set generated afterwards and not committed (52 MB; deterministic regeneration).
+- Dependencies added: networkx 3.7 (pure Python).
+
+New open questions:
+13. Live read-only collectors (gNMI/SNMP) for `read_only` challenges are not implemented; only `recorded_replay`.
+14. Healthy verdicts are limited to monitored domains; should missing domains (e.g. no DNS monitor) block `healthy`?
+15. Independent (organizer or lab) labeled data is still needed for a non-self-referential accuracy claim.
+
 ## Unresolved, must verify before irreversible implementation
 
 1. Host OS, CPU/RAM, Docker availability, public domain and VPS provider/budget. No assumption of campus privileges.
@@ -35,7 +54,7 @@
 7. Whether extra observation can be obtained in recorded scenarios or only from live-authorized tools. Avoid a planner that selects non-existent checks.
 8. Concrete candidate scoring/stopping thresholds: define *before* test-tuning; assess on hold-out data.
 9. Public hosting capacity/performance, privacy requirements and retention policy.
-10. **Gate 4 A2A wire encoding for NDEP artifacts.** A2A `data` parts are protobuf `Value` (doubles): ints become floats and integers >2^53 lose precision. Options: send NDEP JSON as a text part with media type `application/vnd.netcoop.ndep+json` (exact; verified in probe), or `data` part plus schema-aware decoding (lossy for large counters). Decide before Gate 4.
+10. **(RESOLVED 2026-10-31: JSON text part, see docs/24)** Gate 4 A2A wire encoding for NDEP artifacts. A2A `data` parts are protobuf `Value` (doubles): ints become floats and integers >2^53 lose precision. Options: send NDEP JSON as a text part with media type `application/vnd.netcoop.ndep+json` (exact; verified in probe), or `data` part plus schema-aware decoding (lossy for large counters). Decide before Gate 4.
 11. Retention/purge policy vs append-only triggers: needs a deliberate admin migration path if deletion is ever required.
 12. Should observations relayed by different collectors without a shared `origin_sample_id` be heuristically flagged as possible duplicates?
 

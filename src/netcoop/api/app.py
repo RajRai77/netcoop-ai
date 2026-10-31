@@ -120,6 +120,16 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
 
     app = FastAPI(title="NetCoop AI", version=__version__, lifespan=lifespan)
 
+    @app.middleware("http")
+    async def limit_body(request: Request, call_next):
+        """Global request-size guard (endpoints that stream bodies also enforce it)."""
+        declared = request.headers.get("content-length")
+        if declared and declared.isdigit() and int(declared) > limits.max_payload_bytes:
+            return _error(413, "PAYLOAD_TOO_LARGE", f"request body exceeds {limits.max_payload_bytes} bytes")
+        if request.method in ("POST", "PUT", "PATCH") and declared is None and                 request.headers.get("transfer-encoding", "").lower() == "chunked" and request.url.path.startswith("/api/incidents")                 and not request.url.path.endswith(("/telemetry", "/archive")):
+            return _error(411, "LENGTH_REQUIRED", "Content-Length is required for this endpoint")
+        return await call_next(request)
+
     @app.exception_handler(EvidenceError)
     async def _evidence_error(_req: Request, exc: EvidenceError):
         status = 404 if exc.codes == [IssueCode.UNKNOWN_INCIDENT] else (

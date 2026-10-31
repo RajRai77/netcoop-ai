@@ -2,7 +2,7 @@
 // All dynamic text goes through text nodes (no innerHTML with data) to avoid injection.
 "use strict";
 
-const S = { incident: null, tab: "report", poll: null, profiles: [], meta: null, report: null };
+const S = { incident: null, tab: "report", poll: null, profiles: [], meta: null, report: null, stablePolls: 0, lastRunning: false, revision: null };
 
 function el(tag, attrs, ...kids) {
   const e = document.createElement(tag);
@@ -160,7 +160,7 @@ function ingestionView(rep) {
 function stopPoll() { if (S.poll) { clearInterval(S.poll); S.poll = null; } }
 
 async function openIncident(iid) {
-  stopPoll(); S.incident = iid; S.tab = "report";
+  stopPoll(); S.incident = iid; S.tab = "report"; S.stablePolls = 0; S.revision = null;
   $("view-new").classList.add("hidden"); $("view-empty").classList.add("hidden"); $("view-incident").classList.remove("hidden");
   for (const li of document.querySelectorAll("#incident-list li")) li.classList.remove("active");
   await refreshIncident(true);

@@ -338,7 +338,9 @@ class SqlEvidenceStore(InvestigationStoreMixin):
     def list_findings(self, incident_id, *, current_only=True) -> list[Finding]:
         q = select(findings.c.body).where(findings.c.incident_id == incident_id)
         if current_only:
-            newer = select(findings.c.supersedes_finding_id).where(findings.c.supersedes_finding_id.is_not(None))
+            # scoped to this incident: an unscoped subquery made every call O(all findings ever stored)
+            newer = select(findings.c.supersedes_finding_id).where(and_(
+                findings.c.incident_id == incident_id, findings.c.supersedes_finding_id.is_not(None)))
             q = q.where(findings.c.finding_id.not_in(newer.scalar_subquery()))
         q = q.order_by(findings.c.created_at, findings.c.finding_id)
         with self.engine.connect() as conn:

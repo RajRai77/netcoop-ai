@@ -14,9 +14,9 @@
 | SQLAlchemy 2.1.6, Alembic 1.20.1 | single repository implementation + migrations | yes | no | no | Win (SQLite) | V-Win on SQLite |
 | SQLite 3.49.1 (stdlib) | local persistence | yes | no | no | Win | V-Win, including append-only triggers |
 | PostgreSQL 17 + psycopg 3.3.6 (binary) | deployed persistence | client yes (installed); server not installed locally | no (server runs on Windows too, not used here) | yes | Linux CI service container (`test-postgres` job) | **psycopg import only on Win. No PostgreSQL test has executed anywhere yet.** |
-| a2a-sdk 1.3.0 `[http-server]` (+ protobuf 7.36.2, sse-starlette 3.6.0) | inter-agent transport (Gate 4) | yes | no | no | Win: two OS processes on localhost | V-Win for one JSON-RPC `SendMessage` + agent-card fetch (compatibility probe only, **not** a NetCoop agent exchange). gRPC binding not installed. |
-| networkx 3.7 | topology graph reasoning (Gate 3) | PyPI: pure Python, requires Python >=3.12 | no | no | — | PyPI only; not yet a dependency |
-| Local launcher `scripts/run_local.py` | starts/stops services, port checks | yes | no | no | Win | V-Win (`--check` end-to-end, busy-port error, bad-DB-URL error) |
+| a2a-sdk 1.3.0 `[http-server]` (+ protobuf 7.36.2, sse-starlette 3.6.0) | inter-agent transport | yes | no | no | Win: 3 specialist processes + coordinator on localhost; Linux: Compose containers (CI) | V-Win: card discovery, bearer auth, JSON-RPC `SendMessage` -> Task + artifact, exact-number round trip, impersonation refusal, crash handling (`tests/integration/test_a2a_agents.py`). gRPC binding not installed. |
+| networkx 3.7 | topology impact scope | yes (pure Python) | no | no | Win + Linux CI | V-Win (`tests/normalization/test_adapters_and_topology.py`) |
+| Local launcher `scripts/run_local.py` | starts/stops 3 agents + web, port checks, per-run token, parent watchdog | yes | no | no | Win (+ Windows CI job) | V-Win (`--check` full A2A diagnosis, busy port, bad DB URL, children exit after launcher hard-kill) |
 
 ## Optional integrations (must not block core startup)
 

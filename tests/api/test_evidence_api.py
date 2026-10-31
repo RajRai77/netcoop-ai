@@ -87,3 +87,10 @@ def test_api_without_database_is_503():
 def test_unknown_data_mode_rejected(client_factory):
     r = client_factory().post("/api/incidents", json={"data_mode": "production"})
     assert r.status_code == 422
+
+
+def test_oversized_json_body_is_refused_before_parsing(client_factory):
+    c = client_factory(max_upload_bytes=1000)
+    big = {"data_mode": "synthetic", "title": "x", "topology": {"pad": "y" * 5000}}
+    r = c.post("/api/incidents", json=big)
+    assert r.status_code == 413 and r.json()["error"]["code"] == "PAYLOAD_TOO_LARGE"
