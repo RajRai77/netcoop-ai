@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "batch_id": "BATCH-DEMO-001",
+  "source": {"source_id": "fixture-collector", "data_mode": "synthetic", "source_type": "file"},
+  "records": [
+    {
+      "record_id": "REC-001",
+      "subject": {"device_id": "SW-01", "interface_id": "eth1"},
+      "observed_at": "2026-10-31T10:00:00Z",
+      "measurements": [
+        {"metric": "link_utilization", "value": 94.0, "unit": "percent", "kind": "gauge"},
+        {"metric": "crc_errors", "value": 1200, "unit": "count", "kind": "cumulative_counter"}
+      ]
+    },
+    {
+      "record_id": "REC-002",
+      "subject": {"device_id": "SW-01"},
+      "observed_at": "2026-10-31T10:00:00Z",
+      "window": {"start": "2026-10-31T09:59:00Z", "end": "2026-10-31T10:00:00Z"},
+      "measurements": [
+        {"metric": "latency", "value": 0.085, "unit": "s", "kind": "interval_summary"}
+      ]
+    }
+  ]
+}

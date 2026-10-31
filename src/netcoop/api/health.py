@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import psycopg
+from sqlalchemy import Engine, text
 
 
 @dataclass(frozen=True)
@@ -13,13 +13,21 @@ class CheckResult:
     detail: str
 
 
-def check_postgres(database_url: str | None, timeout_s: int) -> CheckResult:
-    """Open a connection and run SELECT 1. Never echo the URL (it holds credentials)."""
-    if not database_url:
+def check_database(engine: Engine | None, expected_revision: str) -> CheckResult:
+    """Connect, run SELECT 1 and require the schema to be migrated to head.
+
+    Never echoes the URL (it can hold credentials); reports only the error type.
+    """
+    if engine is None:
         return CheckResult(False, "NETCOOP_DATABASE_URL is not configured")
     try:
-        with psycopg.connect(database_url, connect_timeout=timeout_s) as conn:
-            conn.execute("SELECT 1").fetchone()
-    except Exception as exc:  # report the failure type, not connection secrets
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1")).fetchone()
+        from netcoop.storage.migrate import current_revision
+
+        rev = current_revision(engine)
+    except Exception as exc:
         return CheckResult(False, f"database unreachable ({type(exc).__name__})")
+    if rev != expected_revision:
+        return CheckResult(False, f"schema revision {rev!r}, expected {expected_revision!r}; run `netcoop db upgrade`")
     return CheckResult(True, "ok")

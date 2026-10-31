@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:ndep:telemetry-batch:1.0.0",
+  "title": "NDEP TelemetryBatch v1.0.0 (draft) - raw measurement submission",
+  "description": "Envelope for submitting source measurements. Structure only: units, ranges, kinds, timestamps and freshness are checked by the NDEP semantic validator against the metric registry, per record, so one bad record does not hide the rest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "records"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "batch_id": {"type": "string", "minLength": 1, "maxLength": 200},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "data_mode", "source_type"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "data_mode": {"enum": ["synthetic", "recorded", "emulated", "live", "mock"]},
+        "source_type": {"type": "string", "minLength": 1, "maxLength": 100},
+        "source_schema": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier/version of the upstream format these records were converted from, if any (e.g. a source profile id)."
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/record"}
+    }
+  },
+  "$defs": {
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "device_id": {"type": "string", "minLength": 1},
+        "interface_id": {"type": "string", "minLength": 1},
+        "service_id": {"type": "string", "minLength": 1},
+        "segment_id": {"type": "string", "minLength": 1},
+        "link_id": {"type": "string", "minLength": 1}
+      },
+      "anyOf": [
+        {"required": ["device_id"]},
+        {"required": ["service_id"]},
+        {"required": ["segment_id"]},
+        {"required": ["link_id"]}
+      ]
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"}
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric", "value", "unit"],
+      "properties": {
+        "metric": {"type": "string", "minLength": 1},
+        "value": {"type": ["number", "string", "boolean"]},
+        "unit": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["gauge", "cumulative_counter", "derived_rate", "interval_summary", "state"]}
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "subject", "observed_at", "measurements"],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1, "maxLength": 200, "description": "Source-assigned identity; must be stable for the same sample."},
+        "origin_sample_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identity of the underlying physical sample. Records from different collectors that relay the same sample MUST share it, so they are not counted as independent evidence."
+        },
+        "subject": {"$ref": "#/$defs/subject"},
+        "observed_at": {"type": "string", "format": "date-time", "description": "Event time, RFC 3339 with explicit offset."},
+        "window": {"$ref": "#/$defs/window"},
+        "measurements": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/measurement"}}
+      }
+    }
+  }
+}

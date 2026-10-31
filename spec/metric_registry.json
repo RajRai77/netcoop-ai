@@ -1,127 +1,164 @@
 {
-  "metric_registry_version": "1.0.0",
+  "metric_registry_version": "1.1.0",
   "status": "draft",
-  "notes": "Only listed explicit units/known source schemas may be converted. Semantic validators enforce ranges, resets and temporal coherence.",
+  "notes": "Only listed explicit units may be accepted or converted. Conversions are exact multiplicative factors to the canonical unit. Unit aliases are spelling variants of the same unit only; they never change meaning. Semantic validators enforce ranges, kinds, resets and temporal coherence. 1.1.0 adds unit_aliases, conversions, allowed_kinds, freshness_policy, value_type, memory_utilization, interface_errors, queue_drops and the explicit 'ratio' unit for packet_loss.",
+  "freshness_policy": {
+    "default_max_age_s": 300,
+    "max_future_skew_s": 30
+  },
+  "unit_aliases": {
+    "%": "percent",
+    "bps": "bit/s",
+    "kbps": "kbit/s",
+    "Mbps": "Mbit/s",
+    "Gbps": "Gbit/s"
+  },
+  "conversions": [
+    {"from": "s", "to": "ms", "factor": 1000},
+    {"from": "kbit/s", "to": "bit/s", "factor": 1000},
+    {"from": "Mbit/s", "to": "bit/s", "factor": 1000000},
+    {"from": "Gbit/s", "to": "bit/s", "factor": 1000000000},
+    {"from": "ratio", "to": "percent", "factor": 100}
+  ],
   "metrics": {
     "link_utilization": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100
     },
     "packet_loss": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent", "ratio"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100,
-      "caution": "ratio->percent only with an explicitly declared source schema"
+      "caution": "A bare number such as 0.02 is ambiguous (2% or 0.02%). The record must state 'percent' or 'ratio' explicitly; 'ratio' means a 0..1 fraction and is converted x100."
     },
     "latency": {
       "canonical_unit": "ms",
-      "allowed_units": [
-        "ms",
-        "s"
-      ],
+      "allowed_units": ["ms", "s"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0
     },
     "jitter": {
       "canonical_unit": "ms",
-      "allowed_units": [
-        "ms",
-        "s"
-      ],
+      "allowed_units": ["ms", "s"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0
     },
     "throughput": {
       "canonical_unit": "bit/s",
-      "allowed_units": [
-        "bit/s",
-        "kbit/s",
-        "Mbit/s"
-      ],
+      "allowed_units": ["bit/s", "kbit/s", "Mbit/s", "Gbit/s"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0
     },
     "cpu_utilization": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
+      "min": 0,
+      "max": 100
+    },
+    "memory_utilization": {
+      "canonical_unit": "percent",
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100
     },
     "crc_errors": {
       "canonical_unit": "count",
-      "allowed_units": [
-        "count"
-      ],
+      "allowed_units": ["count"],
+      "value_type": "integer",
+      "allowed_kinds": ["cumulative_counter"],
       "min": 0,
-      "kind": "cumulative_counter"
+      "max": 18446744073709551615,
+      "max_rate_per_s": 200000000,
+      "caution": "max_rate_per_s is a sanity bound (above line-rate packets/s of 100GbE), not a capacity model. A higher derived rate usually means a missed reset or wrap."
+    },
+    "interface_errors": {
+      "canonical_unit": "count",
+      "allowed_units": ["count"],
+      "value_type": "integer",
+      "allowed_kinds": ["cumulative_counter"],
+      "min": 0,
+      "max": 18446744073709551615,
+      "max_rate_per_s": 200000000
+    },
+    "queue_drops": {
+      "canonical_unit": "count",
+      "allowed_units": ["count"],
+      "value_type": "integer",
+      "allowed_kinds": ["cumulative_counter"],
+      "min": 0,
+      "max": 18446744073709551615,
+      "max_rate_per_s": 200000000
     },
     "queue_drops_rate": {
       "canonical_unit": "count/s",
-      "allowed_units": [
-        "count/s"
-      ],
+      "allowed_units": ["count/s"],
+      "value_type": "number",
+      "allowed_kinds": ["derived_rate", "interval_summary"],
       "min": 0
     },
     "rssi": {
       "canonical_unit": "dBm",
-      "allowed_units": [
-        "dBm"
-      ],
-      "caution": "Negative values valid"
+      "allowed_units": ["dBm"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
+      "min": -120,
+      "max": 0,
+      "caution": "Negative values are valid"
     },
     "snr": {
       "canonical_unit": "dB",
-      "allowed_units": [
-        "dB"
-      ]
+      "allowed_units": ["dB"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"]
     },
     "device_status": {
       "canonical_unit": "state",
-      "allowed_units": [
-        "state"
-      ],
-      "allowed_values": [
-        "up",
-        "down",
-        "degraded",
-        "unknown"
-      ],
-      "kind": "state"
+      "allowed_units": ["state"],
+      "value_type": "enum",
+      "allowed_values": ["up", "down", "degraded", "unknown"],
+      "allowed_kinds": ["state"]
     },
     "reachability": {
       "canonical_unit": "boolean",
-      "allowed_units": [
-        "boolean"
-      ],
-      "kind": "state"
+      "allowed_units": ["boolean"],
+      "value_type": "boolean",
+      "allowed_kinds": ["state"]
     },
     "dns_query_failure_rate": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100
     },
     "dhcp_lease_failure_rate": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100
     },
     "wireless_retry_rate": {
       "canonical_unit": "percent",
-      "allowed_units": [
-        "percent"
-      ],
+      "allowed_units": ["percent"],
+      "value_type": "number",
+      "allowed_kinds": ["gauge", "interval_summary"],
       "min": 0,
       "max": 100
     }

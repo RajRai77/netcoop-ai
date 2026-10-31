@@ -11,7 +11,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 SPEC = Path(__file__).resolve().parents[1] / "spec"
-NAMES = ["observation", "finding", "challenge", "report", "topology", "scenario-manifest"]
+NAMES = ["observation", "finding", "challenge", "report", "topology", "scenario-manifest", "telemetry-batch"]
 
 
 def _load(path: Path):
