@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test-linux:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -15,20 +15,64 @@ jobs:
       - run: uv sync --locked
       - run: uv run pytest
 
+  test-windows:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.24"
+      - run: uv sync --locked
+      - run: uv run pytest
+      - run: uv run python scripts/run_local.py --check --port auto
+
+  test-postgres:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-bookworm
+        env:
+          POSTGRES_USER: netcoop
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: netcoop_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U netcoop -d netcoop_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      NETCOOP_TEST_DATABASE_URL: postgresql://netcoop:ci-only-password@127.0.0.1:5432/netcoop_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.24"
+      - run: uv sync --locked
+      # Fail (not skip) if the PostgreSQL variants did not run.
+      - run: uv run pytest -m postgres -rs | tee pg.txt
+      - run: "! grep -q 'NETCOOP_TEST_DATABASE_URL not set' pg.txt"
+
   compose-smoke:
     runs-on: ubuntu-24.04
-    needs: test
+    needs: [test-linux, test-postgres]
     steps:
       - uses: actions/checkout@v4
       - name: Create CI-only env file
         run: |
           cp .env.example .env
           sed -i "s/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=$(openssl rand -hex 24)/" .env
+          sed -i "s/^NETCOOP_API_TOKEN=.*/NETCOOP_API_TOKEN=$(openssl rand -hex 24)/" .env
       - run: docker compose version
       - run: docker compose config --quiet
       - run: docker compose -f compose.yaml -f compose.production.yaml config --quiet
       - run: docker compose up -d --build --wait --wait-timeout 180
-      - run: BASE_URL=http://127.0.0.1:8000 sh scripts/smoke.sh
+      - run: NETCOOP_API_TOKEN=$(grep '^NETCOOP_API_TOKEN=' .env | cut -d= -f2) BASE_URL=http://127.0.0.1:8000 sh scripts/smoke.sh
+      - name: Evidence survives container restart
+        run: |
+          docker compose restart web
+          docker compose up -d --wait --wait-timeout 120
+          TOKEN=$(grep '^NETCOOP_API_TOKEN=' .env | cut -d= -f2)
+          n=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from observations")
+          echo "observations after restart: $n"; test "$n" -ge 3
       - name: Readiness drops when DB stops
         run: |
           docker compose stop db

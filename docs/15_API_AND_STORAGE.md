@@ -1,6 +1,13 @@
 # Draft API, persistence and consistency design
 
-**Status:** Developer proposal subject to API/schema compatibility review. It is not implemented.
+**Status:** Developer proposal subject to API/schema compatibility review. **Gate 1 implemented a subset** (2026-10-31, SQLite-verified only):
+
+- `GET /health/live`, `GET /health/ready` (ready also requires schema at migration head).
+- `POST /api/incidents` `{data_mode, title?, topology?}` -> 201, server-generated `incident_id`, no diagnosis yet.
+- `POST /api/incidents/{id}/telemetry` (body: TelemetryBatch, size-limited) -> per-record ingestion report; whole-batch refusals are typed 422/413/404.
+- `GET /api/incidents/{id}`, `GET /api/incidents/{id}/evidence?limit&offset&metric`, `GET /api/raw-records/{raw_id}`.
+- Optional bearer token (`NETCOOP_API_TOKEN`) on all `/api/*`; required by `compose.production.yaml`.
+- Tables implemented: incidents, topology_snapshots, raw_records, observations, ingestions, ingestion_issues, findings, finding_observation_refs, audit_events (append-only triggers on all but incidents). Not yet: agent_tasks, challenges, hypotheses, reports.
 
 ## HTTP API (suggested)
 

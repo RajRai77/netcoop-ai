@@ -7,7 +7,8 @@
 - `challenge.schema.json`: coordinator's requested discriminating evidence.
 - `report.schema.json`: required JSON diagnosis with supporting references and defined support categories.
 - `topology.schema.json` / `scenario-manifest.schema.json`: versioned graph snapshot and reproducible source manifest.
-- `metric_registry.json`: seed metric vocabulary and permitted units; source-specific mappings must be verified, not guessed.
+- `telemetry-batch.schema.json`: envelope for submitting raw source measurements (added 2026-10-31). Per-record semantics are enforced by the domain validator, so one bad record is reported without hiding the rest.
+- `metric_registry.json` (1.1.0): metric vocabulary, permitted units, explicit conversion factors, unit spelling aliases, allowed kinds, freshness policy. Source-specific field mappings must be verified, not guessed.
 
 JSON Schema validates shapes, **not full semantic correctness**. Implement domain validators for unit semantics, valid numerical ranges, clock/time windows, counter resets, data lineage, duplicate observations and topology consistency.
 

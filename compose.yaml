@@ -24,8 +24,9 @@ services:
     image: netcoop-web:local
     environment:
       NETCOOP_ENV: ${NETCOOP_ENV:-development}
-      # libpq key=value form; service DNS name "db", never localhost.
-      NETCOOP_DATABASE_URL: "host=db port=5432 dbname=${POSTGRES_DB:-netcoop} user=${POSTGRES_USER:-netcoop} password=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}"
+      # Service DNS name "db", never localhost. Use a hex password (no URL escaping needed).
+      NETCOOP_DATABASE_URL: "postgresql://${POSTGRES_USER:-netcoop}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-netcoop}"
+      NETCOOP_API_TOKEN: ${NETCOOP_API_TOKEN:-}
     depends_on:
       db:
         condition: service_healthy

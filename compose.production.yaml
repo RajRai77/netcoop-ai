@@ -16,6 +16,8 @@ services:
   web:
     environment:
       NETCOOP_ENV: production
+      # Public deployment must not expose evidence endpoints without a token.
+      NETCOOP_API_TOKEN: ${NETCOOP_API_TOKEN:?set NETCOOP_API_TOKEN in .env for production}
     ports: !reset []
     read_only: true
     tmpfs: [/tmp]
