@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "observation_id": "OBS-DEMO-001",
+  "incident_id": "INC-DEMO-001",
+  "raw_record_ref": "RAW-DEMO-001",
+  "source": {
+    "source_id": "fixture-collector",
+    "data_mode": "synthetic",
+    "source_type": "file"
+  },
+  "subject": {
+    "device_id": "SW-01",
+    "interface_id": "eth1"
+  },
+  "measurement": {
+    "metric": "link_utilization",
+    "value": 94.0,
+    "unit": "percent",
+    "kind": "gauge"
+  },
+  "observed_at": "2026-10-31T10:00:00Z",
+  "ingested_at": "2026-10-31T10:00:03Z",
+  "quality": {
+    "validation": "passed",
+    "freshness": "current",
+    "flags": []
+  },
+  "lineage_group": "SRC-GROUP-001",
+  "metric_registry_version": "1.0.0",
+  "transformation_id": null
+}

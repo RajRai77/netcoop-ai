@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "challenge_id": "CH-DEMO-001",
+  "incident_id": "INC-DEMO-001",
+  "target_agent_id": "infrastructure-agent",
+  "hypothesis_ids": [
+    "H-CONGESTION-SW01",
+    "H-INTERFACE-SW01"
+  ],
+  "finding_refs": [
+    "F-DEMO-001"
+  ],
+  "question_type": "discriminating_measurement",
+  "requested_observation": {
+    "metric": "crc_errors",
+    "subject": {
+      "device_id": "SW-01",
+      "interface_id": "eth1"
+    },
+    "window": {
+      "start": "2026-10-31T09:55:00Z",
+      "end": "2026-10-31T10:05:00Z"
+    }
+  },
+  "authorization_scope": "recorded_replay",
+  "deadline_at": "2026-10-31T10:01:00Z",
+  "note": "Only if existing recorded samples are available; never generate counter values"
+}

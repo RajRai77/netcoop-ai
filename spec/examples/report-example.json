@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0",
+  "incident_id": "INC-DEMO-001",
+  "revision": 1,
+  "status": "ambiguous",
+  "suspected_root_cause": null,
+  "confidence_category": "ambiguous",
+  "affected_devices": [
+    "SW-01"
+  ],
+  "supporting_evidence": [
+    {
+      "observation_id": "OBS-DEMO-001",
+      "finding_id": "F-DEMO-001",
+      "metric": "link_utilization",
+      "value": 94.0,
+      "unit": "percent",
+      "interpretation": "Elevated utilization observed; root cause unresolved"
+    }
+  ],
+  "alternative_causes": [
+    "Possible link congestion",
+    "Possible interface fault (requires additional observation)"
+  ],
+  "recommended_actions": [
+    "Inspect recent queue drops and CRC error trends if authorized"
+  ],
+  "evidence_sources": [
+    "performance-agent"
+  ],
+  "limitations": [
+    "Illustrative synthetic example only",
+    "No independent verification or sufficient evidence to diagnose"
+  ],
+  "evidence_snapshot_id": "SNAP-DEMO-001",
+  "topology_snapshot_id": null,
+  "engine_version": "spec-example-only",
+  "data_mode": "synthetic",
+  "generated_at": "2026-10-31T10:00:06Z"
+}

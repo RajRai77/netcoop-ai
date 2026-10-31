@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "finding_id": "F-DEMO-001",
+  "incident_id": "INC-DEMO-001",
+  "agent_id": "performance-agent",
+  "claim": "ELEVATED_LINK_UTILIZATION",
+  "polarity": "present",
+  "subject": {
+    "device_id": "SW-01",
+    "interface_id": "eth1"
+  },
+  "observation_refs": [
+    "OBS-DEMO-001"
+  ],
+  "rule_or_model_version": "example-rule-v0",
+  "created_at": "2026-10-31T10:00:05Z",
+  "caveats": [
+    "Single example observation is not enough to establish congestion as root cause"
+  ],
+  "supersedes_finding_id": null
+}

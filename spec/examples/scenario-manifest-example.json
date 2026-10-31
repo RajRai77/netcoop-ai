@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "scenario_id": "SCENARIO-DEMO-001",
+  "data_mode": "synthetic",
+  "source_description": "Illustrative authored spec example, not validated benchmark data",
+  "telemetry_file": "observation-example.json",
+  "topology_file": "topology-example.json",
+  "ground_truth_file": "NOT_INCLUDED-GROUND_TRUTH_MUST_BE_SEPARATE.json",
+  "time_window": {
+    "start": "2026-10-31T09:55:00Z",
+    "end": "2026-10-31T10:05:00Z"
+  },
+  "seed": 0,
+  "limitations": [
+    "No ground-truth file included; example should not be used to claim accuracy"
+  ]
+}

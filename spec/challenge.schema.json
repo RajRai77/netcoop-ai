@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:ndep:challenge:1.0.0",
+  "title": "NDEP Challenge v1.0.0 (draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "incident_id",
+    "target_agent_id",
+    "hypothesis_ids",
+    "finding_refs",
+    "question_type",
+    "requested_observation",
+    "authorization_scope",
+    "deadline_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "challenge_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "incident_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_agent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hypothesis_ids": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "finding_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "question_type": {
+      "enum": [
+        "discriminating_measurement",
+        "data_conflict",
+        "missing_evidence"
+      ]
+    },
+    "requested_observation": {
+      "type": "object",
+      "required": [
+        "metric",
+        "subject",
+        "window"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "device_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interface_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "service_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "segment_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "link_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "device_id"
+              ]
+            },
+            {
+              "required": [
+                "service_id"
+              ]
+            },
+            {
+              "required": [
+                "segment_id"
+              ]
+            },
+            {
+              "required": [
+                "link_id"
+              ]
+            }
+          ]
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "authorization_scope": {
+      "enum": [
+        "read_only",
+        "recorded_replay"
+      ]
+    },
+    "deadline_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "note": {
+      "type": "string"
+    }
+  }
+}

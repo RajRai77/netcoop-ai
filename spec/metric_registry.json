@@ -1,0 +1,129 @@
+{
+  "metric_registry_version": "1.0.0",
+  "status": "draft",
+  "notes": "Only listed explicit units/known source schemas may be converted. Semantic validators enforce ranges, resets and temporal coherence.",
+  "metrics": {
+    "link_utilization": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100
+    },
+    "packet_loss": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100,
+      "caution": "ratio->percent only with an explicitly declared source schema"
+    },
+    "latency": {
+      "canonical_unit": "ms",
+      "allowed_units": [
+        "ms",
+        "s"
+      ],
+      "min": 0
+    },
+    "jitter": {
+      "canonical_unit": "ms",
+      "allowed_units": [
+        "ms",
+        "s"
+      ],
+      "min": 0
+    },
+    "throughput": {
+      "canonical_unit": "bit/s",
+      "allowed_units": [
+        "bit/s",
+        "kbit/s",
+        "Mbit/s"
+      ],
+      "min": 0
+    },
+    "cpu_utilization": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100
+    },
+    "crc_errors": {
+      "canonical_unit": "count",
+      "allowed_units": [
+        "count"
+      ],
+      "min": 0,
+      "kind": "cumulative_counter"
+    },
+    "queue_drops_rate": {
+      "canonical_unit": "count/s",
+      "allowed_units": [
+        "count/s"
+      ],
+      "min": 0
+    },
+    "rssi": {
+      "canonical_unit": "dBm",
+      "allowed_units": [
+        "dBm"
+      ],
+      "caution": "Negative values valid"
+    },
+    "snr": {
+      "canonical_unit": "dB",
+      "allowed_units": [
+        "dB"
+      ]
+    },
+    "device_status": {
+      "canonical_unit": "state",
+      "allowed_units": [
+        "state"
+      ],
+      "allowed_values": [
+        "up",
+        "down",
+        "degraded",
+        "unknown"
+      ],
+      "kind": "state"
+    },
+    "reachability": {
+      "canonical_unit": "boolean",
+      "allowed_units": [
+        "boolean"
+      ],
+      "kind": "state"
+    },
+    "dns_query_failure_rate": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100
+    },
+    "dhcp_lease_failure_rate": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100
+    },
+    "wireless_retry_rate": {
+      "canonical_unit": "percent",
+      "allowed_units": [
+        "percent"
+      ],
+      "min": 0,
+      "max": 100
+    }
+  }
+}

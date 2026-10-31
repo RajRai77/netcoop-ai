@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:ndep:report:1.0.0",
+  "title": "NDEP StructuredDiagnosis v1.0.0 (draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "incident_id",
+    "revision",
+    "status",
+    "suspected_root_cause",
+    "confidence_category",
+    "affected_devices",
+    "supporting_evidence",
+    "alternative_causes",
+    "recommended_actions",
+    "evidence_sources",
+    "limitations",
+    "evidence_snapshot_id",
+    "topology_snapshot_id",
+    "engine_version",
+    "data_mode",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "incident_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "diagnosed",
+        "ambiguous",
+        "insufficient_evidence",
+        "unknown_fault",
+        "healthy",
+        "operational_error"
+      ]
+    },
+    "suspected_root_cause": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidence_category": {
+      "enum": [
+        "high_support",
+        "moderate_support",
+        "ambiguous",
+        "insufficient",
+        "not_applicable"
+      ]
+    },
+    "affected_devices": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "supporting_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observation_id",
+          "finding_id",
+          "metric",
+          "value",
+          "unit",
+          "interpretation"
+        ],
+        "properties": {
+          "observation_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "metric": {
+            "type": "string"
+          },
+          "value": {
+            "type": [
+              "number",
+              "string",
+              "boolean"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interpretation": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "alternative_causes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_sources": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "topology_snapshot_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "engine_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data_mode": {
+      "enum": [
+        "synthetic",
+        "recorded",
+        "emulated",
+        "live",
+        "mock"
+      ]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

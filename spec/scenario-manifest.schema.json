@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:scenario-manifest:1.0.0",
+  "title": "Scenario source manifest (draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "scenario_id",
+    "data_mode",
+    "source_description",
+    "telemetry_file",
+    "topology_file",
+    "ground_truth_file",
+    "time_window",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data_mode": {
+      "enum": [
+        "synthetic",
+        "recorded",
+        "emulated",
+        "live",
+        "mock"
+      ]
+    },
+    "source_description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "telemetry_file": {
+      "type": "string"
+    },
+    "topology_file": {
+      "type": "string"
+    },
+    "ground_truth_file": {
+      "type": "string"
+    },
+    "time_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "topology_snapshot_id": "TOPO-DEMO-001",
+  "kind": "synthetic",
+  "observed_at": "2026-10-31T10:00:00Z",
+  "nodes": [
+    {
+      "id": "SW-01",
+      "type": "device"
+    },
+    {
+      "id": "AP-01",
+      "type": "ap"
+    }
+  ],
+  "links": [
+    {
+      "id": "LINK-DEMO-01",
+      "from": "AP-01",
+      "to": "SW-01",
+      "type": "physical",
+      "directed": false
+    }
+  ],
+  "limitations": [
+    "Example topology only; not verified forwarding paths"
+  ]
+}
