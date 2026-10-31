@@ -43,7 +43,7 @@ V = implemented and verified by executed tests. U = implemented, not verified in
 | Windows single-command start, port checks, per-run token, graceful stop, orphan prevention | V | `tests/integration/test_processes.py`, CI `test-windows` |
 | PostgreSQL backend | V (CI) | CI `test-postgres` |
 | Docker Compose: 3 agent containers, internal networks, only web published, restart persistence, DB-stop readiness | V (CI) | CI `compose-smoke` |
-| Backup/restore (pg_dump/pg_restore onto a fresh volume; SQLite online backup) | V SQLite locally; PostgreSQL drill in CI | see "CI" for the run containing the drill |
+| Backup/restore (pg_dump/pg_restore onto a fresh volume; SQLite online backup) | V | SQLite locally; PostgreSQL drill passed in CI run 41248552361 |
 | Production overlay (Caddy HTTPS, read-only containers) | U | `compose -f … -f compose.production.yaml config` validated in CI; never started; no domain/VPS |
 | Rate limiting, per-user auth, retention/purge | M | single static API token only; documented limitation |
 | MCP, LLM narration, HITL approval | M (optional per PS) | not required; diagnosis works without an LLM |
@@ -69,13 +69,15 @@ v3 provenance: `95e3e6e` plus uncommitted persistence-only changes. A targeted r
 
 ## Test / CI evidence
 
-- Local full regression 2026-11-01: **294 passed, 99 skipped, 0 failed** (Windows, SQLite). One earlier full run had one intermittent failure under heavy load that did not reproduce in isolation or in the next full run (test not identified).
+- Local full regression 2026-11-01: **294 passed, 99 skipped, 0 failed** (+2 evaluator tests added afterwards, passing) (Windows, SQLite). One earlier full run had one intermittent failure under heavy load that did not reproduce in isolation or in the next full run (test not identified).
 - Real A2A workflow executed and recorded in docs/25 (S19: AP-down resolved by one A2A verification check).
 - CI: see the "CI" section, filled in from the run for the final commit.
 
 ## CI
 
-(updated after the push of this checkpoint)
+- Run 41248062973 on `0e8db55`: test-linux, test-postgres, test-windows, compose-smoke **success**; evaluation **failure** (syntax error in the new provenance code; fixed in `0fc6754` with a new evaluator test).
+- Run 41248552361 on `0fc6754`: test-linux, test-postgres, test-windows, compose-smoke **success**, including "Backup, destroy the volume, restore on a fresh volume" (15 s), A2A smoke over Compose, restart persistence, internal-only ports and DB-stop readiness. The evaluation job was still running the full dev + held-out v1 benchmark when CI was narrowed. From the next commit it is a dev-set reproducibility check (A vs D).
+- Claude can read CI step results only via the public API (logs need auth).
 
 ## Readiness
 
