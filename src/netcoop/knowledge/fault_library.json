@@ -1,5 +1,5 @@
 {
-  "version": "fault-library/1",
+  "version": "fault-library/2",
   "status": "documented fault models for STEaR; not exhaustive - unmodeled causes are reported as unknown_fault",
   "semantics": {
     "signature_any": "Claims characteristic of the fault AT the hypothesis location. Any present -> signature confirmed. All observed absent -> hypothesis contradicted. Otherwise unconfirmed (plausible, needs evidence).",
@@ -239,6 +239,54 @@
       "service_kinds": [
         "dhcp"
       ]
+    }
+  },
+  "coverage_domains": {
+    "_semantics": "A 'healthy' verdict requires a fresh normal ('absent') finding for at least one claim of every domain the topology says exists. Missing data is not evidence of normality. Unmonitored domains make the outcome insufficient_evidence and the planner may request coverage from authorized recorded sources.",
+    "performance": {
+      "claims": [
+        "HIGH_LATENCY",
+        "PACKET_LOSS",
+        "HIGH_LINK_UTILIZATION"
+      ],
+      "required": "always"
+    },
+    "device_health": {
+      "claims": [
+        "HIGH_CPU",
+        "DEVICE_DOWN_STATE",
+        "UNREACHABLE"
+      ],
+      "required": "always"
+    },
+    "dns": {
+      "claims": [
+        "DNS_FAILURES"
+      ],
+      "required": {
+        "service_kind": "dns"
+      },
+      "probe_subject_type": "segment"
+    },
+    "dhcp": {
+      "claims": [
+        "DHCP_FAILURES"
+      ],
+      "required": {
+        "service_kind": "dhcp"
+      },
+      "probe_subject_type": "segment"
+    },
+    "wireless": {
+      "claims": [
+        "WEAK_SIGNAL",
+        "LOW_SNR",
+        "HIGH_WIRELESS_RETRIES"
+      ],
+      "required": {
+        "node_type": "ap"
+      },
+      "probe_subject_type": "ap"
     }
   }
 }

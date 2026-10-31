@@ -15,7 +15,8 @@ from pathlib import Path
 from netcoop.evaluation.runner import evaluate, to_markdown
 
 ROOT = Path(__file__).resolve().parents[1]
-SETS = {"dev": ROOT / "data" / "scenarios", "heldout": ROOT / "data" / "heldout"}
+SETS = {"dev": ROOT / "data" / "scenarios", "heldout": ROOT / "data" / "heldout",
+        "heldout-v2": ROOT / "data" / "heldout-v2"}
 
 
 def main() -> int:

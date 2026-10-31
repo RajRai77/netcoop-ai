@@ -97,6 +97,8 @@ class Evaluation:
     decision_basis: list[str]
     limitations: list[str]
     symptoms: dict[str, Sym]
+    # domains the topology says exist but with no fresh normal reading: [(domain, claims, candidate subjects)]
+    coverage_gaps: list[tuple[str, list[str], list[dict]]] = field(default_factory=list)
 
     @property
     def leader(self) -> Hypothesis | None:
@@ -225,6 +227,16 @@ class Stear:
             agents_absent = {s.finding.agent_id for s in syms.values() if s.finding.polarity == "absent"}
             perf_absent = any(s.finding.polarity == "absent" and s.finding.claim in
                               {"HIGH_LATENCY", "PACKET_LOSS", "HIGH_LINK_UTILIZATION"} for s in syms.values())
+            gaps = self._coverage_gaps(syms)
+            if gaps:
+                names = [g[0] for g in gaps]
+                basis.append(f"No anomaly in the monitored data, but these domains exist in the topology and have no "
+                             f"fresh normal reading: {names}. Missing data is not evidence of normality.")
+                limitations.append(f"Unmonitored domains: {names}.")
+                ev = Evaluation("insufficient_evidence", "insufficient", [], [], ranked, [], [], 0.0, basis,
+                                limitations, syms)
+                ev.coverage_gaps = gaps
+                return ev
             if len(agents_absent) >= 2 and perf_absent:
                 basis.append(f"No persistent anomaly in fresh data; normal readings reported by {sorted(agents_absent)}.")
                 unknowns = [s.fid for s in syms.values() if s.finding.polarity == "unknown"]
@@ -289,6 +301,15 @@ class Stear:
 
         n_sources = independent_sources(set().union(*(h.source_pairs for h in causes)))
         temporal = any(h.temporal_issues for h in causes)
+        # A plausible (unverified) hypothesis that would explain symptoms the selected causes leave
+        # unexplained is a possible concurrent fault: it blocks high support and is a verification target.
+        second = [h for h in valid if h not in causes and h not in competitors and h.status == "plausible"
+                  and set(h.explained) & set(unexplained)]
+        second.sort(key=lambda h: (-len(set(h.explained) & set(unexplained)), h.rank_key()))
+        if second:
+            basis.append(f"Possible concurrent fault not yet verified: {', '.join(h.hid for h in second[:3])} would "
+                         f"explain {len(set(second[0].explained) & set(unexplained))} unexplained symptom(s).")
+            competitors = competitors + second[:4]
         high = not competitors and n_sources >= 2 and not temporal and coverage >= 0.6
         for c in causes:
             basis.append(f"{c.hid}: signature observed ({', '.join(c.signature)}); explains {len(c.explained)} symptom "
@@ -308,6 +329,30 @@ class Stear:
             limitations.append(f"{len(unexplained)} symptom finding(s) remain unexplained by the selected cause(s).")
         return Evaluation("diagnosed", "high_support" if high else "moderate_support", causes, competitors, ranked,
                           sorted(P), unexplained, coverage, basis, limitations, syms)
+
+    # -- monitoring coverage -----------------------------------------------------------------
+    def _coverage_gaps(self, syms: dict[str, Sym]) -> list[tuple[str, list[str], list[dict]]]:
+        domains = {k: v for k, v in self.lib.get("coverage_domains", {}).items() if not k.startswith("_")}
+        normal = {s.finding.claim for s in syms.values() if s.finding.polarity == "absent"}
+        gaps = []
+        for name, d in sorted(domains.items()):
+            req = d["required"]
+            if req != "always":
+                if not self.topo.available:
+                    continue  # cannot know the domain exists; stated as a topology limitation instead
+                if "service_kind" in req and req["service_kind"] not in self.topo.service_kinds.values():
+                    continue
+                if "node_type" in req and req["node_type"] not in self.topo.node_types.values():
+                    continue
+            if normal & set(d["claims"]):
+                continue
+            stype = d.get("probe_subject_type")
+            subjects: list[dict] = []
+            if stype and self.topo.available:
+                key = "segment_id" if stype == "segment" else "device_id"
+                subjects = [{key: n} for n, t in sorted(self.topo.node_types.items()) if t == stype][:2]
+            gaps.append((name, list(d["claims"]), subjects))
+        return gaps
 
     # -- hypothesis generation ------------------------------------------------------------
     def _generate(self, present: list[Sym], hints: list[Sym], all_syms: list[Sym]) -> dict[str, Hypothesis]:

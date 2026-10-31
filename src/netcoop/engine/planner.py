@@ -55,12 +55,23 @@ def plan(ev: Evaluation, capabilities: dict[str, set[str]], already: set[str], b
         return []
     if ev.status not in ("ambiguous", "insufficient_evidence", "diagnosed"):
         return []
-    live: list[Hypothesis] = list(ev.causes) + list(ev.competitors)
-    if not live:
-        return []
-    rank_of = {h.hid: i for i, h in enumerate(ev.hypotheses)}
     sources = claim_sources()
     checks: dict[str, Check] = {}
+    # Coverage requests: the topology says a domain exists (e.g. DNS) but nothing was observed.
+    for domain, claims, subjects in getattr(ev, "coverage_gaps", []):
+        for claim in claims:
+            for rule in sources.get(claim, []):
+                if rule["metric"] not in capabilities.get(rule["agent"], set()):
+                    continue
+                for subj in subjects:
+                    c = Check(rule["agent"], rule["metric"], claim, subj, decides=[f"H-UNMONITORED-{domain}"],
+                              best_rank=10**5)
+                    if c.key not in already:
+                        checks.setdefault(c.key, c)
+    live: list[Hypothesis] = list(ev.causes) + list(ev.competitors)
+    if not live and not checks:
+        return []
+    rank_of = {h.hid: i for i, h in enumerate(ev.hypotheses)}
     for h in live:
         for claim, subject in h.missing:
             for rule in sources.get(claim, []):

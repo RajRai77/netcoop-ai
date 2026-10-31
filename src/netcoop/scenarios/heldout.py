@@ -96,7 +96,7 @@ def heldout_specs(n: int = 60, seed: int = 20261101) -> list[dict]:
         diag_init = bool(faults) and kind != "unmodeled" and sig_sources <= set(init)
         diag_arch = bool(faults) and kind != "unmodeled" and sig_sources <= set(init) | set(arch)
         spec = {
-            "id": f"H{i:03d}-{kind}", "title": f"Held-out {kind} ({cond})", "seed": 5000 + i, "campus": CAMPUS,
+            "id": (f"H{i:03d}-{kind}" if seed == 20261101 else f"V{seed % 100:02d}-{i:03d}-{kind}"), "title": f"Held-out {kind} ({cond})", "seed": 5000 + i, "campus": CAMPUS,
             "faults": faults, "initial_sources": init, "archive_sources": arch,
             "spikes": [{"node": f"ACC-{rng.randint(1, 3)}-{rng.randint(1, 3)}", "step": rng.randint(2, 9)}]
             if rng.random() < 0.25 else [],
