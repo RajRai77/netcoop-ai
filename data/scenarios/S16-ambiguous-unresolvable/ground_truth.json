@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S16-ambiguous-unresolvable",
+ "faults": [
+  {
+   "fault_type": "INTERFACE_DEGRADATION",
+   "location": "DIST-2:ge0/2"
+  }
+ ],
+ "expected_status": "ambiguous",
+ "expected_status_without_verification": "ambiguous",
+ "notes": "Same initial evidence as S11 but nothing else exists: the honest answer is ambiguous.",
+ "generator": "netcoop-scengen/1",
+ "seed": 111
+}

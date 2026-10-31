@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S02-interface-degradation",
+ "faults": [
+  {
+   "fault_type": "INTERFACE_DEGRADATION",
+   "location": "DIST-1:ge0/2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 102
+}

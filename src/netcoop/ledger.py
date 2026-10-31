@@ -46,7 +46,8 @@ def ingest_telemetry(
             kw = {"source_schema": BATCH_SOURCE_SCHEMA}
         batch = normalize_batch(
             payload, incident_id=incident_id, ingested_at=now, registry=registry,
-            topology=topology, expected_data_mode=incident.data_mode, limits=limits, batch_id=batch_id, **kw,
+            topology=topology, expected_data_mode=incident.data_mode, limits=limits, batch_id=batch_id,
+            reference_time=incident.reference_time, **kw,
         )
     except EvidenceError as exc:
         store.audit(incident_id, "telemetry_batch_rejected",

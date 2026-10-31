@@ -1,0 +1,44 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "S01-congestion",
+ "title": "Uplink congestion DIST-2 -> ACC-2-1",
+ "data_mode": "synthetic",
+ "source_description": "Synthetic campus telemetry from netcoop-scengen/1 (seed 101); fault injected by the generator; not real network data.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": null,
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 101,
+ "split": "dev",
+ "tags": [
+  "congestion"
+ ],
+ "generator": {
+  "version": "netcoop-scengen/1",
+  "spec": {
+   "id": "S01-congestion",
+   "title": "Uplink congestion DIST-2 -> ACC-2-1",
+   "seed": 101,
+   "faults": [
+    {
+     "type": "LINK_CONGESTION",
+     "location": "DIST-2:ge0/1"
+    }
+   ],
+   "expected_status": "diagnosed",
+   "tags": [
+    "congestion"
+   ]
+  }
+ },
+ "limitations": [
+  "Synthetic data; values and fault signatures follow the generator's model",
+  "Generator and diagnosis engine were written by the same team (not an independent benchmark)"
+ ]
+}

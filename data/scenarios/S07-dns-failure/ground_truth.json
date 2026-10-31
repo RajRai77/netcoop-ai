@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S07-dns-failure",
+ "faults": [
+  {
+   "fault_type": "DNS_FAILURE",
+   "location": "DNS-1"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 107
+}

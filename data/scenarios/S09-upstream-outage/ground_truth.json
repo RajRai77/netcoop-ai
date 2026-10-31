@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S09-upstream-outage",
+ "faults": [
+  {
+   "fault_type": "DEVICE_DOWN",
+   "location": "DIST-2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "ambiguous",
+ "notes": "Downstream nodes unreachable; device state of the common upstream is only in the NMS archive.",
+ "generator": "netcoop-scengen/1",
+ "seed": 109
+}

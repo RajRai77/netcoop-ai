@@ -164,6 +164,8 @@ def adapt(payload: bytes | str, profile: dict, registry: MetricRegistry | None =
                 continue  # column absent: not measured (not the same as an empty cell)
             v = row[col]
             if not typed:
+                if (v is None or v.strip() == "") and profile.get("empty_cell", "missing_value") == "not_measured":
+                    continue  # declared by the profile: blank = not applicable, not a missing value
                 v = _csv_value(v, registry.metrics[m["metric"]].value_type)
             entry = {"metric": m["metric"], "value": v, "unit": m["unit"]}
             if "kind" in m:

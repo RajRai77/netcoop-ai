@@ -1,0 +1,51 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "S12-malformed-mixed",
+ "title": "Congestion plus malformed, stale and unknown-device records",
+ "data_mode": "synthetic",
+ "source_description": "Synthetic campus telemetry from netcoop-scengen/1 (seed 112); fault injected by the generator; not real network data.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": null,
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 112,
+ "split": "dev",
+ "tags": [
+  "robustness"
+ ],
+ "generator": {
+  "version": "netcoop-scengen/1",
+  "spec": {
+   "id": "S12-malformed-mixed",
+   "title": "Congestion plus malformed, stale and unknown-device records",
+   "seed": 112,
+   "faults": [
+    {
+     "type": "LINK_CONGESTION",
+     "location": "DIST-1:ge0/2"
+    }
+   ],
+   "malformed": true,
+   "spikes": [
+    {
+     "node": "ACC-2-2",
+     "step": 6
+    }
+   ],
+   "expected_status": "diagnosed",
+   "tags": [
+    "robustness"
+   ]
+  }
+ },
+ "limitations": [
+  "Synthetic data; values and fault signatures follow the generator's model",
+  "Generator and diagnosis engine were written by the same team (not an independent benchmark)"
+ ]
+}

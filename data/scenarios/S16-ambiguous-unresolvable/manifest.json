@@ -1,0 +1,47 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "S16-ambiguous-unresolvable",
+ "title": "Loss on ACC-2-2 branch; no archive available",
+ "data_mode": "synthetic",
+ "source_description": "Synthetic campus telemetry from netcoop-scengen/1 (seed 111); fault injected by the generator; not real network data.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": null,
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 111,
+ "split": "dev",
+ "tags": [
+  "ambiguous"
+ ],
+ "generator": {
+  "version": "netcoop-scengen/1",
+  "spec": {
+   "id": "S16-ambiguous-unresolvable",
+   "title": "Loss on ACC-2-2 branch; no archive available",
+   "seed": 111,
+   "faults": [
+    {
+     "type": "INTERFACE_DEGRADATION",
+     "location": "DIST-2:ge0/2"
+    }
+   ],
+   "initial_sources": [
+    "probe-collector"
+   ],
+   "expected_status": "ambiguous",
+   "tags": [
+    "ambiguous"
+   ]
+  }
+ },
+ "limitations": [
+  "Synthetic data; values and fault signatures follow the generator's model",
+  "Generator and diagnosis engine were written by the same team (not an independent benchmark)"
+ ]
+}

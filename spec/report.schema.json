@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:netcoop:ndep:report:1.0.0",
-  "title": "NDEP StructuredDiagnosis v1.0.0 (draft)",
+  "$id": "urn:netcoop:ndep:report:1.1.0",
+  "title": "NDEP StructuredDiagnosis v1.1.0 (draft)",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -25,7 +25,10 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "incident_id": {
       "type": "string",
@@ -161,6 +164,85 @@
     "generated_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "transport": {
+      "enum": [
+        "a2a",
+        "in-process"
+      ],
+      "description": "How specialist tasks were exchanged. 'in-process' is only used by tests/evaluation baselines."
+    },
+    "root_causes": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hypothesis_id",
+          "fault_type",
+          "location",
+          "support"
+        ],
+        "properties": {
+          "hypothesis_id": {
+            "type": "string"
+          },
+          "fault_type": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "support": {
+            "type": "string"
+          },
+          "affected_scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "verification": {
+      "type": "object"
+    },
+    "coverage": {
+      "type": "object"
+    },
+    "agent_contributions": {
+      "type": "object"
+    },
+    "unexplained_symptoms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision_basis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "knowledge_versions": {
+      "type": "object"
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Human-readable summary generated deterministically from the fields above; adds no facts."
     }
-  }
+  },
+  "description": "confidence_category is a documented SUPPORT category (see docs/05), not a probability. 1.1.0 adds optional structured fields; all 1.0.0 required fields are unchanged."
 }

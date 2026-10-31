@@ -33,6 +33,7 @@ class Incident(BaseModel):
     created_at: Timestamp
     archive_ref: str | None = None
     scenario_id: str | None = None
+    reference_time: Timestamp | None = None
 
 
 class RecordResult(BaseModel):
@@ -81,7 +82,7 @@ class EvidenceStore(Protocol):
     def create_incident(
         self, incident_id: str, data_mode: str, *, created_at: datetime,
         topology_snapshot_id: str | None = None, title: str | None = None,
-        archive_ref: str | None = None, scenario_id: str | None = None,
+        archive_ref: str | None = None, scenario_id: str | None = None, reference_time: datetime | None = None,
     ) -> Incident: ...
     def list_incidents(self, limit: int = 100) -> list[Incident]: ...
     def get_incident(self, incident_id: str) -> Incident | None: ...

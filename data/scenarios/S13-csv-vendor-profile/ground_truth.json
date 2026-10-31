@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S13-csv-vendor-profile",
+ "faults": [
+  {
+   "fault_type": "LINK_CONGESTION",
+   "location": "DIST-2:ge0/2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 113
+}

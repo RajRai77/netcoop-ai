@@ -25,6 +25,7 @@ def upgrade() -> None:
     with op.batch_alter_table("incidents") as b:
         b.add_column(sa.Column("archive_ref", sa.String(ID), nullable=True))
         b.add_column(sa.Column("scenario_id", sa.String(ID), nullable=True))
+        b.add_column(sa.Column("reference_time", sa.String(TS), nullable=True))
     op.create_table(
         "derived_rates",
         sa.Column("derived_id", sa.String(80), primary_key=True),
@@ -107,6 +108,7 @@ def downgrade() -> None:
               "workflow_events", "derived_rates"):
         op.drop_table(t)
     with op.batch_alter_table("incidents") as b:
+        b.drop_column("reference_time")
         b.drop_column("scenario_id")
         b.drop_column("archive_ref")
 

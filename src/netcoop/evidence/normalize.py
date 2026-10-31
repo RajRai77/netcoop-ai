@@ -132,6 +132,7 @@ def normalize_batch(
     source_schema: str = BATCH_SOURCE_SCHEMA,
     pre_issues: list[Issue] | None = None,
     batch_id: str | None = None,
+    reference_time: datetime | None = None,
 ) -> NormalizedBatch:
     """originals: when a source-profile adapter produced the batch, the vendor rows
     (same order as records). They become the immutable raw record content."""
@@ -165,6 +166,9 @@ def normalize_batch(
     if originals is not None and len(originals) != len(records):
         raise ValueError("originals must align with records")
     ctx = _Ctx(incident_id, source, ingested_at, registry, topology, batch_id or doc.get("batch_id"), source_schema)
+    # Freshness/future checks use the declared reference time (capture time of a recorded
+    # replay) when given; otherwise the real ingestion time.
+    ctx.as_of = reference_time or ingested_at
     ctx.issues.extend(pre_issues or [])
     for i, rec in enumerate(records):
         ctx.record(i, rec, record_schema_errors.get(i, []), originals[i] if originals is not None else None)
@@ -352,9 +356,9 @@ class _Ctx:
             self._issue(exc.code, Severity.REJECT, message, i, rid, path=path)
             return None
         skew = timedelta(seconds=self.reg.max_future_skew_s)
-        if ts > self.ingested_at + skew:
+        if ts > self.as_of + skew:
             self._issue(IssueCode.FUTURE_TIMESTAMP, Severity.REJECT,
-                        f"{path} {value!r} is later than ingestion time plus {self.reg.max_future_skew_s}s skew",
+                        f"{path} {value!r} is later than the reference time plus {self.reg.max_future_skew_s}s skew",
                         i, rid, path=path)
             return None
         return ts
@@ -439,12 +443,12 @@ class _Ctx:
                         i, rid, j)
 
         freshness = "current"
-        age = (self.ingested_at - observed_at).total_seconds()
+        age = (self.as_of - observed_at).total_seconds()
         if age > self.reg.max_age_s(mdef):
             freshness = "stale"
             flags.append("stale")
             self._issue(IssueCode.STALE_OBSERVATION, Severity.WARNING,
-                        f"{metric_name}: observed {age:.0f}s before ingestion; policy max {self.reg.max_age_s(mdef):.0f}s",
+                        f"{metric_name}: observed {age:.0f}s before the reference time; policy max {self.reg.max_age_s(mdef):.0f}s",
                         i, rid, j)
 
         obs_id = derive_id("OBS", raw_id, str(j), self.reg.version)

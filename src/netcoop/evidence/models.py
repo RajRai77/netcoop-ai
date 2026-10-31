@@ -181,6 +181,7 @@ class TopologyNode(_Model):
     type: Literal["device", "service", "ap", "segment", "host"]
     role: Literal["core", "distribution", "access", "edge", "server", "client"] | None = None
     label: str | None = None
+    service_kind: Literal["dns", "dhcp", "aaa", "web", "other"] | None = None
 
     def to_json_dict(self) -> dict:
         return self.model_dump(mode="json", exclude_none=True)

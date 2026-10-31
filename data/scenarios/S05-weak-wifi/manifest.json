@@ -1,0 +1,44 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "S05-weak-wifi",
+ "title": "Weak Wi-Fi signal at AP-2-1 (hostel)",
+ "data_mode": "synthetic",
+ "source_description": "Synthetic campus telemetry from netcoop-scengen/1 (seed 105); fault injected by the generator; not real network data.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": null,
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 105,
+ "split": "dev",
+ "tags": [
+  "wireless"
+ ],
+ "generator": {
+  "version": "netcoop-scengen/1",
+  "spec": {
+   "id": "S05-weak-wifi",
+   "title": "Weak Wi-Fi signal at AP-2-1 (hostel)",
+   "seed": 105,
+   "faults": [
+    {
+     "type": "WEAK_WIFI_SIGNAL",
+     "location": "AP-2-1"
+    }
+   ],
+   "expected_status": "diagnosed",
+   "tags": [
+    "wireless"
+   ]
+  }
+ },
+ "limitations": [
+  "Synthetic data; values and fault signatures follow the generator's model",
+  "Generator and diagnosis engine were written by the same team (not an independent benchmark)"
+ ]
+}

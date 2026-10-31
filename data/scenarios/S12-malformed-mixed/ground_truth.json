@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S12-malformed-mixed",
+ "faults": [
+  {
+   "fault_type": "LINK_CONGESTION",
+   "location": "DIST-1:ge0/2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 112
+}

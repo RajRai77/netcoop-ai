@@ -1,0 +1,27 @@
+{
+  "version": "detector-rules/1",
+  "status": "engineering defaults, not universal truths; frozen before held-out evaluation",
+  "notes": "A claim is PRESENT only when the condition holds persistently: at least min_samples anomalous fresh samples from one source (or one anomalous interval_summary covering >= min_interval_summary_s). A single anomalous sample yields polarity 'unknown' (transient). ABSENT requires fresh, validated, normal samples - missing data never yields 'absent'. Stale or quarantined observations are not used. If two sources disagree (one present, one absent) the claim is 'unknown' with a SOURCE_CONFLICT caveat.",
+  "persistence": {"min_samples": 2, "min_interval_summary_s": 60},
+  "rules": [
+    {"claim": "HIGH_LATENCY", "agent": "performance-agent", "metric": "latency", "op": "gt", "threshold": 100, "unit": "ms"},
+    {"claim": "HIGH_JITTER", "agent": "performance-agent", "metric": "jitter", "op": "gt", "threshold": 30, "unit": "ms"},
+    {"claim": "PACKET_LOSS", "agent": "performance-agent", "metric": "packet_loss", "op": "gt", "threshold": 1, "unit": "percent"},
+    {"claim": "HIGH_LINK_UTILIZATION", "agent": "performance-agent", "metric": "link_utilization", "op": "ge", "threshold": 85, "unit": "percent"},
+    {"claim": "QUEUE_DROPS", "agent": "performance-agent", "metric": "queue_drops_rate", "op": "gt", "threshold": 1, "unit": "count/s"},
+    {"claim": "QUEUE_DROPS", "agent": "performance-agent", "metric": "queue_drops", "source": "counter_rate", "op": "gt", "threshold": 1, "unit": "count/s"},
+    {"claim": "HIGH_CPU", "agent": "infrastructure-agent", "metric": "cpu_utilization", "op": "ge", "threshold": 90, "unit": "percent"},
+    {"claim": "HIGH_MEMORY", "agent": "infrastructure-agent", "metric": "memory_utilization", "op": "ge", "threshold": 90, "unit": "percent"},
+    {"claim": "CRC_ERRORS", "agent": "infrastructure-agent", "metric": "crc_errors", "source": "counter_rate", "op": "gt", "threshold": 0.1, "unit": "count/s"},
+    {"claim": "INTERFACE_ERRORS", "agent": "infrastructure-agent", "metric": "interface_errors", "source": "counter_rate", "op": "gt", "threshold": 0.1, "unit": "count/s"},
+    {"claim": "DEVICE_DOWN_STATE", "agent": "infrastructure-agent", "metric": "device_status", "op": "in", "values": ["down"], "min_samples": 1},
+    {"claim": "DEVICE_DEGRADED_STATE", "agent": "infrastructure-agent", "metric": "device_status", "op": "in", "values": ["degraded"], "min_samples": 1},
+    {"claim": "INTERFACE_DOWN", "agent": "infrastructure-agent", "metric": "interface_status", "op": "in", "values": ["down", "flapping"], "min_samples": 1},
+    {"claim": "WEAK_SIGNAL", "agent": "infrastructure-agent", "metric": "rssi", "op": "lt", "threshold": -75, "unit": "dBm"},
+    {"claim": "LOW_SNR", "agent": "infrastructure-agent", "metric": "snr", "op": "lt", "threshold": 20, "unit": "dB"},
+    {"claim": "HIGH_WIRELESS_RETRIES", "agent": "infrastructure-agent", "metric": "wireless_retry_rate", "op": "gt", "threshold": 15, "unit": "percent"},
+    {"claim": "UNREACHABLE", "agent": "connectivity-agent", "metric": "reachability", "op": "in", "values": [false]},
+    {"claim": "DNS_FAILURES", "agent": "connectivity-agent", "metric": "dns_query_failure_rate", "op": "gt", "threshold": 5, "unit": "percent"},
+    {"claim": "DHCP_FAILURES", "agent": "connectivity-agent", "metric": "dhcp_lease_failure_rate", "op": "gt", "threshold": 5, "unit": "percent"}
+  ]
+}

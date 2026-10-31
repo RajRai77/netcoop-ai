@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:ndep:agent-task:1.0.0",
+  "title": "NDEP AgentTask v1.0.0 (draft) - coordinator -> specialist request",
+  "description": "Carried inside an A2A message as ONE text part with media type application/vnd.netcoop.ndep+json (exact JSON numbers; A2A data parts would turn integers into doubles). Embedded observations, findings, topology and challenge objects must validate against their own NDEP schemas.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "task_type", "incident_id", "agent_id", "issued_at", "deadline_at", "data_mode"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "task_id": {"type": "string", "minLength": 1, "description": "Logical idempotency key; retries reuse it."},
+    "task_type": {"enum": ["investigate", "verify"]},
+    "incident_id": {"type": "string", "minLength": 1},
+    "agent_id": {"type": "string", "minLength": 1, "description": "Intended recipient; agents refuse tasks addressed to others."},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "deadline_at": {"type": "string", "format": "date-time"},
+    "data_mode": {"enum": ["synthetic", "recorded", "emulated", "live", "mock"]},
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["analysis_time", "observations", "prior_findings"],
+      "properties": {
+        "analysis_time": {"type": "string", "format": "date-time"},
+        "observations": {"type": "array", "items": {"type": "object"}},
+        "topology": {"type": ["object", "null"]},
+        "prior_findings": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "challenge": {"type": "object"},
+    "archive_ref": {"type": ["string", "null"], "pattern": "^(scenario|upload):[A-Za-z0-9._-]{1,120}$"}
+  },
+  "allOf": [
+    {"if": {"properties": {"task_type": {"const": "investigate"}}}, "then": {"required": ["case"]}},
+    {"if": {"properties": {"task_type": {"const": "verify"}}}, "then": {"required": ["challenge"]}}
+  ]
+}

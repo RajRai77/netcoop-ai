@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S15-unknown-fault",
+ "faults": [
+  {
+   "fault_type": "UNMODELED_PATH_ISSUE",
+   "location": "ACC-1-2"
+  }
+ ],
+ "expected_status": "unknown_fault",
+ "expected_status_without_verification": "unknown_fault",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 115
+}

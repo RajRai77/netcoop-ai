@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S08-dhcp-failure",
+ "faults": [
+  {
+   "fault_type": "DHCP_FAILURE",
+   "location": "DHCP-1"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 108
+}

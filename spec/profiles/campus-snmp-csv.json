@@ -2,18 +2,53 @@
   "schema_version": "1.0.0",
   "profile_id": "campus-snmp-csv",
   "version": "1",
-  "description": "Example vendor-style SNMP poller CSV export (synthetic format authored for NetCoop tests). Loss is exported as a 0..1 ratio, throughput in Mbps, timestamps in IST without offset.",
+  "description": "Example vendor-style SNMP poller CSV export (synthetic format authored for NetCoop tests). Loss is exported as a 0..1 ratio, throughput in Mbps, timestamps in IST without offset. Blank cells mean the column does not apply to that row (declared via empty_cell).",
   "format": "csv",
-  "source": {"source_id": "snmp-poller-csv", "data_mode": "synthetic", "source_type": "csv-export"},
-  "record_id": {"field": "poll_id"},
-  "timestamp": {"field": "poll_time", "timezone": "+05:30"},
-  "subject": {"device_id": "hostname", "interface_id": "ifName"},
-  "measurements": {
-    "ifUtilPct": {"metric": "link_utilization", "unit": "percent", "kind": "gauge"},
-    "lossRatio": {"metric": "packet_loss", "unit": "ratio", "kind": "gauge"},
-    "rttMs": {"metric": "latency", "unit": "ms", "kind": "gauge"},
-    "outMbps": {"metric": "throughput", "unit": "Mbit/s", "kind": "gauge"},
-    "inErrors": {"metric": "interface_errors", "unit": "count", "kind": "cumulative_counter"}
+  "source": {
+    "source_id": "snmp-poller-csv",
+    "data_mode": "synthetic",
+    "source_type": "csv-export"
   },
-  "ignore_fields": ["poller_host"]
+  "record_id": {
+    "field": "poll_id"
+  },
+  "timestamp": {
+    "field": "poll_time",
+    "timezone": "+05:30"
+  },
+  "subject": {
+    "device_id": "hostname",
+    "interface_id": "ifName"
+  },
+  "measurements": {
+    "ifUtilPct": {
+      "metric": "link_utilization",
+      "unit": "percent",
+      "kind": "gauge"
+    },
+    "lossRatio": {
+      "metric": "packet_loss",
+      "unit": "ratio",
+      "kind": "gauge"
+    },
+    "rttMs": {
+      "metric": "latency",
+      "unit": "ms",
+      "kind": "gauge"
+    },
+    "outMbps": {
+      "metric": "throughput",
+      "unit": "Mbit/s",
+      "kind": "gauge"
+    },
+    "inErrors": {
+      "metric": "interface_errors",
+      "unit": "count",
+      "kind": "cumulative_counter"
+    }
+  },
+  "ignore_fields": [
+    "poller_host"
+  ],
+  "empty_cell": "not_measured"
 }

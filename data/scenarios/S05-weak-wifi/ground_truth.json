@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S05-weak-wifi",
+ "faults": [
+  {
+   "fault_type": "WEAK_WIFI_SIGNAL",
+   "location": "AP-2-1"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 105
+}

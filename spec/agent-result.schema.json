@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:netcoop:ndep:agent-result:1.0.0",
+  "title": "NDEP AgentResult v1.0.0 (draft) - specialist -> coordinator artifact",
+  "description": "Returned as an A2A task artifact with one text part (application/vnd.netcoop.ndep+json). The coordinator validates it, checks agent identity, task id and observation references, and only then persists findings. Telemetry batches returned by 'verify' are raw recorded records; the coordinator ingests them through the normal NDEP validator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "agent_id", "agent_version", "status", "findings", "telemetry_batches", "coverage", "notes"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "task_id": {"type": "string", "minLength": 1},
+    "agent_id": {"type": "string", "minLength": 1},
+    "agent_version": {"type": "string", "minLength": 1},
+    "rule_version": {"type": "string"},
+    "status": {"enum": ["completed", "unavailable", "refused", "failed"]},
+    "findings": {"type": "array", "items": {"type": "object"}},
+    "telemetry_batches": {"type": "array", "items": {"type": "object"}},
+    "coverage": {"type": "object"},
+    "notes": {"type": "array", "items": {"type": "string"}},
+    "error": {
+      "type": "object", "additionalProperties": false, "required": ["code", "message"],
+      "properties": {"code": {"type": "string"}, "message": {"type": "string"}}
+    }
+  }
+}

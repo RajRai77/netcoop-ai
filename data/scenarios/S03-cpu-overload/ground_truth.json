@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S03-cpu-overload",
+ "faults": [
+  {
+   "fault_type": "DEVICE_CPU_OVERLOAD",
+   "location": "ACC-2-2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 103
+}

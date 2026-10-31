@@ -35,6 +35,8 @@ incidents = Table(
     # Added in 0002: recorded-archive reference for evidence seeking, e.g. "scenario:S11".
     Column("archive_ref", String(ID), nullable=True),
     Column("scenario_id", String(ID), nullable=True),
+    # Declared capture time used as the freshness reference for recorded/synthetic replays.
+    Column("reference_time", String(TS), nullable=True),
 )
 
 topology_snapshots = Table(

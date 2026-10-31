@@ -1,0 +1,9 @@
+{
+ "scenario_id": "S17-transient-spike",
+ "faults": [],
+ "expected_status": "healthy",
+ "expected_status_without_verification": "healthy",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 117
+}

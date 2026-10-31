@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S06-interference",
+ "faults": [
+  {
+   "fault_type": "WIRELESS_INTERFERENCE",
+   "location": "AP-1-2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 106
+}

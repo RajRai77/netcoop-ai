@@ -1,0 +1,44 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "S08-dhcp-failure",
+ "title": "DHCP service failure (new leases fail)",
+ "data_mode": "synthetic",
+ "source_description": "Synthetic campus telemetry from netcoop-scengen/1 (seed 108); fault injected by the generator; not real network data.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": null,
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 108,
+ "split": "dev",
+ "tags": [
+  "service"
+ ],
+ "generator": {
+  "version": "netcoop-scengen/1",
+  "spec": {
+   "id": "S08-dhcp-failure",
+   "title": "DHCP service failure (new leases fail)",
+   "seed": 108,
+   "faults": [
+    {
+     "type": "DHCP_FAILURE",
+     "location": "DHCP-1"
+    }
+   ],
+   "expected_status": "diagnosed",
+   "tags": [
+    "service"
+   ]
+  }
+ },
+ "limitations": [
+  "Synthetic data; values and fault signatures follow the generator's model",
+  "Generator and diagnosis engine were written by the same team (not an independent benchmark)"
+ ]
+}

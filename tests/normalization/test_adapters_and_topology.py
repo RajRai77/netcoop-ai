@@ -49,11 +49,20 @@ def test_csv_maps_declared_columns_units_and_timezone(store):
 def test_csv_cells_are_not_coerced(store):
     store.create_incident("INC-1", "synthetic", created_at=NOW)
     payload = csv_rows("p1,2026-10-31 15:29:00,SW-01,eth1,high,,NaN,850,12.5,a,b")
-    rep = ingest_telemetry(store, "INC-1", payload, profile=builtin_profile("campus-snmp-csv"), now=later(0))
+    strict = dict(builtin_profile("campus-snmp-csv"), empty_cell="missing_value")
+    rep = ingest_telemetry(store, "INC-1", payload, profile=strict, now=later(0))
     codes = {i.code for i in rep.issues if i.severity == "reject"}
     assert {IssueCode.TYPE_MISMATCH, IssueCode.MISSING_VALUE, IssueCode.NON_FINITE_VALUE} <= codes
     assert [o.measurement.metric for o in store.list_observations("INC-1")] == ["throughput"]
     assert rep.records[0].status == "partially_rejected"
+
+
+def test_declared_blank_cells_are_not_measured(store):
+    store.create_incident("INC-1", "synthetic", created_at=NOW)
+    payload = csv_rows("p1,2026-10-31 15:29:00,SW-01,,,0.01,12,,,a,probe")
+    rep = ingest_telemetry(store, "INC-1", payload, profile=builtin_profile("campus-snmp-csv"), now=later(0))
+    assert rep.records[0].status == "accepted"
+    assert sorted(o.measurement.metric for o in store.list_observations("INC-1")) == ["latency", "packet_loss"]
 
 
 def test_malformed_csv_is_refused():

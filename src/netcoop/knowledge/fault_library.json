@@ -1,0 +1,244 @@
+{
+  "version": "fault-library/1",
+  "status": "documented fault models for STEaR; not exhaustive - unmodeled causes are reported as unknown_fault",
+  "semantics": {
+    "signature_any": "Claims characteristic of the fault AT the hypothesis location. Any present -> signature confirmed. All observed absent -> hypothesis contradicted. Otherwise unconfirmed (plausible, needs evidence).",
+    "signature_scope": "'location' (default): signature must be observed at the location itself. 'scope': anywhere within the location's impact scope (used for services observed through their dependents).",
+    "require_absent": "Claims that must be observed ABSENT at the location to confirm (present -> contradicted; missing -> unconfirmed).",
+    "contradicted_by": "Claims whose presence at the location contradicts the hypothesis (missing is fine).",
+    "corroborating": "Claims at the location that add support when present.",
+    "effects": "Claims the fault can cause at any entity inside its impact scope (topology-derived).",
+    "location_types": "Allowed topology node types for node-located faults (ignored without topology).",
+    "signature_contradiction": "'all_absent' (default): contradicted only when every signature claim is observed normal. 'any_absent': contradicted when at least one signature claim is observed normal and none is present - used when the listed claims are alternative counters of ONE physical phenomenon, so one normal reading is informative.",
+    "service_kinds": "For service-located faults: allowed topology service_kind values (nodes without a declared kind are allowed, with a limitation)."
+  },
+  "symptom_claims": [
+    "HIGH_LATENCY",
+    "HIGH_JITTER",
+    "PACKET_LOSS",
+    "UNREACHABLE",
+    "DNS_FAILURES",
+    "DHCP_FAILURES",
+    "HIGH_WIRELESS_RETRIES",
+    "HIGH_LINK_UTILIZATION",
+    "QUEUE_DROPS",
+    "HIGH_CPU",
+    "CRC_ERRORS",
+    "INTERFACE_ERRORS",
+    "DEVICE_DOWN_STATE",
+    "INTERFACE_DOWN",
+    "WEAK_SIGNAL",
+    "LOW_SNR"
+  ],
+  "informational_claims": [
+    "HIGH_MEMORY",
+    "DEVICE_DEGRADED_STATE"
+  ],
+  "temporal_tolerance_s": 120,
+  "faults": {
+    "LINK_CONGESTION": {
+      "location": "interface",
+      "signature_any": [
+        "HIGH_LINK_UTILIZATION"
+      ],
+      "corroborating": [
+        "QUEUE_DROPS"
+      ],
+      "effects": [
+        "HIGH_LATENCY",
+        "HIGH_JITTER",
+        "PACKET_LOSS"
+      ],
+      "recommendations": [
+        "Identify top talkers and traffic classes on {location} using existing flow/telemetry tools (read-only)",
+        "Review QoS policy and capacity of {location}; plan an uplink upgrade or load-balancing if utilization stays high",
+        "Correlate with scheduled jobs (backups, updates) during the incident window"
+      ],
+      "caveats": []
+    },
+    "INTERFACE_DEGRADATION": {
+      "location": "interface",
+      "signature_any": [
+        "CRC_ERRORS",
+        "INTERFACE_ERRORS"
+      ],
+      "effects": [
+        "PACKET_LOSS",
+        "HIGH_LATENCY",
+        "HIGH_JITTER"
+      ],
+      "recommendations": [
+        "Inspect cabling, transceiver/optic levels and duplex/speed negotiation on {location}",
+        "Check the peer interface counters for matching errors",
+        "Schedule a maintenance window to replace the cable or optic if errors keep increasing"
+      ],
+      "caveats": [],
+      "signature_contradiction": "any_absent",
+      "modeling_note": "Physical-layer degradation (cable/optic/duplex) increments CRC/FCS or input-error counters; a fresh normal reading of either counter with neither elevated is treated as contradicting it."
+    },
+    "LINK_OR_PATH_FAILURE": {
+      "location": "interface",
+      "signature_any": [
+        "INTERFACE_DOWN"
+      ],
+      "effects": [
+        "UNREACHABLE",
+        "PACKET_LOSS",
+        "HIGH_LATENCY",
+        "DNS_FAILURES",
+        "DHCP_FAILURES"
+      ],
+      "recommendations": [
+        "Check physical link state and logs on {location} and its peer",
+        "Verify whether a redundant path exists and whether traffic failed over"
+      ],
+      "caveats": []
+    },
+    "DEVICE_CPU_OVERLOAD": {
+      "location": "node",
+      "location_types": [
+        "device",
+        "ap"
+      ],
+      "signature_any": [
+        "HIGH_CPU"
+      ],
+      "corroborating": [
+        "HIGH_MEMORY",
+        "DEVICE_DEGRADED_STATE"
+      ],
+      "effects": [
+        "HIGH_LATENCY",
+        "HIGH_JITTER",
+        "PACKET_LOSS"
+      ],
+      "recommendations": [
+        "Inspect the process/CPU breakdown on {location} (control-plane load, logging, routing churn) using read-only commands",
+        "Check for broadcast storms or control-plane policing drops affecting {location}"
+      ],
+      "caveats": [
+        "High CPU co-occurring with symptoms does not by itself prove it caused them"
+      ]
+    },
+    "DEVICE_DOWN": {
+      "location": "node",
+      "location_types": [
+        "device",
+        "ap",
+        "host"
+      ],
+      "signature_any": [
+        "DEVICE_DOWN_STATE"
+      ],
+      "corroborating": [
+        "UNREACHABLE"
+      ],
+      "effects": [
+        "UNREACHABLE",
+        "PACKET_LOSS",
+        "INTERFACE_DOWN",
+        "DNS_FAILURES",
+        "DHCP_FAILURES"
+      ],
+      "recommendations": [
+        "Check power, console access and last logs of {location}",
+        "Confirm the outage scope and whether redundant devices took over"
+      ],
+      "caveats": []
+    },
+    "WEAK_WIFI_SIGNAL": {
+      "location": "node",
+      "location_types": [
+        "ap",
+        "segment"
+      ],
+      "signature_any": [
+        "WEAK_SIGNAL"
+      ],
+      "effects": [
+        "HIGH_WIRELESS_RETRIES",
+        "PACKET_LOSS",
+        "HIGH_LATENCY",
+        "HIGH_JITTER",
+        "LOW_SNR"
+      ],
+      "recommendations": [
+        "Survey coverage around {location}; check AP transmit power and placement",
+        "Check whether clients are associating to a distant AP (sticky clients)"
+      ],
+      "caveats": []
+    },
+    "WIRELESS_INTERFERENCE": {
+      "location": "node",
+      "location_types": [
+        "ap",
+        "segment"
+      ],
+      "signature_any": [
+        "LOW_SNR"
+      ],
+      "require_absent": [
+        "WEAK_SIGNAL"
+      ],
+      "effects": [
+        "HIGH_WIRELESS_RETRIES",
+        "PACKET_LOSS",
+        "HIGH_LATENCY",
+        "HIGH_JITTER"
+      ],
+      "recommendations": [
+        "Run a spectrum/channel-utilization check near {location}; consider changing channel or channel width",
+        "Look for non-Wi-Fi interferers and overlapping neighbouring APs"
+      ],
+      "caveats": []
+    },
+    "DNS_FAILURE": {
+      "location": "node",
+      "location_types": [
+        "service"
+      ],
+      "signature_any": [
+        "DNS_FAILURES"
+      ],
+      "signature_scope": "scope",
+      "contradicted_by": [
+        "UNREACHABLE"
+      ],
+      "effects": [
+        "DNS_FAILURES"
+      ],
+      "recommendations": [
+        "Check the DNS service {location}: process health, upstream forwarders and recent configuration changes",
+        "Test name resolution from an affected segment against {location} and an alternate resolver (read-only)"
+      ],
+      "caveats": [],
+      "service_kinds": [
+        "dns"
+      ]
+    },
+    "DHCP_FAILURE": {
+      "location": "node",
+      "location_types": [
+        "service"
+      ],
+      "signature_any": [
+        "DHCP_FAILURES"
+      ],
+      "signature_scope": "scope",
+      "contradicted_by": [
+        "UNREACHABLE"
+      ],
+      "effects": [
+        "DHCP_FAILURES"
+      ],
+      "recommendations": [
+        "Check the DHCP service {location}: scope exhaustion, relay (ip-helper) configuration and service health",
+        "Compare new-lease failures with existing clients' connectivity"
+      ],
+      "caveats": [],
+      "service_kinds": [
+        "dhcp"
+      ]
+    }
+  }
+}

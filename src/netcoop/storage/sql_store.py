@@ -60,9 +60,10 @@ class SqlEvidenceStore(InvestigationStoreMixin):
 
     # -- incidents -------------------------------------------------------------
     def create_incident(self, incident_id, data_mode, *, created_at, topology_snapshot_id=None, title=None,
-                        archive_ref=None, scenario_id=None) -> Incident:
+                        archive_ref=None, scenario_id=None, reference_time=None) -> Incident:
         inc = Incident(incident_id=incident_id, data_mode=data_mode, topology_snapshot_id=topology_snapshot_id,
-                       title=title, created_at=created_at, archive_ref=archive_ref, scenario_id=scenario_id)
+                       title=title, created_at=created_at, archive_ref=archive_ref, scenario_id=scenario_id,
+                       reference_time=reference_time)
         with self.engine.begin() as conn:
             if topology_snapshot_id is not None and conn.execute(
                 select(topology_snapshots.c.topology_snapshot_id).where(
@@ -75,6 +76,7 @@ class SqlEvidenceStore(InvestigationStoreMixin):
                     incident_id=incident_id, data_mode=inc.data_mode, topology_snapshot_id=topology_snapshot_id,
                     title=title, created_at=to_canonical(inc.created_at), archive_ref=archive_ref,
                     scenario_id=scenario_id,
+                    reference_time=to_canonical(inc.reference_time) if inc.reference_time else None,
                 ))
             except IntegrityError:
                 raise EvidenceError.single(IssueCode.SCHEMA_INVALID,

@@ -71,6 +71,16 @@
           },
           "label": {
             "type": "string"
+          },
+          "service_kind": {
+            "enum": [
+              "dns",
+              "dhcp",
+              "aaa",
+              "web",
+              "other"
+            ],
+            "description": "For type=service: which service it provides (lets the engine localize DNS vs DHCP faults)."
           }
         }
       }

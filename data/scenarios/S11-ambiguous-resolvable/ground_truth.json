@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S11-ambiguous-resolvable",
+ "faults": [
+  {
+   "fault_type": "INTERFACE_DEGRADATION",
+   "location": "DIST-2:ge0/2"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "ambiguous",
+ "notes": "Initial upload has only end-to-end probes: congestion, interface fault and CPU overload all fit.",
+ "generator": "netcoop-scengen/1",
+ "seed": 111
+}

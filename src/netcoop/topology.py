@@ -62,12 +62,15 @@ class TopologyGraph:
         self.dependents: dict[str, set[str]] = {}
         self.links: dict[str, tuple[str, str, str | None, str | None]] = {}
         self.node_types: dict[str, str] = {}
+        self.service_kinds: dict[str, str] = {}
         self.roots: set[str] = set()
         if snapshot is None:
             return
         for n in snapshot.nodes:
             self.g.add_node(n.id)
             self.node_types[n.id] = n.type
+            if n.service_kind:
+                self.service_kinds[n.id] = n.service_kind
             if n.role == "core":
                 self.roots.add(n.id)
         for lk in snapshot.links:
