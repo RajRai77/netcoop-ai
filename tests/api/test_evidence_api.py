@@ -94,3 +94,47 @@ def test_oversized_json_body_is_refused_before_parsing(client_factory):
     big = {"data_mode": "synthetic", "title": "x", "topology": {"pad": "y" * 5000}}
     r = c.post("/api/incidents", json=big)
     assert r.status_code == 413 and r.json()["error"]["code"] == "PAYLOAD_TOO_LARGE"
+
+
+def test_sse_stream_replays_persisted_run_and_ends(tmp_path):
+    from pathlib import Path
+
+    url = f"sqlite:///{(tmp_path / 'sse.db').as_posix()}"
+    engine = make_engine(url)
+    migrate.upgrade(engine)
+    engine.dispose()
+    base = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+    app = create_app(Settings(database_url=url, allow_in_process_agents=True, scenarios_dir=str(base),
+                              resume_on_start=False))
+    c = TestClient(app)
+    iid = c.post("/api/incidents", json={"scenario_id": "S01-congestion"}).json()["incident"]["incident_id"]
+    from netcoop.agents.protocol import SPECIALISTS
+    from netcoop.orchestration.coordinator import Coordinator
+    from netcoop.orchestration.ports import InProcessAgentPort
+    Coordinator(app.state.store, [InProcessAgentPort(a, base, None) for a in SPECIALISTS]).run(iid)
+    with c.stream("GET", f"/api/incidents/{iid}/stream") as r:
+        assert r.headers["content-type"].startswith("text/event-stream")
+        body = "".join(r.iter_text())
+    events = [line.split(": ", 1)[1] for line in body.splitlines() if line.startswith("event: ")]
+    assert events[0] == "workflow" and events[-1] == "end"
+    assert {"workflow", "attempt", "report", "end"} <= set(events)
+    assert '"state":"DIAGNOSED"' in body
+
+
+def test_cors_is_opt_in(client_factory):
+    plain = client_factory()
+    assert "access-control-allow-origin" not in plain.get("/api/meta", headers={"Origin": "http://localhost:5173"}).headers
+    cors = client_factory(cors_origins=("http://localhost:5173",))
+    r = cors.get("/api/meta", headers={"Origin": "http://localhost:5173"})
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+
+def test_evaluations_are_served_from_committed_results(client_factory):
+    from pathlib import Path
+    eval_dir = Path(__file__).resolve().parents[2] / "eval"
+    c = client_factory(eval_dir=str(eval_dir))
+    names = [e["name"] for e in c.get("/api/evaluations").json()["evaluations"]]
+    assert "results-heldout-v2" in names
+    full = c.get("/api/evaluations/results-heldout-v2").json()
+    assert full["sets"]["heldout-v2"]["knowledge_frozen_before_generation"] is True
+    assert c.get("/api/evaluations/..%2Fsecrets").status_code == 404

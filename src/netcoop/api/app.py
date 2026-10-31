@@ -119,6 +119,14 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
         yield
 
     app = FastAPI(title="NetCoop AI", version=__version__, lifespan=lifespan)
+    if settings.cors_origins:
+        from fastapi.middleware.cors import CORSMiddleware
+
+        if "*" in settings.cors_origins and settings.api_token:
+            raise ValueError("NETCOOP_CORS_ORIGINS='*' is not allowed together with NETCOOP_API_TOKEN")
+        app.add_middleware(CORSMiddleware, allow_origins=list(settings.cors_origins), allow_credentials=False,
+                           allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type"],
+                           expose_headers=["Content-Disposition"])
 
     @app.middleware("http")
     async def limit_body(request: Request, call_next):
@@ -203,6 +211,33 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
                 entry.update(status="unavailable", error=f"{exc.kind}: {exc}")
             out.append(entry)
         return {"agents": out}
+
+    eval_dir = Path(settings.eval_dir) if settings.eval_dir else None
+
+    def _eval_sets() -> dict[str, Path]:
+        if eval_dir is None or not eval_dir.is_dir():
+            return {}
+        return {d.name: d / "results.json" for d in sorted(eval_dir.iterdir()) if (d / "results.json").is_file()}
+
+    @app.get("/api/evaluations", dependencies=api)
+    def evaluations() -> dict:
+        """Generated evaluation results committed in eval/ (summaries only; nothing computed here)."""
+        out = []
+        for name, path in _eval_sets().items():
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            out.append({"name": name, "git_commit": doc.get("git_commit"), "knowledge": doc.get("knowledge"),
+                        "platform": doc.get("platform"), "transport": doc.get("transport"),
+                        "sets": {k: {"scenarios": v["scenarios"],
+                                     "knowledge_frozen_before_generation": v.get("knowledge_frozen_before_generation"),
+                                     "summary": v["summary"]} for k, v in doc["sets"].items()}})
+        return {"evaluations": out, "note": "Synthetic data; generator and engine share authors (docs/21)."}
+
+    @app.get("/api/evaluations/{name}", dependencies=api)
+    def evaluation(name: str) -> JSONResponse:
+        sets = _eval_sets()
+        if name not in sets:
+            raise HTTPException(404, f"evaluation {name!r} not found")
+        return JSONResponse(json.loads(sets[name].read_text(encoding="utf-8")))
 
     @app.get("/api/profiles", dependencies=api)
     def profiles() -> dict:
@@ -326,6 +361,67 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
             a["detail"] = {k: v for k, v in a["detail"].items() if k != "response_text"}
         return {"events": s.list_events(incident_id), "attempts": attempts,
                 "challenges": s.list_challenges(incident_id)}
+
+    @app.get("/api/incidents/{incident_id}/stream", dependencies=api)
+    async def stream(incident_id: str, request: Request, after: int = 0, s: SqlEvidenceStore = Depends(require_store)):
+        """Server-Sent Events: `workflow` (workflow event), `attempt` (agent task attempt, no raw artifact),
+        `challenge` (verification outcome), `report` (new report revision summary), `end` (run finished).
+        Resume with ?after=<last workflow seq>. Read back from the ledger; nothing is synthesized."""
+        import asyncio
+
+        from fastapi.responses import StreamingResponse
+
+        incident_or_404(s, incident_id)
+
+        def sse(event: str, data: dict, eid: str | None = None) -> str:
+            head = f"id: {eid}\n" if eid else ""
+            return f"{head}event: {event}\ndata: {json.dumps(data, separators=(',', ':'))}\n\n"
+
+        async def gen():
+            last_seq, seen_attempts, seen_outcomes, last_rev = after, set(), set(), None
+            idle = 0
+            while True:
+                if await request.is_disconnected():
+                    return
+                events, attempts, chs, reps = await asyncio.to_thread(lambda: (
+                    s.list_events(incident_id), s.list_attempts(incident_id), s.list_challenges(incident_id),
+                    s.list_reports(incident_id)))
+                sent = False
+                for e in events:
+                    if e["seq"] > last_seq:
+                        last_seq = e["seq"]
+                        sent = True
+                        yield sse("workflow", e, str(e["seq"]))
+                for a in attempts:
+                    if a["attempt_id"] not in seen_attempts:
+                        seen_attempts.add(a["attempt_id"])
+                        sent = True
+                        yield sse("attempt", {**a, "detail": {k: v for k, v in a["detail"].items()
+                                                                if k != "response_text"}})
+                for c in chs:
+                    for o in c["outcomes"]:
+                        key = (c["challenge"]["challenge_id"], o["at"])
+                        if key not in seen_outcomes:
+                            seen_outcomes.add(key)
+                            sent = True
+                            yield sse("challenge", {"challenge": c["challenge"], "outcome": o})
+                if reps and reps[-1]["revision"] != last_rev:
+                    last_rev = reps[-1]["revision"]
+                    sent = True
+                    yield sse("report", reps[-1])
+                running = incident_lock(incident_id).locked()
+                if events and events[-1]["state"] in TERMINAL_STATES and not running:
+                    yield sse("end", {"state": events[-1]["state"], "revision": last_rev})
+                    return
+                idle = 0 if sent else idle + 1
+                if idle and idle % 15 == 0:
+                    yield ": keep-alive\n\n"
+                if idle > 600 and not running:  # nothing happening for ~10 min and no run: close
+                    return
+                await asyncio.sleep(1.0)
+
+        return StreamingResponse(gen(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
     @app.get("/api/incidents/{incident_id}/attempts/{attempt_id}", dependencies=api)
     def attempt(incident_id: str, attempt_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:

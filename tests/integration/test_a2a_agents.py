@@ -134,3 +134,28 @@ def test_agent_crash_mid_incident_is_reported_honestly(store, agents, tmp_path):
     assert any("connectivity-agent unavailable" in x for x in r["limitations"])
     assert "connectivity-agent" not in r["evidence_sources"]
     assert r["status"] != "operational_error"  # the other two specialists still contributed
+
+
+def test_card_protocol_version_is_checked(agents, monkeypatch):
+    from a2a.types import AgentCard
+
+    port = A2AAgentPort("performance-agent", agents["urls"]["performance-agent"], TOKEN)
+    real = asyncio.run(port.discover(5)).card
+    assert {"protocolBinding": "JSONRPC", "protocolVersion": "1.0"}.items() <= real["supportedInterfaces"][0].items()
+    import a2a.client as client_mod
+
+    class OldCardResolver:
+        def __init__(self, *a, **k):
+            pass
+
+        async def get_agent_card(self):
+            from netcoop.agents.server import build_card
+            card = build_card("performance-agent", agents["urls"]["performance-agent"])
+            card.supported_interfaces[0].protocol_version = "0.3"
+            return card
+
+    monkeypatch.setattr(client_mod, "A2ACardResolver", OldCardResolver)
+    with pytest.raises(TransportError) as e:
+        asyncio.run(A2AAgentPort("performance-agent", agents["urls"]["performance-agent"], TOKEN).discover(5))
+    assert e.value.kind == "protocol" and "protocol 1.0" in str(e.value)
+    assert isinstance(real, dict) and AgentCard  # real card is unaffected

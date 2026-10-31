@@ -42,6 +42,10 @@ def make_engine(url: str, *, connect_timeout_s: int = 5) -> Engine:
             cur = dbapi_conn.cursor()
             cur.execute("PRAGMA foreign_keys=ON")  # SQLite does not enforce FKs unless asked
             cur.execute("PRAGMA busy_timeout=30000")
+            # WAL: readers (API/UI) do not block the background diagnosis writer and commits avoid a
+            # full rollback-journal sync each time. synchronous=FULL keeps every commit durable.
+            cur.execute("PRAGMA journal_mode=WAL")
+            cur.execute("PRAGMA synchronous=FULL")
             cur.close()
 
         return engine

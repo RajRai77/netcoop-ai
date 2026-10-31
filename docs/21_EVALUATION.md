@@ -50,6 +50,7 @@ Support categories are documented decision rules (`docs/05`, `src/netcoop/engine
 |---|---|---|---|---|---|---|
 | v1 (seed 20261101, 60 cases) | fault-library/1, commit 2ff9bca | `eval/results-frozen-2ff9bca/RESULTS.md` | 49/60 | 3/60 | 3/60 | 8/53 |
 | v2 (seed 20261102, 60 cases) | fault-library/2, commit 013a6d5 | `eval/results-heldout-v2/RESULTS.md` | 53/60 | 6/60 | 0/60 | 0/56 |
+| v3 (seed 20261103, 60 cases; methods A-D only) | fault-library/3, commit 95e3e6e (+ uncommitted persistence-only changes, see `eval/results-heldout-v3/PROVENANCE.md`) | `eval/results-heldout-v3/RESULTS.md` | 59/60 | 1/60 | 0/60 | 0/56 |
 
 On v2, STEaR without verification (C) has 55/60 acceptable vs 53/60 for full (D). D makes 39 exact diagnoses (of 46 diagnosable with
 the archive) vs 20 for C (of 22 diagnosable from the upload alone): verification turns many otherwise-abstained incidents into correct
@@ -61,3 +62,17 @@ switches, not APs, so the AP-down signature is never observable; both explanatio
 link failure instead of reporting ambiguity. Candidate rule change (not yet made; would need a v3 held-out set): when the leading
 cause is confirmed but an equal-coverage competitor's signature is *unobservable*, report `ambiguous`. The other two failures are
 compound faults where only one of two faults was reported (now `moderate_support`, no longer `high_support`).
+
+**Annotation caveat for v1/v2 (found 2026-11-01):** the generator never emitted AP status in v1/v2, yet the ground truth
+annotated AP-down faults as diagnosable from NMS data. Their AP-down cases were therefore scored as "diagnosable" although the
+evidence could not identify them. The result files are kept unchanged; v3 uses the corrected annotation and a generator in
+which the wireless controller reports a failed AP.
+
+**v3 summary (from `eval/results-heldout-v3/RESULTS.md`):** acceptable outcomes A 22/60, B 42/60, C 57/60, D 59/60; confidently wrong A 30, B 4, C 0, D 1; high-support wrong B 1, others 0.
+Compared with C on the same cases, verification helped in 3 cases (healthy networks whose unmonitored DNS/DHCP/wireless coverage
+was fetched from the archive), harmed 1 (V03-014: a subtle compound fault where C abstained and D reported only the CPU overload,
+missing the wireless interference, at `moderate_support`), and made a correct diagnosis more specific in 22 cases where C had
+correctly abstained. AP-down: the only two AP-down cases behaved as intended (probes-only -> `ambiguous`, checks unavailable;
+full data -> correct `DEVICE_DOWN at AP`). Weaknesses that remain: unmodeled faults are reported as `ambiguous`, never
+`unknown_fault` (0/4), because a plausible modeled hypothesis remains unverifiable; compound recall 1/2; C cannot declare
+`healthy` when service domains are unmonitored (by design, 1/4). v3 is still synthetic and same-author.

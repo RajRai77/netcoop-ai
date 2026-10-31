@@ -108,6 +108,11 @@ class Coordinator:
             extra_limits.append(f"{counts['quarantined']} observation(s) quarantined (e.g. unknown subject) and not used.")
         if stale:
             extra_limits.append(f"{stale} stale observation(s) were kept but not used as current evidence.")
+        if topo_snap is not None and observations:
+            age_h = (min(o.observed_at for o in observations) - topo_snap.observed_at).total_seconds() / 3600
+            if age_h > 24:
+                extra_limits.append(f"Topology snapshot {topo_snap.topology_snapshot_id} is {age_h:.0f} h older than "
+                                    "the evidence; paths may have changed, localization may be wrong.")
         rej = sum(1 for i in issues if i.severity == "reject")
         if rej:
             extra_limits.append(f"{rej} input record/measurement rejection(s) during validation (see evidence issues).")

@@ -89,7 +89,7 @@ knowledge freeze.
 `POST /api/incidents/{id}/telemetry[?profile=…]` · `POST /api/incidents/{id}/archive` ·
 `POST /api/incidents/{id}/diagnose` (`{verification}`) · `GET /api/incidents/{id}` · `/report[?revision]` · `/report.txt` ·
 `/timeline` (events, A2A attempts, challenges) · `/attempts/{attempt_id}` (raw artifact) · `/evidence` · `/findings` ·
-`/topology` · `GET /api/raw-records/{raw_id}`. Interactive docs: `/docs`. If `NETCOOP_API_TOKEN` is set, `/api/*`
+`/topology` · `/stream` (Server-Sent Events) · `GET /api/raw-records/{raw_id}` · `GET /api/evaluations[/{name}]`. Interactive docs: `/docs`; exported contract [docs/openapi.json](docs/openapi.json); frontend guide [docs/25_FRONTEND_INTEGRATION.md](docs/25_FRONTEND_INTEGRATION.md). Separate frontend dev server: `uv run python scripts/run_local.py --cors-origin http://localhost:5173`. If `NETCOOP_API_TOKEN` is set, `/api/*`
 needs `Authorization: Bearer …`.
 
 CLI: `uv run netcoop --database-url sqlite:///var/netcoop.db db upgrade | incident create | ingest [--profile] | evidence`.
@@ -102,6 +102,8 @@ docker compose up -d --build --wait
 BASE_URL=http://127.0.0.1:8000 sh scripts/smoke.sh
 docker compose down       # keeps data; `down -v` DELETES the database volume
 ```
+
+Backup/restore: `sh scripts/backup.sh` / `sh scripts/restore.sh <file>` (Compose, pg_dump custom format; CI restores onto a fresh volume). Local SQLite: `uv run netcoop --database-url sqlite:///var/netcoop.db db backup backups/netcoop.db`.
 
 Services: `db` (PostgreSQL 17, internal), `web`, `agent-performance`, `agent-infrastructure`, `agent-connectivity`.
 The agents sit on an internal network and are reached by service DNS. Only `web` is published, on 127.0.0.1.
@@ -117,4 +119,4 @@ VPS deployment has **not** been performed.
 - Verification queries recorded archives (`recorded_replay`). Live read-only collectors (gNMI/SNMP) are adapter points
   and are not implemented.
 - Support categories are rule-based, not calibrated probabilities.
-- Single-node Compose is not highly available. Backup/restore and the public HTTPS deployment are not yet verified.
+- Single-node Compose is not highly available. The public HTTPS (Caddy) deployment on a VPS has not been performed; backup/restore is drilled in CI only.

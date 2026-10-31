@@ -21,8 +21,11 @@ WORKDIR /app
 COPY --from=build --chown=app:app /app/.venv /app/.venv
 # Packaged synthetic scenarios (read-only data; ground truth is only used by the evaluator).
 COPY --chown=app:app data/scenarios /app/data/scenarios
+# Generated evaluation results (read-only, served by GET /api/evaluations).
+COPY --chown=app:app eval /app/eval
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 \
-    NETCOOP_SCENARIOS_DIR=/app/data/scenarios NETCOOP_ARCHIVE_UPLOADS_DIR=/app/var/archives
+    NETCOOP_SCENARIOS_DIR=/app/data/scenarios NETCOOP_ARCHIVE_UPLOADS_DIR=/app/var/archives \
+    NETCOOP_EVAL_DIR=/app/eval
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \

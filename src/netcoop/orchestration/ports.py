@@ -94,6 +94,10 @@ class A2AAgentPort:
         expected = SPECIALISTS[self.agent_id]["name"]
         if card.name != expected:
             raise TransportError("protocol", f"card name {card.name!r} does not match allowlisted {expected!r}")
+        ifaces = [(i.protocol_binding, i.protocol_version) for i in card.supported_interfaces]
+        if ("JSONRPC", "1.0") not in ifaces:
+            raise TransportError("protocol", f"{self.agent_id} offers {ifaces}; NetCoop requires JSONRPC with "
+                                             "A2A protocol 1.0")
         skills = {s.id: s for s in card.skills}
         if not {"investigate", "verify"} <= set(skills):
             raise TransportError("protocol", f"{self.agent_id} card lacks investigate/verify skills")

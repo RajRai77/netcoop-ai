@@ -59,6 +59,8 @@ class Tamper(InProcessAgentPort):
                 f["observation_refs"] = ["OBS-not-sent-to-this-agent"]
         if self.mode == "wrong_task":
             res["task_id"] = "someone-elses-task"
+        if self.mode == "old_schema":
+            res["schema_version"] = "0.9.0"  # incompatible NDEP envelope version
         return Reply(dumps(res), r.meta)
 
 
@@ -89,7 +91,7 @@ def test_persistent_failure_gives_partial_coverage_not_fiction(store):
 
 
 def test_invalid_spoofed_and_foreign_artifacts_are_rejected(store):
-    for mode in ("garbage", "spoof", "foreign_refs", "wrong_task"):
+    for mode in ("garbage", "spoof", "foreign_refs", "wrong_task", "old_schema"):
         inc = load_into(store, BASE, "S01-congestion")["incident"]
         r = Coordinator(store, ports(**{"performance-agent": Tamper("performance-agent", mode)})).run(inc.incident_id)
         att = [a for a in store.list_attempts(inc.incident_id)
@@ -157,3 +159,18 @@ def test_interrupted_run_is_resumed_on_startup(db_url):
         states = [e["state"] for e in c.get(f"/api/incidents/{inc.incident_id}/timeline").json()["events"]]
     assert "INTERRUPTED" in states and rep["status"] == "diagnosed"
     assert rep["suspected_root_cause"] == "DEVICE_CPU_OVERLOAD at ACC-2-2"
+
+
+def test_stale_topology_is_reported(store):
+    from netcoop.evidence.models import TopologySnapshot
+    inc = load_into(store, BASE, "S01-congestion")["incident"]
+    topo = store.get_topology(inc.topology_snapshot_id).to_json_dict()
+    topo.update(topology_snapshot_id="TOPO-OLD", observed_at="2026-09-01T00:00:00Z")
+    store.put_topology(TopologySnapshot.model_validate(topo), stored_at=NOW)
+    old = store.create_incident("INC-OLD-TOPO", "synthetic", created_at=NOW, topology_snapshot_id="TOPO-OLD",
+                                reference_time=inc.reference_time)
+    from netcoop.ledger import ingest_telemetry
+    for b in json.loads((BASE / "S01-congestion" / "telemetry.json").read_text(encoding="utf-8"))["batches"]:
+        ingest_telemetry(store, old.incident_id, b, now=NOW)
+    r = Coordinator(store, ports()).run(old.incident_id)
+    assert any("older than the evidence" in x for x in r["limitations"])

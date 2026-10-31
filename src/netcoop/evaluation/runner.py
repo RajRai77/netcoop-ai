@@ -179,6 +179,33 @@ def summarize(cases: list[dict]) -> dict:
     }
 
 
+def code_fingerprint() -> dict:
+    """Provenance of the code actually imported: HEAD, uncommitted changes, and a SHA-256 over the
+    diagnosis-relevant source files as they were when evaluation started."""
+    import hashlib
+
+    import netcoop
+
+    root = Path(netcoop.__file__).resolve().parent
+    parts = ["engine", "agents", "knowledge", "evidence", "orchestration", "scenarios", "storage", "evaluation"]
+    h = hashlib.sha256()
+    files = sorted(p for d in parts for p in (root / d).rglob("*") if p.suffix in (".py", ".json"))
+    files += [root / "ledger.py", root / "topology.py", root / "spec.py"]
+    for p in files:
+        h.update(p.relative_to(root).as_posix().encode())
+        h.update(p.read_bytes().replace(b"
+", b"
+"))
+    dirty = None
+    try:
+        out = subprocess.run(["git", "status", "--porcelain", "--", "src", "spec"], capture_output=True, text=True,
+                             timeout=10, cwd=root.parents[1]).stdout
+        dirty = sorted(line[3:] for line in out.splitlines() if line.strip())
+    except OSError:
+        pass
+    return {"diagnosis_code_sha256": h.hexdigest(), "uncommitted_changes": dirty}
+
+
 def git_commit() -> str | None:
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10).stdout.strip() or None
@@ -188,11 +215,14 @@ def git_commit() -> str | None:
 
 def evaluate(sets: dict[str, Path], methods: list[Method] = METHODS, progress=print) -> dict:
     tmp = tempfile.mkdtemp(prefix="netcoop-eval-")
-    engine = make_engine(f"sqlite:///{Path(tmp, 'eval.db').as_posix()}")
-    migrate.upgrade(engine)
-    store = SqlEvidenceStore(engine)
+
+    def fresh_store(tag: str):
+        """One small SQLite ledger per scenario (isolation + avoids an ever-growing file)."""
+        eng = make_engine(f"sqlite:///{Path(tmp, f'{tag}.db').as_posix()}")
+        migrate.upgrade(eng)
+        return eng, SqlEvidenceStore(eng)
     results: dict = {
-        "generated_by": "netcoop.evaluation.runner", "git_commit": git_commit(),
+        "generated_by": "netcoop.evaluation.runner", "git_commit": git_commit(), "code": code_fingerprint(),
         "platform": f"{platform.system()} {platform.release()} / Python {platform.python_version()}",
         "knowledge": {"detector_rules": detector_rules()["version"], "fault_library": fault_library()["version"],
                       "sha256": knowledge_fingerprint()},
@@ -208,6 +238,7 @@ def evaluate(sets: dict[str, Path], methods: list[Method] = METHODS, progress=pr
             gt = json.loads((base / sid / "ground_truth.json").read_text(encoding="utf-8"))
             if "frozen_knowledge_sha256" in gt:
                 frozen_ok = (frozen_ok is not False) and gt["frozen_knowledge_sha256"] == results["knowledge"]["sha256"]
+            engine, store = fresh_store(f"{set_name}-{sid}")
             for m in methods:
                 case = run_case(store, base, sid, m)
                 case["truth"] = sorted(_truth(gt))
@@ -215,6 +246,9 @@ def evaluate(sets: dict[str, Path], methods: list[Method] = METHODS, progress=pr
                 case["score"] = score(case, gt, m)
                 case["causes"] = sorted(case["causes"])
                 cases_by_method[m.name].append(case)
+            engine.dispose()
+            for f in Path(tmp).glob(f"{set_name}-{sid}.db*"):
+                f.unlink(missing_ok=True)
             progress(f"[{set_name}] {sid}: " + ", ".join(
                 f"{m.name}={cases_by_method[m.name][-1]['status']}{'' if cases_by_method[m.name][-1]['score']['acceptable'] else '(x)'}"
                 for m in methods))
@@ -224,7 +258,6 @@ def evaluate(sets: dict[str, Path], methods: list[Method] = METHODS, progress=pr
             "summary": {m: summarize(c) for m, c in cases_by_method.items()},
             "cases": cases_by_method,
         }
-    engine.dispose()
     return results
 
 

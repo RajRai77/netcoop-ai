@@ -24,6 +24,17 @@
 - Batch `data_mode` must equal the incident's `data_mode` (`DATA_MODE_MISMATCH`), so modes cannot be mixed silently. Revisit if mixed-mode incidents are needed.
 - Open question 3 updated: a2a-sdk 1.3.0 JSON-RPC binding works on Windows between two processes (probe). gRPC binding not installed. Inspector not tried.
 
+## 2026-11-01 — Identifiability fix and backend stabilization (no ADR change)
+
+- **fault-library/2** (commit 013a6d5): coverage-aware `healthy` (coverage_domains); planner targets possible concurrent faults; possible second fault blocks `high_support`. Evaluated on held-out v2 (seed 20261102).
+- **fault-library/3** (commit 95e3e6e): identifiability rule (a selected cause whose confirming findings are all predicted by a surviving competitor with missing discriminators -> `ambiguous` until the discriminator is obtained); `DEVICE_DOWN` contradicted by a fresh normal reachability reading (`contradicted_if_absent`). Evaluated on held-out v3 (seed 20261103).
+- **Generator/annotation correction:** the wireless controller reports the status of a failed AP. The held-out `diagnosable_*` annotation now takes AP-down observability from the controller. v1/v2 ground truth had annotated AP-down as NMS-observable although the generator never emitted AP status; v1/v2 result files are kept unchanged and this caveat applies to their AP-down cases.
+- **Dev scenarios S18–S20** (AP down: status observed / only in archive / unavailable).
+- **SQLite WAL mode** with `synchronous=FULL` (durability unchanged, readers no longer block the background writer). The evaluator uses a fresh SQLite file per scenario. Persistence/performance only; no diagnostic logic changed after the v3 freeze.
+- **API for the separate frontend:** SSE `GET /api/incidents/{id}/stream`, opt-in CORS (`NETCOOP_CORS_ORIGINS` / `--cors-origin`), read-only `GET /api/evaluations[/{name}]`, `docs/openapi.json`, `docs/25_FRONTEND_INTEGRATION.md`.
+- **Backup/restore:** `scripts/backup.sh`/`restore.sh` (pg_dump/pg_restore for Compose), `netcoop db backup` (SQLite online backup); CI drill restores onto a fresh volume.
+- **Repository hygiene incident:** commit 538e59c (pushed) unintentionally included part of the user's separate `frontend/` work in progress via `git add -A`. A later local commit doing the same was undone before pushing. History was not rewritten; the owner decides whether to keep or untrack those files. Staging now uses explicit paths.
+
 ## 2026-10-31 — Full implementation session (Phases A-H; no ADR change)
 
 Architecture unchanged (ADR-001..006). Implementation decisions recorded here:

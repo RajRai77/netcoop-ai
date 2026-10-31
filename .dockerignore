@@ -7,3 +7,5 @@
 docs
 references
 tests
+frontend
+**/node_modules

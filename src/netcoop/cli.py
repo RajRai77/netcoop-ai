@@ -66,6 +66,33 @@ def cmd_db(args) -> int:
     return EXIT_OK
 
 
+def cmd_backup(args) -> int:
+    """SQLite online backup (consistent copy via the sqlite3 backup API). PostgreSQL: scripts/backup.sh."""
+    import sqlite3
+
+    from sqlalchemy.engine import make_url
+
+    from netcoop.storage.engine import normalize_url
+
+    u = make_url(normalize_url(_url(args)))
+    if u.get_backend_name() != "sqlite":
+        print("error: `netcoop db backup` supports SQLite; for PostgreSQL use scripts/backup.sh (pg_dump)",
+              file=sys.stderr)
+        return EXIT_CONFIG
+    target = Path(args.file)
+    if target.exists():
+        print(f"error: {target} already exists (backups are never overwritten)", file=sys.stderr)
+        return EXIT_CONFIG
+    target.parent.mkdir(parents=True, exist_ok=True)
+    src, dst = sqlite3.connect(u.database), sqlite3.connect(target)
+    with dst:
+        src.backup(dst)
+    src.close()
+    dst.close()
+    print(f"backup written: {target}")
+    return EXIT_OK
+
+
 def cmd_incident_create(args) -> int:
     from netcoop.evidence.models import TopologySnapshot
     from netcoop.evidence.timeutil import utcnow
@@ -117,6 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
     down = db_sub.add_parser("downgrade", help="migrate down (DESTROYS data below that revision)")
     down.add_argument("revision")
     db.set_defaults(func=cmd_db)
+    bk = db_sub.add_parser("backup", help="SQLite: consistent online backup to a new file")
+    bk.add_argument("file")
+    bk.set_defaults(func=cmd_backup)
 
     inc = sub.add_parser("incident", help="incidents")
     inc_sub = inc.add_subparsers(dest="action", required=True)

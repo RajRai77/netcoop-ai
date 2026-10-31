@@ -58,6 +58,10 @@ class Settings:
     uploads_dir: str | None = None
     resume_on_start: bool = True
     task_timeout_s: int = 20
+    # Browser origins allowed to call the API cross-origin (e.g. a separate React dev server).
+    cors_origins: tuple[str, ...] = ()
+    # Directory with generated evaluation results (eval/results-*/results.json), served read-only.
+    eval_dir: str | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -75,4 +79,6 @@ class Settings:
             uploads_dir=os.environ.get("NETCOOP_ARCHIVE_UPLOADS_DIR") or None,
             resume_on_start=_bool("NETCOOP_RESUME_ON_START", True),
             task_timeout_s=_int("NETCOOP_TASK_TIMEOUT_S", 20),
+            eval_dir=os.environ.get("NETCOOP_EVAL_DIR") or (str(REPO_ROOT / "eval") if (REPO_ROOT / "eval").is_dir() else None),
+            cors_origins=tuple(o.strip() for o in os.environ.get("NETCOOP_CORS_ORIGINS", "").split(",") if o.strip()),
         )

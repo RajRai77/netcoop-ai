@@ -1,0 +1,1097 @@
+{
+ "components": {
+  "schemas": {
+   "CreateIncident": {
+    "additionalProperties": false,
+    "properties": {
+     "data_mode": {
+      "anyOf": [
+       {
+        "enum": [
+         "synthetic",
+         "recorded",
+         "emulated",
+         "live",
+         "mock"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Data Mode"
+     },
+     "reference_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Capture time used as freshness reference",
+      "title": "Reference Time"
+     },
+     "scenario_id": {
+      "anyOf": [
+       {
+        "maxLength": 120,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Scenario Id"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "maxLength": 500,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "topology": {
+      "anyOf": [
+       {
+        "additionalProperties": true,
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Topology"
+     }
+    },
+    "title": "CreateIncident",
+    "type": "object"
+   },
+   "DiagnoseRequest": {
+    "additionalProperties": false,
+    "properties": {
+     "max_rounds": {
+      "default": 2,
+      "maximum": 5.0,
+      "minimum": 0.0,
+      "title": "Max Rounds",
+      "type": "integer"
+     },
+     "total_budget": {
+      "default": 6,
+      "maximum": 20.0,
+      "minimum": 0.0,
+      "title": "Total Budget",
+      "type": "integer"
+     },
+     "verification": {
+      "default": true,
+      "title": "Verification",
+      "type": "boolean"
+     }
+    },
+    "title": "DiagnoseRequest",
+    "type": "object"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "title": "Detail",
+      "type": "array"
+     }
+    },
+    "title": "HTTPValidationError",
+    "type": "object"
+   },
+   "ValidationError": {
+    "properties": {
+     "ctx": {
+      "title": "Context",
+      "type": "object"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "title": "Location",
+      "type": "array"
+     },
+     "msg": {
+      "title": "Message",
+      "type": "string"
+     },
+     "type": {
+      "title": "Error Type",
+      "type": "string"
+     }
+    },
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError",
+    "type": "object"
+   }
+  }
+ },
+ "info": {
+  "title": "NetCoop AI",
+  "version": "0.0.1"
+ },
+ "openapi": "3.1.0",
+ "paths": {
+  "/api/agents": {
+   "get": {
+    "operationId": "agents_api_agents_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Agents Api Agents Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Agents"
+   }
+  },
+  "/api/evaluations": {
+   "get": {
+    "description": "Generated evaluation results committed in eval/ (summaries only; nothing computed here).",
+    "operationId": "evaluations_api_evaluations_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Evaluations Api Evaluations Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Evaluations"
+   }
+  },
+  "/api/evaluations/{name}": {
+   "get": {
+    "operationId": "evaluation_api_evaluations__name__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "name",
+      "required": true,
+      "schema": {
+       "title": "Name",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Evaluation"
+   }
+  },
+  "/api/incidents": {
+   "get": {
+    "operationId": "incidents_api_incidents_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "title": "Limit",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Incidents Api Incidents Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Incidents"
+   },
+   "post": {
+    "operationId": "create_incident_api_incidents_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CreateIncident"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Create Incident Api Incidents Post",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Incident"
+   }
+  },
+  "/api/incidents/{incident_id}": {
+   "get": {
+    "operationId": "get_incident_api_incidents__incident_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Get Incident Api Incidents  Incident Id  Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Incident"
+   }
+  },
+  "/api/incidents/{incident_id}/archive": {
+   "post": {
+    "description": "Upload recorded observations that agents may query during verification (recorded_replay).\nThey are NOT evidence until an agent returns them for a specific challenge.",
+    "operationId": "post_archive_api_incidents__incident_id__archive_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Post Archive"
+   }
+  },
+  "/api/incidents/{incident_id}/attempts/{attempt_id}": {
+   "get": {
+    "operationId": "attempt_api_incidents__incident_id__attempts__attempt_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "path",
+      "name": "attempt_id",
+      "required": true,
+      "schema": {
+       "title": "Attempt Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Attempt Api Incidents  Incident Id  Attempts  Attempt Id  Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Attempt"
+   }
+  },
+  "/api/incidents/{incident_id}/diagnose": {
+   "post": {
+    "operationId": "diagnose_api_incidents__incident_id__diagnose_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/DiagnoseRequest"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Diagnose"
+   }
+  },
+  "/api/incidents/{incident_id}/evidence": {
+   "get": {
+    "operationId": "get_evidence_api_incidents__incident_id__evidence_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 200,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "metric",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Metric"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Get Evidence Api Incidents  Incident Id  Evidence Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Evidence"
+   }
+  },
+  "/api/incidents/{incident_id}/findings": {
+   "get": {
+    "operationId": "get_findings_api_incidents__incident_id__findings_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "all_revisions",
+      "required": false,
+      "schema": {
+       "default": false,
+       "title": "All Revisions",
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Findings"
+   }
+  },
+  "/api/incidents/{incident_id}/report": {
+   "get": {
+    "operationId": "report_api_incidents__incident_id__report_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "revision",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Revision"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Report"
+   }
+  },
+  "/api/incidents/{incident_id}/report.txt": {
+   "get": {
+    "operationId": "report_text_api_incidents__incident_id__report_txt_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "revision",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Revision"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Report Text"
+   }
+  },
+  "/api/incidents/{incident_id}/stream": {
+   "get": {
+    "description": "Server-Sent Events: `workflow` (workflow event), `attempt` (agent task attempt, no raw artifact),\n`challenge` (verification outcome), `report` (new report revision summary), `end` (run finished).\nResume with ?after=<last workflow seq>. Read back from the ledger; nothing is synthesized.",
+    "operationId": "stream_api_incidents__incident_id__stream_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "after",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "After",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Stream"
+   }
+  },
+  "/api/incidents/{incident_id}/telemetry": {
+   "post": {
+    "operationId": "post_telemetry_api_incidents__incident_id__telemetry_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "profile",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Profile"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Post Telemetry"
+   }
+  },
+  "/api/incidents/{incident_id}/timeline": {
+   "get": {
+    "operationId": "timeline_api_incidents__incident_id__timeline_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Timeline Api Incidents  Incident Id  Timeline Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Timeline"
+   }
+  },
+  "/api/incidents/{incident_id}/topology": {
+   "get": {
+    "operationId": "topology_api_incidents__incident_id__topology_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "incident_id",
+      "required": true,
+      "schema": {
+       "title": "Incident Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Topology Api Incidents  Incident Id  Topology Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Topology"
+   }
+  },
+  "/api/meta": {
+   "get": {
+    "operationId": "meta_api_meta_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Meta Api Meta Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Meta"
+   }
+  },
+  "/api/profiles": {
+   "get": {
+    "operationId": "profiles_api_profiles_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Profiles Api Profiles Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Profiles"
+   }
+  },
+  "/api/profiles/{profile_id}": {
+   "get": {
+    "operationId": "profile_api_profiles__profile_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "profile_id",
+      "required": true,
+      "schema": {
+       "title": "Profile Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Profile Api Profiles  Profile Id  Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Profile"
+   }
+  },
+  "/api/raw-records/{raw_id}": {
+   "get": {
+    "operationId": "get_raw_api_raw_records__raw_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "raw_id",
+      "required": true,
+      "schema": {
+       "title": "Raw Id",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Get Raw Api Raw Records  Raw Id  Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Raw"
+   }
+  },
+  "/api/scenarios": {
+   "get": {
+    "operationId": "scenarios_api_scenarios_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Scenarios Api Scenarios Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Scenarios"
+   }
+  },
+  "/health/live": {
+   "get": {
+    "operationId": "live_health_live_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Live Health Live Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Live"
+   }
+  },
+  "/health/ready": {
+   "get": {
+    "operationId": "ready_health_ready_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Ready"
+   }
+  }
+ }
+}

@@ -100,6 +100,20 @@ jobs:
           n=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from observations")
           r=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from reports")
           echo "observations after restart: $n, reports: $r"; test "$n" -ge 3 && test "$r" -ge 1
+      - name: Backup, destroy the volume, restore on a fresh volume
+        run: |
+          before=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from reports")
+          sh scripts/backup.sh backups/ci.dump
+          docker compose down -v
+          docker compose up -d --wait --wait-timeout 240 db
+          docker compose up -d --no-deps --no-start web || true
+          sh scripts/restore.sh backups/ci.dump
+          docker compose up -d --wait --wait-timeout 240
+          after=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select count(*) from reports")
+          echo "reports before=$before after restore=$after"; test "$before" = "$after" && test "$after" -ge 1
+          TOKEN=$(grep '^NETCOOP_API_TOKEN=' .env | cut -d= -f2)
+          iid=$(docker compose exec -T db psql -U netcoop -d netcoop -tAc "select incident_id from reports limit 1" | tr -d ' ')
+          curl -sf -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:8000/api/incidents/$iid/report" | grep -q '"incident_id"'
       - name: Readiness drops when DB stops
         run: |
           docker compose stop db

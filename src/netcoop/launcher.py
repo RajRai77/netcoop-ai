@@ -247,6 +247,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="override database (default: $NETCOOP_DATABASE_URL or SQLite in --data-dir)")
     p.add_argument("--check", action="store_true", help="start, run a smoke test, stop; exit 0 only if all pass")
     p.add_argument("--scenarios-dir", default=None, help="packaged scenarios (default: data/scenarios)")
+    p.add_argument("--cors-origin", action="append", default=[],
+                   help="allow a separate frontend origin, e.g. http://localhost:5173 (repeatable)")
     args = p.parse_args(argv)
 
     procs: list[ManagedProcess] = []
@@ -282,7 +284,10 @@ def main(argv: list[str] | None = None) -> int:
         uploads_dir = data_dir / "archives"
         uploads_dir.mkdir(parents=True, exist_ok=True)
         log_dir = data_dir / "logs"
-        for spec in services(args.host, port, url, agent_ports, token, scenarios_dir, uploads_dir):
+        specs = services(args.host, port, url, agent_ports, token, scenarios_dir, uploads_dir)
+        if args.cors_origin:
+            specs[-1].env["NETCOOP_CORS_ORIGINS"] = ",".join(args.cors_origin)
+        for spec in specs:
             mp = ManagedProcess(spec, log_dir / f"{spec.name}.log" if args.check else None).start()
             procs.append(mp)
             mp.wait_ready()
