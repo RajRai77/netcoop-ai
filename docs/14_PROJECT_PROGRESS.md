@@ -1,9 +1,9 @@
 # CURRENT IMPLEMENTATION STATUS — UPDATE EVERY CLAUDE CODE SESSION
 
 **Last updated:** 2026-10-31 (Gate 1 session)
-**Current state:** Evidence foundation implemented and tested **on Windows with SQLite**: NDEP models, semantic validation, counter rates, provenance/lineage, duplicate and conflict handling, finding revisions, append-only SQL ledger with migrations, minimal ingest/evidence API, CLI, cross-platform local launcher. **No diagnosis, no specialist agents, no NetCoop A2A exchange, no report generation.** Nothing has run on PostgreSQL, Docker or CI.
-**Current build gate:** G1 — **implemented; SQLite-verified; PostgreSQL verification outstanding**. G0 — **partial** (Docker/CI never executed).
-**Branch:** `gate0-skeleton` (local only, nothing pushed). Last green commit: see "Commits" below.
+**Current state:** Evidence foundation implemented; tested locally on Windows/SQLite and in GitHub Actions on Linux, Windows, real PostgreSQL 17 and Docker Compose (run 41213586252, commit 93cd584, all 4 jobs green): NDEP models, semantic validation, counter rates, provenance/lineage, duplicate and conflict handling, finding revisions, append-only SQL ledger with migrations, minimal ingest/evidence API, CLI, cross-platform local launcher. **No diagnosis, no specialist agents, no NetCoop A2A exchange, no report generation.** Production stack (Caddy/HTTPS) and VPS deployment never started.
+**Current build gate:** G0 — **PASS (in GitHub Actions Ubuntu runner, not a VPS)**. G1 — **PASS per docs/10 criteria** (SQLite locally + PostgreSQL in CI). Carry-over: source-profile/CSV adapters. Next: G2, awaiting user authorization.
+**Branch:** `gate0-skeleton`, pushed to origin 2026-10-31 (user-authorized). Last green commit: see "Commits" below.
 **Deployed URL:** NONE.
 **Verified environment:** Windows 11 Home 10.0.26200, 12 logical CPUs, ~15.7 GB RAM. Python 3.12.10, uv 0.11.24, git 2.51.0, Node 25.6.1, SQLite 3.49.1. **No Docker, no WSL, CPU virtualization disabled in firmware, no PostgreSQL server.** Full dependency matrix: `docs/20_PLATFORM_COMPATIBILITY.md`.
 **Official PS PDF:** `references/official-problem-statement.pdf` **does not exist**. Requirements rely on the summary in `docs/01_PROBLEM_REQUIREMENTS.md`.
@@ -40,7 +40,7 @@ uv run netcoop --help                           # db upgrade/current/downgrade, 
 | DB-enforced append-only evidence | PASS on SQLite | UPDATE/DELETE refused on all 8 evidence tables |
 | Migrations | PASS on SQLite | upgrade/downgrade/upgrade repeatable; migration matches table metadata (autogenerate diff empty) |
 | Persistence across API **process** restart | PASS on SQLite | `tests/integration/test_processes.py::test_evidence_survives_api_process_restart` (real uvicorn processes) |
-| Same tests on PostgreSQL | **NOT EXECUTED** | 30 parametrized storage tests + 1 health test skip without `NETCOOP_TEST_DATABASE_URL`; CI job `test-postgres` written, never run |
+| Same tests on PostgreSQL | PASS in CI | job `test-postgres` (postgres:17-bookworm service): `pytest -m postgres` succeeded and the no-skip guard step succeeded. Exact counts not visible to Claude (job logs need GitHub auth). |
 | CSV / vendor field-name adapters (source profiles) | **NOT IMPLEMENTED** | planned; see "Remaining" |
 
 ## Gate 0 checklist (unchanged except where noted)
@@ -50,9 +50,9 @@ uv run netcoop --help                           # db upgrade/current/downgrade, 
 | Python env, uv lock, pytest, layout, health endpoints, placeholder UI, `.env.example`, README | PASS (local) |
 | Dockerfile / compose / Caddy | WRITTEN, NEVER BUILT. Updated this session: image ships `spec/`, runs `netcoop db upgrade` before uvicorn; production compose requires `NETCOOP_API_TOKEN` |
 | Wheel packaging used by the image | PASS (local): wheel contains `netcoop/_spec/*` and migrations; fresh venv install ran `netcoop db upgrade` using packaged spec |
-| `scripts/smoke.sh` | PASS against a local uvicorn + SQLite (6/6 checks). **Never run against Compose.** |
-| CI (`test-linux`, `test-windows`, `test-postgres`, `compose-smoke`) | WRITTEN, NEVER RUN (needs a push; not authorized) |
-| `docker compose up` + health | **BLOCKED** (no Docker locally) |
+| `scripts/smoke.sh` | PASS locally (6/6) and PASS against Compose in CI (`compose-smoke`) |
+| CI (`test-linux`, `test-windows`, `test-postgres`, `compose-smoke`) | PASS — run 41213586252 on 93cd584: https://github.com/RajRai77/netcoop-ai/actions/runs/41213586252 |
+| `docker compose config` (dev + production overlay), `up -d --build --wait`, health | PASS in CI (Ubuntu 24.04). Also passed there: evidence survives `docker compose restart web`; `/health/ready` = 503 after `docker compose stop db`. Still not run: production overlay `up` (Caddy/TLS), VPS, backup/restore (G6). Docker still unavailable locally. |
 
 ## A2A early compatibility check
 
@@ -95,9 +95,12 @@ Next single most valuable, testable task: run CI (PostgreSQL + Compose) once a p
 ADR/spec updates required: none to ADRs. Spec draft changes logged in docs/13 (registry 1.1.0, telemetry-batch schema).
 ```
 
-## Remaining Gate 1 work
+## CI verification (2026-10-31)
 
-- **PostgreSQL execution** of the storage/health tests (CI `test-postgres`, or any reachable PostgreSQL via `NETCOOP_TEST_DATABASE_URL`).
+Pushed `gate0-skeleton` (user-authorized). Run 41213586252 on 93cd584, all jobs `success`: test-windows (pytest 58 s + `run_local.py --check`), test-linux (pytest), test-postgres (`pytest -m postgres` + no-skip guard), compose-smoke (compose config x2, build/up/wait, smoke.sh, restart persistence, DB-stop readiness 503, `down -v`). Claude saw step conclusions via the public API only. Logs need auth, so per-test counts on CI are not recorded here.
+
+## Remaining Gate 1 carry-over (not in docs/10 G1 PASS criteria)
+
 - **Source-profile adapters** for incompatible field names (declared alias maps, no guessing) and **CSV** input. Not started.
 - Persisting derived counter rates as evidence with multi-observation lineage (rates currently computed in memory only).
 - Report revisions belong to Gate 2 (reports do not exist yet).
