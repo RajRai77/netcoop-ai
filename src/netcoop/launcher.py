@@ -1,8 +1,7 @@
 """Cross-platform local launcher (Windows and Linux; no Docker needed).
 
 Starts each NetCoop service as its own OS process, waits for health, and shuts
-everything down cleanly. Gate 1 runs one service (web). Specialist A2A agents will
-be added to `services()` as separate processes in Gate 4 - never as in-process calls.
+everything down cleanly: three specialist A2A agent processes plus the web/coordinator.
 
   uv run python scripts/run_local.py                 # run until Ctrl+C
   uv run python scripts/run_local.py --check         # start, smoke-test, stop (exit code)
@@ -12,6 +11,7 @@ be added to `services()` as separate processes in Gate 4 - never as in-process c
 from __future__ import annotations
 
 import argparse
+import secrets
 import json
 import os
 import signal
@@ -98,7 +98,7 @@ class ManagedProcess:
         self.proc: subprocess.Popen | None = None
 
     def start(self) -> "ManagedProcess":
-        env = {**os.environ, **self.spec.env}
+        env = {**os.environ, **self.spec.env, "NETCOOP_PARENT_PID": str(os.getpid())}
         kw: dict = {"env": env, "cwd": str(REPO_ROOT)}
         if self.log_path is not None:
             self.log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -152,22 +152,37 @@ class ManagedProcess:
 
 # -- services --------------------------------------------------------------------------------
 
-def services(host: str, port: int, database_url: str, extra_env: dict[str, str]) -> list[ServiceSpec]:
-    return [
-        ServiceSpec(
-            name="web",
-            argv=[sys.executable, "-m", "uvicorn", "netcoop.api.app:app", "--host", host, "--port", str(port),
-                  "--log-level", "info"],
-            health_url=f"http://{host}:{port}/health/ready",
-            env={"NETCOOP_DATABASE_URL": database_url, **extra_env},
-        ),
-    ]
+AGENT_IDS = ("performance-agent", "infrastructure-agent", "connectivity-agent")
+
+
+def services(host: str, port: int, database_url: str, agent_ports: dict[str, int], token: str,
+             scenarios_dir: Path, uploads_dir: Path) -> list[ServiceSpec]:
+    """Three independent specialist A2A servers + the web/coordinator process."""
+    specs = []
+    for aid, ap in agent_ports.items():
+        specs.append(ServiceSpec(
+            name=aid,
+            argv=[sys.executable, "-m", "netcoop.agents.server", "--agent", aid, "--host", host, "--port", str(ap)],
+            health_url=f"http://{host}:{ap}/health",
+            env={"NETCOOP_AGENT_TOKEN": token, "NETCOOP_SCENARIOS_DIR": str(scenarios_dir),
+                 "NETCOOP_ARCHIVE_UPLOADS_DIR": str(uploads_dir)},
+        ))
+    specs.append(ServiceSpec(
+        name="web",
+        argv=[sys.executable, "-m", "uvicorn", "netcoop.api.app:app", "--host", host, "--port", str(port),
+              "--log-level", "info"],
+        health_url=f"http://{host}:{port}/health/ready",
+        env={"NETCOOP_DATABASE_URL": database_url, "NETCOOP_AGENT_TOKEN": token,
+             "NETCOOP_AGENTS": json.dumps({aid: f"http://{host}:{ap}/" for aid, ap in agent_ports.items()}),
+             "NETCOOP_SCENARIOS_DIR": str(scenarios_dir), "NETCOOP_ARCHIVE_UPLOADS_DIR": str(uploads_dir)},
+    ))
+    return specs
 
 
 def _http(method: str, url: str, body: bytes | None = None) -> tuple[int, dict | str]:
     req = urllib.request.Request(url, data=body, method=method, headers={"Content-Type": "application/json"})
     try:
-        with urllib.request.urlopen(req, timeout=10) as r:
+        with urllib.request.urlopen(req, timeout=30) as r:
             raw = r.read()
             status = r.status
     except urllib.error.HTTPError as e:
@@ -179,29 +194,45 @@ def _http(method: str, url: str, body: bytes | None = None) -> tuple[int, dict |
         return status, text
 
 
-def smoke(base: str) -> list[tuple[str, bool, str]]:
-    """Exercise the real running service with the synthetic example files."""
+def smoke(base: str, scenario: str = "S11-ambiguous-resolvable") -> list[tuple[str, bool, str]]:
+    """Exercise the real running services end to end over A2A."""
     out: list[tuple[str, bool, str]] = []
-    s, b = _http("GET", f"{base}/health/live")
+    s, _ = _http("GET", f"{base}/health/live")
     out.append(("live", s == 200, str(s)))
-    s, b = _http("GET", f"{base}/health/ready")
+    s, _ = _http("GET", f"{base}/health/ready")
     out.append(("ready", s == 200, str(s)))
-    from netcoop.spec import spec_dir
-    topo = (spec_dir() / "examples/topology-example.json").read_text(encoding="utf-8")
-    s, b = _http("POST", f"{base}/api/incidents",
-                 json.dumps({"data_mode": "synthetic", "title": "launcher smoke", "topology": json.loads(topo)}).encode())
-    ok = s == 201
-    out.append(("create incident", ok, str(s)))
-    if not ok:
+    s, b = _http("GET", f"{base}/")
+    out.append(("browser UI served", s == 200 and "NetCoop AI" in str(b), str(s)))
+    s, b = _http("GET", f"{base}/api/agents")
+    avail = [a["agent_id"] for a in b.get("agents", []) if a.get("status") == "available"] if isinstance(b, dict) else []
+    out.append(("3 specialist agents discoverable over A2A", s == 200 and len(avail) == 3, f"{s} {avail}"))
+    s, b = _http("POST", f"{base}/api/incidents", json.dumps({"scenario_id": scenario}).encode())
+    out.append((f"create incident from {scenario}", s == 201, str(s)))
+    if s != 201:
         return out
     iid = b["incident"]["incident_id"]
-    tel = (spec_dir() / "examples/telemetry-batch-example.json").read_bytes()
-    s, b = _http("POST", f"{base}/api/incidents/{iid}/telemetry", tel)
-    out.append(("ingest example batch", s == 200 and isinstance(b, dict) and b.get("observations_added", 0) > 0,
-                f"{s} observations_added={b.get('observations_added') if isinstance(b, dict) else '?'}"))
-    s, b = _http("GET", f"{base}/api/incidents/{iid}/evidence")
-    n = len(b.get("observations", [])) if isinstance(b, dict) else 0
-    out.append(("read back evidence", s == 200 and n > 0, f"{s} observations={n}"))
+    s, _ = _http("POST", f"{base}/api/incidents/{iid}/diagnose", json.dumps({"verification": True}).encode())
+    out.append(("start diagnosis", s == 202, str(s)))
+    report = None
+    for _ in range(240):
+        s, r = _http("GET", f"{base}/api/incidents/{iid}/report")
+        if s == 200:
+            report = r
+            break
+        time.sleep(0.5)
+    out.append(("report produced", report is not None, "timeout" if report is None else report["status"]))
+    if report is None:
+        return out
+    out.append(("report transport is a2a", report.get("transport") == "a2a", str(report.get("transport"))))
+    out.append(("diagnosis", report["status"] != "operational_error",
+                f"{report['status']} / {report['suspected_root_cause']} / {report['confidence_category']}"))
+    s, tl = _http("GET", f"{base}/api/incidents/{iid}/timeline")
+    attempts = tl.get("attempts", []) if isinstance(tl, dict) else []
+    a2a = [a for a in attempts if a["transport"] == "a2a" and a["detail"].get("a2a_task_id")]
+    agents = sorted({a["agent_id"] for a in a2a if a["task_type"] == "investigate" and a["outcome"] == "completed"})
+    out.append((">=2 specialists completed real A2A tasks", len(agents) >= 2, f"{len(a2a)} A2A exchanges; {agents}"))
+    contributors = report.get("evidence_sources", [])
+    out.append(("one report uses evidence from >=2 agents", len(contributors) >= 2, str(contributors)))
     return out
 
 
@@ -215,6 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--database-url", default=None,
                    help="override database (default: $NETCOOP_DATABASE_URL or SQLite in --data-dir)")
     p.add_argument("--check", action="store_true", help="start, run a smoke test, stop; exit 0 only if all pass")
+    p.add_argument("--scenarios-dir", default=None, help="packaged scenarios (default: data/scenarios)")
     args = p.parse_args(argv)
 
     procs: list[ManagedProcess] = []
@@ -239,12 +271,22 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[netcoop] database {redact(url)} at schema revision {rev}")
 
         port = resolve_port(args.host, args.port)
+        agent_ports: dict[str, int] = {}
+        for aid in AGENT_IDS:
+            ap = free_port(args.host)
+            while ap == port or ap in agent_ports.values():
+                ap = free_port(args.host)
+            agent_ports[aid] = ap
+        token = secrets.token_hex(24)  # per-run secret shared only with child processes
+        scenarios_dir = Path(args.scenarios_dir).resolve() if args.scenarios_dir else REPO_ROOT / "data" / "scenarios"
+        uploads_dir = data_dir / "archives"
+        uploads_dir.mkdir(parents=True, exist_ok=True)
         log_dir = data_dir / "logs"
-        for spec in services(args.host, port, url, {}):
+        for spec in services(args.host, port, url, agent_ports, token, scenarios_dir, uploads_dir):
             mp = ManagedProcess(spec, log_dir / f"{spec.name}.log" if args.check else None).start()
             procs.append(mp)
             mp.wait_ready()
-            print(f"[netcoop] {spec.name} ready (pid {mp.proc.pid})")
+            print(f"[netcoop] {spec.name} ready (pid {mp.proc.pid}, {spec.health_url.rsplit('/', 1)[0]})")
         base = f"http://{args.host}:{port}"
 
         if args.check:

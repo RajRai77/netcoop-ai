@@ -112,6 +112,9 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     import uvicorn
 
+    from netcoop.procwatch import start_parent_watchdog
+
+    start_parent_watchdog()
     cfg = make_config(args.agent, args.scenarios_dir, args.uploads_dir)
     url = args.public_url or f"http://{args.host}:{args.port}/"
     token = os.environ.get("NETCOOP_AGENT_TOKEN") or None

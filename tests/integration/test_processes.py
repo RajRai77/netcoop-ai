@@ -28,9 +28,10 @@ def web(tmp_path, port, url, tag):
 
 def test_launcher_check_mode_end_to_end(tmp_path):
     r = subprocess.run([PY, "scripts/run_local.py", "--check", "--port", "auto", "--data-dir", str(tmp_path)],
-                       capture_output=True, text=True, timeout=120)
+                       capture_output=True, text=True, timeout=300)
     assert r.returncode == 0, r.stdout + r.stderr
-    assert r.stdout.count("PASS") == 5 and "FAIL" not in r.stdout
+    assert r.stdout.count("PASS") == 11 and "FAIL" not in r.stdout, r.stdout
+    assert "report transport is a2a (a2a)" in r.stdout
     assert (tmp_path / "netcoop.db").is_file()
 
 
@@ -130,3 +131,31 @@ def test_cli_without_database_gives_helpful_error():
     env = {k: v for k, v in os.environ.items() if k != "NETCOOP_DATABASE_URL"}
     r = subprocess.run([PY, "-m", "netcoop.cli", "db", "current"], capture_output=True, text=True, env=env, timeout=60)
     assert r.returncode == 2 and "no database configured" in r.stderr
+
+
+def test_children_exit_when_launcher_is_killed(tmp_path):
+    """Hard-kill the launcher; its agent/web children must not linger as orphans."""
+    import time
+    import urllib.request
+
+    port = free_port("127.0.0.1")
+    launcher = subprocess.Popen([PY, "scripts/run_local.py", "--port", str(port), "--data-dir", str(tmp_path)],
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    try:
+        deadline = time.time() + 90
+        up = False
+        while time.time() < deadline:
+            try:
+                urllib.request.urlopen(f"http://127.0.0.1:{port}/health/ready", timeout=2)
+                up = True
+                break
+            except OSError:
+                time.sleep(0.5)
+        assert up, "stack did not start"
+    finally:
+        launcher.kill()  # no graceful shutdown: TerminateProcess / SIGKILL
+        launcher.wait(timeout=10)
+    deadline = time.time() + 20
+    while time.time() < deadline and not port_is_free("127.0.0.1", port):
+        time.sleep(0.5)
+    assert port_is_free("127.0.0.1", port), "web child kept running after the launcher was killed"

@@ -1,54 +1,63 @@
-"""FastAPI entrypoint.
+"""FastAPI entrypoint: evidence API, diagnosis workflow API and the browser UI.
 
-Gate 1 scope: health, incident creation and validated evidence ingestion/read-back.
-There is NO diagnosis yet (Gate 2); the UI page says so.
+Diagnosis runs in a background thread and is driven by the DB-persisted coordinator.
+Specialists are reached over A2A (NETCOOP_AGENTS). In-process specialists are only
+allowed when NETCOOP_ALLOW_IN_PROCESS_AGENTS=true (tests); reports label the transport.
 """
 
 from __future__ import annotations
 
 import hmac
+import json
+import threading
 import uuid
 from collections.abc import Callable
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from netcoop import __version__
+from netcoop.agents.protocol import SPECIALISTS
 from netcoop.api.health import CheckResult, check_database
 from netcoop.config import Settings
-from netcoop.evidence.adapters import builtin_profile, list_builtin_profiles
+from netcoop.engine.planner import VerificationPolicy
+from netcoop.evidence.adapters import builtin_profile, list_builtin_profiles, validate_profile
 from netcoop.evidence.errors import EvidenceError, IssueCode
 from netcoop.evidence.models import DataMode, TopologySnapshot
 from netcoop.evidence.normalize import Limits
 from netcoop.evidence.registry import default_registry
-from netcoop.evidence.timeutil import utcnow
+from netcoop.evidence.timeutil import parse_timestamp, utcnow
+from netcoop.knowledge import detector_rules, fault_library
 from netcoop.ledger import ingest_telemetry
+from netcoop.orchestration.coordinator import Coordinator, CoordinatorOptions, incident_lock
+from netcoop.orchestration.ports import InProcessAgentPort, TransportError, ports_from_config
+from netcoop.scenarios.loader import list_scenarios, load_into
+from netcoop.spec import validator
 from netcoop.storage import SqlEvidenceStore, make_engine, migrate
+from netcoop.storage.investigation import TERMINAL_STATES
 
-PLACEHOLDER_HTML = """<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><title>NetCoop AI</title></head>
-<body style="font-family: sans-serif; max-width: 44rem; margin: 3rem auto; line-height: 1.5">
-<h1>NetCoop AI</h1>
-<p><strong>Diagnosis: Not yet implemented.</strong> This build (Gate 1) validates and
-stores telemetry evidence only. No agents run and no root cause is produced.
-Nothing on this page reflects real network data.</p>
-<ul>
-<li>Health: <a href="/health/live">/health/live</a>, <a href="/health/ready">/health/ready</a></li>
-<li>API docs: <a href="/docs">/docs</a></li>
-<li>Metric registry version: {registry}</li>
-</ul>
-<p>Version {version}</p>
-</body></html>
-"""
+WEB_DIR = Path(__file__).resolve().parents[1] / "web"
 
 
 class CreateIncident(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    data_mode: DataMode
+    data_mode: DataMode | None = None
     title: str | None = Field(default=None, max_length=500)
     topology: dict | None = None
+    scenario_id: str | None = Field(default=None, max_length=120)
+    reference_time: str | None = Field(default=None, description="Capture time used as freshness reference")
+
+
+class DiagnoseRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    verification: bool = True
+    max_rounds: int = Field(default=2, ge=0, le=5)
+    total_budget: int = Field(default=6, ge=0, le=20)
 
 
 def _error(status: int, code: str, message: str, issues=None) -> JSONResponse:
@@ -58,21 +67,58 @@ def _error(status: int, code: str, message: str, issues=None) -> JSONResponse:
     return JSONResponse(body, status_code=status)
 
 
-def create_app(
-    settings: Settings | None = None,
-    db_check: Callable[[], CheckResult] | None = None,
-) -> FastAPI:
+def create_app(settings: Settings | None = None, db_check: Callable[[], CheckResult] | None = None) -> FastAPI:
     settings = settings or Settings.from_env()
     engine = make_engine(settings.database_url, connect_timeout_s=settings.db_connect_timeout_s) \
         if settings.database_url else None
     store = SqlEvidenceStore(engine) if engine is not None else None
     head = migrate.head_revision()
     limits = Limits(max_payload_bytes=settings.max_upload_bytes, max_records=settings.max_records_per_batch)
+    scenarios_dir = Path(settings.scenarios_dir) if settings.scenarios_dir else None
+    uploads_dir = Path(settings.uploads_dir) if settings.uploads_dir else None
+    a2a_ports = ports_from_config(settings.agents, settings.agent_token)
     if db_check is None:
         def db_check() -> CheckResult:
             return check_database(engine, head)
 
-    app = FastAPI(title="NetCoop AI", version=__version__)
+    def make_ports():
+        if a2a_ports:
+            return a2a_ports
+        if settings.allow_in_process_agents:
+            return [InProcessAgentPort(a, scenarios_dir, uploads_dir) for a in SPECIALISTS]
+        return []
+
+    runs: dict[str, threading.Thread] = {}
+
+    def start_run(incident_id: str, opts: CoordinatorOptions) -> str:
+        ports = make_ports()
+        if not ports:
+            raise HTTPException(503, "No specialist agents configured (set NETCOOP_AGENTS); "
+                                     "start them with scripts/run_local.py")
+        if incident_lock(incident_id).locked():
+            raise HTTPException(409, f"a diagnosis for {incident_id} is already running")
+        run_id = f"RUN-{uuid.uuid4().hex[:16]}"
+
+        def work():
+            try:
+                Coordinator(store, ports, opts).run(incident_id, run_id)
+            except Exception as exc:  # recorded as an event so the UI shows it
+                store.append_event(incident_id, run_id, "OPERATIONAL_ERROR", "coordinator",
+                                   {"error": f"{type(exc).__name__}: {exc}"}, utcnow())
+
+        t = threading.Thread(target=work, name=f"diagnose-{incident_id}", daemon=True)
+        runs[incident_id] = t
+        t.start()
+        return run_id
+
+    from contextlib import asynccontextmanager
+
+    @asynccontextmanager
+    async def lifespan(_app):
+        resume()
+        yield
+
+    app = FastAPI(title="NetCoop AI", version=__version__, lifespan=lifespan)
 
     @app.exception_handler(EvidenceError)
     async def _evidence_error(_req: Request, exc: EvidenceError):
@@ -95,43 +141,13 @@ def create_app(
 
     api = [Depends(require_auth)]
 
-    @app.get("/health/live")
-    def live() -> dict:
-        return {"status": "live", "version": __version__}  # deliberately no DB access
+    def incident_or_404(s: SqlEvidenceStore, iid: str):
+        inc = s.get_incident(iid)
+        if inc is None:
+            raise HTTPException(404, f"incident {iid!r} not found")
+        return inc
 
-    @app.get("/health/ready")
-    def ready() -> JSONResponse:
-        db = db_check()
-        return JSONResponse({
-            "status": "ready" if db.ok else "not_ready",
-            "version": __version__,
-            "checks": {"database": {"ok": db.ok, "detail": db.detail}},
-        }, status_code=200 if db.ok else 503)
-
-    @app.get("/", response_class=HTMLResponse)
-    def index() -> str:
-        return PLACEHOLDER_HTML.format(version=__version__, registry=default_registry().version)
-
-    @app.post("/api/incidents", status_code=201, dependencies=api)
-    def create_incident(body: CreateIncident, s: SqlEvidenceStore = Depends(require_store)) -> dict:
-        now = utcnow()
-        topo_id = None
-        if body.topology is not None:
-            try:
-                topo = TopologySnapshot.model_validate(body.topology)
-            except ValueError as exc:
-                raise EvidenceError.single(IssueCode.TOPOLOGY_INVALID, f"topology: {exc}") from None
-            s.put_topology(topo, stored_at=now)
-            topo_id = topo.topology_snapshot_id
-        incident_id = f"INC-{uuid.uuid4().hex[:16]}"
-        inc = s.create_incident(incident_id, body.data_mode, created_at=now,
-                                topology_snapshot_id=topo_id, title=body.title)
-        return {"incident": inc.model_dump(mode="json"), "status": "open",
-                "diagnosis": "not implemented (Gate 2)"}
-
-    @app.post("/api/incidents/{incident_id}/telemetry", dependencies=api)
-    async def post_telemetry(incident_id: str, request: Request, profile: str | None = None,
-                             s: SqlEvidenceStore = Depends(require_store)):
+    async def read_body(request: Request) -> bytes:
         declared = request.headers.get("content-length")
         if declared is not None and declared.isdigit() and int(declared) > limits.max_payload_bytes:
             raise EvidenceError.single(IssueCode.PAYLOAD_TOO_LARGE,
@@ -140,36 +156,204 @@ def create_app(
         async for chunk in request.stream():
             payload.extend(chunk)
             if len(payload) > limits.max_payload_bytes:
-                raise EvidenceError.single(IssueCode.PAYLOAD_TOO_LARGE,
-                                           f"payload exceeds {limits.max_payload_bytes} bytes")
-        prof = builtin_profile(profile) if profile else None
-        report = ingest_telemetry(s, incident_id, bytes(payload), limits=limits, profile=prof)
-        return report.model_dump(mode="json")
+                raise EvidenceError.single(IssueCode.PAYLOAD_TOO_LARGE, f"payload exceeds {limits.max_payload_bytes} bytes")
+        return bytes(payload)
 
-    @app.get("/api/incidents/{incident_id}", dependencies=api)
-    def get_incident(incident_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
-        inc = s.get_incident(incident_id)
-        if inc is None:
-            raise HTTPException(404, f"incident {incident_id!r} not found")
-        return {"incident": inc.model_dump(mode="json"), "evidence_counts": s.count_incident_evidence(incident_id),
-                "diagnosis": "not implemented (Gate 2)"}
+    # -- health & meta ------------------------------------------------------------------
+    @app.get("/health/live")
+    def live() -> dict:
+        return {"status": "live", "version": __version__}
 
-    @app.get("/api/incidents/{incident_id}/evidence", dependencies=api)
-    def get_evidence(incident_id: str, limit: int = 200, offset: int = 0, metric: str | None = None,
-                     s: SqlEvidenceStore = Depends(require_store)) -> dict:
-        if s.get_incident(incident_id) is None:
-            raise HTTPException(404, f"incident {incident_id!r} not found")
-        limit = max(1, min(limit, 1000))
-        obs = s.list_observations(incident_id, metric=metric, limit=limit, offset=max(0, offset))
-        return {
-            "incident_id": incident_id, "limit": limit, "offset": offset,
-            "observations": [o.to_json_dict() for o in obs],
-            "issues": [i.model_dump(mode="json") for i in s.list_issues(incident_id)],
-        }
+    @app.get("/health/ready")
+    def ready() -> JSONResponse:
+        db = db_check()
+        return JSONResponse({"status": "ready" if db.ok else "not_ready", "version": __version__,
+                             "checks": {"database": {"ok": db.ok, "detail": db.detail}}},
+                            status_code=200 if db.ok else 503)
+
+    @app.get("/api/meta", dependencies=api)
+    def meta() -> dict:
+        return {"version": __version__, "environment": settings.deployment_env,
+                "metric_registry_version": default_registry().version,
+                "detector_rules": detector_rules()["version"], "fault_library": fault_library()["version"],
+                "agent_transport": "a2a" if a2a_ports else ("in-process" if settings.allow_in_process_agents else "none"),
+                "auth_required": settings.api_token is not None, "max_upload_bytes": settings.max_upload_bytes,
+                "uploads_archive_enabled": uploads_dir is not None}
+
+    @app.get("/api/agents", dependencies=api)
+    async def agents() -> dict:
+        out = []
+        for p in make_ports():
+            entry = {"agent_id": p.agent_id, "transport": p.transport, "url": getattr(p, "url", None)}
+            try:
+                d = await p.discover(3)
+                entry.update(status="available", skills=d.skills, metrics=sorted(d.metrics),
+                             name=d.card.get("name"), version=d.card.get("version"))
+            except TransportError as exc:
+                entry.update(status="unavailable", error=f"{exc.kind}: {exc}")
+            out.append(entry)
+        return {"agents": out}
 
     @app.get("/api/profiles", dependencies=api)
     def profiles() -> dict:
         return {"profiles": [builtin_profile(p) for p in list_builtin_profiles()]}
+
+    @app.get("/api/scenarios", dependencies=api)
+    def scenarios() -> dict:
+        return {"scenarios": list_scenarios(scenarios_dir) if scenarios_dir else []}
+
+    # -- incidents & evidence -------------------------------------------------------------
+    @app.get("/api/incidents", dependencies=api)
+    def incidents(limit: int = 100, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        summaries = s.latest_report_summaries()
+        out = []
+        for inc in s.list_incidents(min(max(limit, 1), 500)):
+            out.append({**inc.model_dump(mode="json"), "workflow": s.workflow_state(inc.incident_id),
+                        "latest_report": summaries.get(inc.incident_id)})
+        return {"incidents": out}
+
+    @app.post("/api/incidents", status_code=201, dependencies=api)
+    def create_incident(body: CreateIncident, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        now = utcnow()
+        if body.scenario_id:
+            if scenarios_dir is None:
+                raise HTTPException(404, "no scenario directory configured")
+            loaded = load_into(s, scenarios_dir, body.scenario_id, now=now)
+            return {"incident": loaded["incident"].model_dump(mode="json"),
+                    "ingestions": [r.model_dump(mode="json") for r in loaded["ingestions"]]}
+        if body.data_mode is None:
+            raise HTTPException(422, "data_mode is required unless scenario_id is given")
+        topo_id = None
+        if body.topology is not None:
+            try:
+                topo = TopologySnapshot.model_validate(body.topology)
+            except ValueError as exc:
+                raise EvidenceError.single(IssueCode.TOPOLOGY_INVALID, f"topology: {exc}") from None
+            s.put_topology(topo, stored_at=now)
+            topo_id = topo.topology_snapshot_id
+        ref = None
+        if body.reference_time:
+            try:
+                ref = parse_timestamp(body.reference_time)
+            except ValueError as exc:
+                raise EvidenceError.single(IssueCode.INVALID_TIMESTAMP, f"reference_time: {exc}") from None
+        iid = f"INC-{uuid.uuid4().hex[:16]}"
+        inc = s.create_incident(iid, body.data_mode, created_at=now, topology_snapshot_id=topo_id, title=body.title,
+                                archive_ref=f"upload:{iid}" if uploads_dir else None, reference_time=ref)
+        return {"incident": inc.model_dump(mode="json"), "ingestions": []}
+
+    @app.post("/api/incidents/{incident_id}/telemetry", dependencies=api)
+    async def post_telemetry(incident_id: str, request: Request, profile: str | None = None,
+                             s: SqlEvidenceStore = Depends(require_store)):
+        payload = await read_body(request)
+        prof = None
+        if profile == "inline":
+            raise HTTPException(422, "use POST /api/incidents/{id}/telemetry?profile=<builtin id>")
+        if profile:
+            prof = builtin_profile(profile)
+        return ingest_telemetry(s, incident_id, payload, limits=limits, profile=prof).model_dump(mode="json")
+
+    @app.post("/api/incidents/{incident_id}/archive", dependencies=api)
+    async def post_archive(incident_id: str, request: Request, s: SqlEvidenceStore = Depends(require_store)):
+        """Upload recorded observations that agents may query during verification (recorded_replay).
+        They are NOT evidence until an agent returns them for a specific challenge."""
+        inc = incident_or_404(s, incident_id)
+        if uploads_dir is None or inc.archive_ref != f"upload:{incident_id}":
+            raise HTTPException(409, "archive uploads are not enabled for this incident")
+        payload = await read_body(request)
+        try:
+            doc = json.loads(payload)
+        except ValueError as exc:
+            raise EvidenceError.single(IssueCode.MALFORMED_JSON, f"archive is not JSON: {exc}") from None
+        if not isinstance(doc, dict) or not isinstance(doc.get("batches"), list):
+            raise EvidenceError.single(IssueCode.SCHEMA_INVALID, "archive must be {\"batches\": [TelemetryBatch...]}")
+        for i, b in enumerate(doc["batches"]):
+            errs = [e.message for e in validator("telemetry-batch").iter_errors(b)]
+            if errs:
+                raise EvidenceError.single(IssueCode.SCHEMA_INVALID, f"batch {i}: {errs[0]}")
+            if b["source"]["data_mode"] != inc.data_mode:
+                raise EvidenceError.single(IssueCode.DATA_MODE_MISMATCH, f"batch {i} data_mode differs from incident")
+        uploads_dir.mkdir(parents=True, exist_ok=True)
+        path = uploads_dir / f"{incident_id}.json"
+        if path.exists():
+            raise HTTPException(409, "an archive was already uploaded for this incident (archives are immutable)")
+        path.write_text(json.dumps({"schema_version": "1.0.0", "archive_id": f"UPLOAD-{incident_id}",
+                                    "batches": doc["batches"]}), encoding="utf-8")
+        s.audit(incident_id, "archive_uploaded", {"batches": len(doc["batches"]),
+                                                  "records": sum(len(b["records"]) for b in doc["batches"])}, utcnow())
+        return {"archive_ref": inc.archive_ref, "batches": len(doc["batches"])}
+
+    @app.get("/api/incidents/{incident_id}", dependencies=api)
+    def get_incident(incident_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        inc = incident_or_404(s, incident_id)
+        wf = s.workflow_state(incident_id)
+        return {"incident": inc.model_dump(mode="json"), "evidence_counts": s.count_incident_evidence(incident_id),
+                "workflow": wf, "running": bool(wf and wf["state"] not in TERMINAL_STATES | {"INTERRUPTED"}
+                                                and incident_lock(incident_id).locked()),
+                "reports": s.list_reports(incident_id)}
+
+    @app.get("/api/incidents/{incident_id}/evidence", dependencies=api)
+    def get_evidence(incident_id: str, limit: int = 200, offset: int = 0, metric: str | None = None,
+                     s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        incident_or_404(s, incident_id)
+        limit = max(1, min(limit, 2000))
+        obs = s.list_observations(incident_id, metric=metric, limit=limit, offset=max(0, offset))
+        return {"incident_id": incident_id, "limit": limit, "offset": offset,
+                "observations": [o.to_json_dict() for o in obs],
+                "derived_rates": s.list_derived_rates(incident_id),
+                "issues": [i.model_dump(mode="json") for i in s.list_issues(incident_id)]}
+
+    @app.get("/api/incidents/{incident_id}/findings", dependencies=api)
+    def get_findings(incident_id: str, all_revisions: bool = False, s: SqlEvidenceStore = Depends(require_store)):
+        incident_or_404(s, incident_id)
+        return {"findings": [f.to_json_dict() for f in s.list_findings(incident_id, current_only=not all_revisions)]}
+
+    @app.get("/api/incidents/{incident_id}/timeline", dependencies=api)
+    def timeline(incident_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        incident_or_404(s, incident_id)
+        attempts = s.list_attempts(incident_id)
+        for a in attempts:
+            a["detail"] = {k: v for k, v in a["detail"].items() if k != "response_text"}
+        return {"events": s.list_events(incident_id), "attempts": attempts,
+                "challenges": s.list_challenges(incident_id)}
+
+    @app.get("/api/incidents/{incident_id}/attempts/{attempt_id}", dependencies=api)
+    def attempt(incident_id: str, attempt_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        for a in s.list_attempts(incident_id):
+            if a["attempt_id"] == attempt_id:
+                return a
+        raise HTTPException(404, "attempt not found")
+
+    @app.get("/api/incidents/{incident_id}/topology", dependencies=api)
+    def topology(incident_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+        inc = incident_or_404(s, incident_id)
+        topo = s.get_topology(inc.topology_snapshot_id) if inc.topology_snapshot_id else None
+        return {"topology": topo.to_json_dict() if topo else None}
+
+    @app.post("/api/incidents/{incident_id}/diagnose", status_code=202, dependencies=api)
+    def diagnose(incident_id: str, body: DiagnoseRequest | None = None, s: SqlEvidenceStore = Depends(require_store)):
+        incident_or_404(s, incident_id)
+        body = body or DiagnoseRequest()
+        opts = CoordinatorOptions(task_timeout_s=settings.task_timeout_s, verification=VerificationPolicy(
+            enabled=body.verification, max_rounds=body.max_rounds, total_budget=body.total_budget))
+        return {"incident_id": incident_id, "run_id": start_run(incident_id, opts), "status": "started"}
+
+    @app.get("/api/incidents/{incident_id}/report", dependencies=api)
+    def report(incident_id: str, revision: int | None = None, s: SqlEvidenceStore = Depends(require_store)):
+        incident_or_404(s, incident_id)
+        r = s.get_report(incident_id, revision)
+        if r is None:
+            raise HTTPException(404, "no report yet; POST /api/incidents/{id}/diagnose")
+        return JSONResponse(r, headers={"Content-Disposition": f'inline; filename="{incident_id}-r{r["revision"]}.json"'})
+
+    @app.get("/api/incidents/{incident_id}/report.txt", dependencies=api)
+    def report_text(incident_id: str, revision: int | None = None, s: SqlEvidenceStore = Depends(require_store)):
+        r = s.get_report(incident_id, revision)
+        if r is None:
+            raise HTTPException(404, "no report yet")
+        from netcoop.engine.text import report_to_text
+
+        return PlainTextResponse(report_to_text(r))
 
     @app.get("/api/raw-records/{raw_id}", dependencies=api)
     def get_raw(raw_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
@@ -178,11 +362,39 @@ def create_app(
             raise HTTPException(404, f"raw record {raw_id!r} not found")
         return raw.model_dump(mode="json")
 
+    @app.get("/api/profiles/{profile_id}", dependencies=api)
+    def profile(profile_id: str) -> dict:
+        return validate_profile(builtin_profile(profile_id))
+
+    # -- UI --------------------------------------------------------------------------------
+    if WEB_DIR.is_dir():
+        app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+
+    @app.get("/", include_in_schema=False)
+    def index():
+        return FileResponse(WEB_DIR / "index.html")
+
+    # -- crash recovery: resume runs that were interrupted (e.g. process killed) ------------------
+    def resume() -> None:
+        if store is None or not settings.resume_on_start or not db_check().ok:
+            return
+        for iid, run_id in store.unfinished_runs():
+            store.append_event(iid, run_id, "INTERRUPTED", "coordinator",
+                               {"reason": "process restarted while the run was in progress"}, utcnow())
+            if make_ports():
+                try:
+                    start_run(iid, CoordinatorOptions(task_timeout_s=settings.task_timeout_s))
+                except HTTPException:
+                    pass
+
     app.state.store = store
     return app
 
 
 def _app_from_env() -> FastAPI:
+    from netcoop.procwatch import start_parent_watchdog
+
+    start_parent_watchdog()  # only active when started by the local launcher
     return create_app()
 
 

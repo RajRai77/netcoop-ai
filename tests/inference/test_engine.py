@@ -47,7 +47,7 @@ def test_shared_lineage_prevents_high_support():
     ev = evaluate(f, o)
     assert ev.status == "diagnosed" and ev.causes[0].hid == "H-LINK_CONGESTION-A:g2"
     assert ev.confidence_category == "moderate_support"
-    assert any("single lineage" in b for b in ev.decision_basis)
+    assert any("single independent source" in b for b in ev.decision_basis)
 
 
 def test_effect_before_cause_is_temporal_issue():
@@ -101,3 +101,11 @@ def test_all_explanations_contradicted_is_unknown_fault():
     f.append(finding("F6", "infrastructure-agent", "INTERFACE_DOWN", "absent", "A", ["s"], iface="g2"))
     ev = evaluate(f, o)
     assert ev.status == "unknown_fault" and ev.causes == []
+
+
+def test_relayed_copies_count_as_one_source():
+    from netcoop.engine.stear import independent_sources
+    assert independent_sources({("LG1", "collector-a"), ("LG1", "collector-b")}) == 1
+    assert independent_sources({("LG1", "snmp"), ("LG2", "snmp")}) == 1  # repeated polls of one source
+    assert independent_sources({("LG1", "snmp"), ("LG2", "probe")}) == 2
+    assert independent_sources({("LG1", "a"), ("LG1", "b"), ("LG2", "b"), ("LG3", "c")}) == 2

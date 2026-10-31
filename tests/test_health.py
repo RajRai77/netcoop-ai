@@ -52,10 +52,11 @@ def test_ready_is_200_when_dependency_check_passes():
     assert r.json()["status"] == "ready"
 
 
-def test_placeholder_page_says_not_implemented():
-    r = TestClient(create_app(_settings(None))).get("/")
-    assert r.status_code == 200
-    assert "Not yet implemented" in r.text
+def test_browser_ui_is_served():
+    c = TestClient(create_app(_settings(None)))
+    r = c.get("/")
+    assert r.status_code == 200 and "NetCoop AI" in r.text
+    assert c.get("/static/app.js").status_code == 200
 
 
 def test_ready_is_503_when_schema_not_migrated(tmp_path):

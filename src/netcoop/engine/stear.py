@@ -39,6 +39,7 @@ class Sym:
     entities: frozenset[str]
     onset: datetime | None
     lineages: frozenset[str]
+    sources: frozenset[tuple[str, str]]  # (lineage_group, source_id) pairs behind this finding
 
     @property
     def fid(self) -> str:
@@ -58,12 +59,17 @@ class Hypothesis:
     missing: list[tuple[str, dict]] = field(default_factory=list)  # (claim, subject) not yet observed
     temporal_issues: list[str] = field(default_factory=list)
     lineages: set[str] = field(default_factory=set)
+    source_pairs: set[tuple[str, str]] = field(default_factory=set)
     reasons: list[str] = field(default_factory=list)
+
+    @property
+    def independent_sources(self) -> int:
+        return independent_sources(self.source_pairs)
 
     def rank_key(self):
         state = {"confirmed": 0, "plausible": 1, "contradicted": 2}[self.status]
-        return (state, -len(self.explained), -len(self.lineages), len(self.missing), len(self.temporal_issues),
-                len(self.scope), self.hid)
+        return (state, -len(self.explained), -self.independent_sources, -len(self.lineages), len(self.missing),
+                len(self.temporal_issues), len(self.scope), self.hid)
 
     def to_dict(self, rank: int | None = None) -> dict:
         return {
@@ -73,6 +79,7 @@ class Hypothesis:
             "contradictions": self.contradictions,
             "missing_discriminators": [{"claim": c, "subject": s} for c, s in self.missing],
             "temporal_issues": self.temporal_issues, "independent_lineage_groups": len(self.lineages),
+            "independent_sources": self.independent_sources,
             "impact_scope": sorted(self.scope), "reasons": self.reasons,
         }
 
@@ -95,6 +102,26 @@ class Evaluation:
     def leader(self) -> Hypothesis | None:
         return self.causes[0] if self.causes else (
             self.hypotheses[0] if self.hypotheses and self.hypotheses[0].status != "contradicted" else None)
+
+
+def independent_sources(pairs: set[tuple[str, str]]) -> int:
+    """Number of independent evidence sources. Sources that share a lineage group (one
+    physical sample relayed by several collectors) are merged into one."""
+    parent: dict[str, str] = {}
+
+    def find(x):
+        while parent.setdefault(x, x) != x:
+            x = parent[x]
+        return x
+
+    by_lineage: dict[str, list[str]] = {}
+    for lg, src in pairs:
+        by_lineage.setdefault(lg, []).append(src)
+        find(src)
+    for srcs in by_lineage.values():
+        for other in srcs[1:]:
+            parent[find(other)] = find(srcs[0])
+    return len({find(s) for s in parent})
 
 
 def _primary_node(s: Subject) -> str | None:
@@ -176,7 +203,8 @@ class Stear:
             obs = [observations[r] for r in f.observation_refs if r in observations]
             onset = min((o.observed_at for o in obs), default=None) if f.polarity != "absent" else None
             syms[f.finding_id] = Sym(f, location_of(f.subject), self._entities(f.subject), onset,
-                                     frozenset(o.lineage_group for o in obs))
+                                     frozenset(o.lineage_group for o in obs),
+                                     frozenset((o.lineage_group, o.source.source_id) for o in obs))
         present = [s for s in syms.values() if s.finding.polarity == "present" and s.finding.claim in self.symptom_claims]
         hints = [s for s in syms.values() if s.finding.polarity == "present" and s.finding.claim in HINT_CLAIMS]
         P = {s.fid for s in present}
@@ -259,17 +287,19 @@ class Stear:
             return Evaluation(status, cat, [], [h1] + competitors, ranked, sorted(P), sorted(P), 0.0, basis,
                               limitations, syms)
 
-        lineages = set().union(*(h.lineages for h in causes))
+        n_sources = independent_sources(set().union(*(h.source_pairs for h in causes)))
         temporal = any(h.temporal_issues for h in causes)
-        high = not competitors and len(lineages) >= 2 and not temporal and coverage >= 0.6
+        high = not competitors and n_sources >= 2 and not temporal and coverage >= 0.6
         for c in causes:
             basis.append(f"{c.hid}: signature observed ({', '.join(c.signature)}); explains {len(c.explained)} symptom "
-                         f"finding(s) with {len(c.lineages)} independent lineage group(s).")
+                         f"finding(s) using {c.independent_sources} independent source(s) "
+                         f"({len(c.lineages)} sample lineage group(s)).")
         if competitors:
             basis.append(f"Not high support: {len(competitors)} competing hypothesis(es) remain unverified: "
                          f"{', '.join(h.hid for h in competitors[:5])}.")
-        if len(lineages) < 2:
-            basis.append("Not high support: evidence comes from a single lineage group (no independent corroboration).")
+        if n_sources < 2:
+            basis.append("Not high support: all explaining evidence comes from a single independent source "
+                         "(no independent corroboration).")
         if temporal:
             basis.append("Not high support: temporal ordering inconsistencies were found.")
         if coverage < 0.6:
@@ -389,6 +419,7 @@ class Stear:
                 continue
             explained.append(fid)
             h.lineages |= set(s.lineages)
+            h.source_pairs |= set(s.sources)
         h.explained = explained
         if h.contradictions:
             h.status = "contradicted"

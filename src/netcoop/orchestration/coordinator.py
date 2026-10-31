@@ -85,8 +85,8 @@ class Coordinator:
         try:
             return await self._investigate(inc, run_id)
         except Exception as exc:  # honest operational failure, not a network diagnosis
-            self._event(iid, run_id, "OPERATIONAL_ERROR", {"error": f"{type(exc).__name__}: {exc}"})
-            return self._operational_report(inc, run_id, [f"Coordinator failure: {type(exc).__name__}: {exc}"], {})
+            return self._operational_report(inc, run_id, [f"Coordinator failure: {type(exc).__name__}: {exc}"],
+                                            {"error": f"{type(exc).__name__}: {exc}"})
 
     def _transport_label(self) -> str:
         kinds = {p.transport for p in self.ports.values()}
@@ -153,6 +153,11 @@ class Coordinator:
             observations = self.store.list_observations(iid, limit=100_000)
             await self._investigate_round(inc, run_id, observations, topo_snap, caps, rounds, agent_cov,
                                           responded, failed, extra_limits)
+            if not responded:
+                return self._operational_report(
+                    inc, run_id, extra_limits + ["No specialist agent completed an investigation task; "
+                                                 "nothing about the network was concluded."],
+                    {"agents_failed": failed, "agents_available": sorted(caps)})
             findings = self.store.list_findings(iid)
             obs_map = {o.observation_id: o for o in observations}
             ev = engine.evaluate(findings, obs_map)
@@ -380,5 +385,5 @@ class Coordinator:
                               coverage=coverage, verification={"enabled": False, "challenges": []},
                               extra_limitations=limits)
         self.store.put_report(report, self.clock())
-        self._event(inc.incident_id, run_id, "OPERATIONAL_ERROR", {"revision": rev})
+        self._event(inc.incident_id, run_id, "OPERATIONAL_ERROR", {"revision": rev, **coverage})
         return report

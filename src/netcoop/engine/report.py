@@ -38,7 +38,9 @@ def build_report(*, incident, revision: int, run_id: str, ev: Evaluation, findin
     # supporting evidence: findings that explain the selected cause(s), else the present symptoms
     support_fids: list[str] = []
     for h in causes:
-        support_fids += [fid for fid in h.signature + h.explained if fid not in support_fids]
+        for fid in h.signature + h.explained:
+            if fid not in support_fids:
+                support_fids.append(fid)
     if not causes:
         support_fids = list(ev.present_symptoms)
     # discriminating negative evidence that eliminated competitors is also evidence
