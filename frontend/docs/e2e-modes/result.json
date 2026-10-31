@@ -1,0 +1,72 @@
+{
+  "ran_at": "2026-10-31T23:29:47.779Z",
+  "ui": "http://127.0.0.1:5173",
+  "passed": true,
+  "steps": [
+    {
+      "name": "preview /: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /incidents: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /topology: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /agents: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /evidence: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /reasoning: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /report: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /scenarios: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /evaluation: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "preview /settings: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "ok": true,
+      "detail": "api calls=0 errors=0 runDisabled=true"
+    },
+    {
+      "name": "offline /: explicit backend-offline state, no diagnosis shown",
+      "ok": true,
+      "detail": "errors=0"
+    },
+    {
+      "name": "offline /report: explicit backend-offline state, no diagnosis shown",
+      "ok": true,
+      "detail": "errors=0"
+    },
+    {
+      "name": "offline /evaluation: explicit backend-offline state, no diagnosis shown",
+      "ok": true,
+      "detail": "errors=0"
+    }
+  ]
+}

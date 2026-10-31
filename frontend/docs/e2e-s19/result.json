@@ -1,0 +1,89 @@
+{
+  "scenario": "S19-ap-down-status-in-archive",
+  "incident_id": "INC-e896d069b7834f7a",
+  "ran_at": "2026-10-31T23:40:59.507Z",
+  "ui": "http://127.0.0.1:5173",
+  "passed": true,
+  "steps": [
+    {
+      "name": "UI shows CONNECTED API (live backend, not preview)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "3 specialist agents available over A2A",
+      "ok": true,
+      "detail": "connectivity-agent:available/a2a, infrastructure-agent:available/a2a, performance-agent:available/a2a"
+    },
+    {
+      "name": "Run diagnosis created a new S19 incident on the backend",
+      "ok": true,
+      "detail": "INC-e896d069b7834f7a"
+    },
+    {
+      "name": "UI opened the SSE stream for the incident",
+      "ok": true,
+      "detail": "1 stream request(s)"
+    },
+    {
+      "name": "Backend: first correlation round was ambiguous (AP down vs port failure)",
+      "ok": true,
+      "detail": "round 0 status=ambiguous; competitors=H-LINK_OR_PATH_FAILURE-ACC-2-1:ge1/1 vs H-DEVICE_DOWN-AP-2-1"
+    },
+    {
+      "name": "Backend: challenge to infrastructure-agent for device_status of AP-2-1",
+      "ok": true,
+      "detail": "CH-4dd030ac96b90a0055b493aa {\"device_id\":\"AP-2-1\"}"
+    },
+    {
+      "name": "Backend: challenge returned archived observations",
+      "ok": true,
+      "detail": "obtained, 20 observation(s)"
+    },
+    {
+      "name": "Backend: verify task went over A2A",
+      "ok": true,
+      "detail": "3c321827-3260-4ddf-8247-96b4f8d34706"
+    },
+    {
+      "name": "UI timeline shows the QUERY to Infrastructure for device_status@AP-2-1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "UI timeline shows the RESPONSE with returned observations",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Backend: DEVICE_DOWN at AP-2-1 with high_support",
+      "ok": true,
+      "detail": "diagnosed DEVICE_DOWN@AP-2-1 high_support"
+    },
+    {
+      "name": "UI reasoning page shows the obtained verification check",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "UI report shows \"Device down at AP-2-1\" and High support",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "UI never renders the support category as a percentage",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Exported report JSON equals the backend report",
+      "ok": true,
+      "detail": "INC-e896d069b7834f7a-r1.json"
+    },
+    {
+      "name": "No browser errors",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}
