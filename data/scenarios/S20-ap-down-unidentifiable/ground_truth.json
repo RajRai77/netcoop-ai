@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S20-ap-down-unidentifiable",
+ "faults": [
+  {
+   "fault_type": "DEVICE_DOWN",
+   "location": "AP-2-2"
+  }
+ ],
+ "expected_status": "ambiguous",
+ "expected_status_without_verification": "ambiguous",
+ "notes": "Honest answer: AP failure and failure of its switch port cannot be distinguished from the available data.",
+ "generator": "netcoop-scengen/1",
+ "seed": 120
+}

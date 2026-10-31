@@ -12,23 +12,24 @@ import json
 import sys
 from pathlib import Path
 
-from netcoop.evaluation.runner import evaluate, to_markdown
+from netcoop.evaluation.runner import METHODS, evaluate, to_markdown
 
 ROOT = Path(__file__).resolve().parents[1]
 SETS = {"dev": ROOT / "data" / "scenarios", "heldout": ROOT / "data" / "heldout",
-        "heldout-v2": ROOT / "data" / "heldout-v2"}
+        "heldout-v2": ROOT / "data" / "heldout-v2", "heldout-v3": ROOT / "data" / "heldout-v3"}
 
 
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--sets", nargs="*", default=["dev", "heldout"], choices=sorted(SETS))
     p.add_argument("--out", default=str(ROOT / "eval" / "results"))
+    p.add_argument("--methods", nargs="*", default=[m.name for m in METHODS], choices=[m.name for m in METHODS])
     args = p.parse_args()
     sets = {s: SETS[s] for s in args.sets if SETS[s].is_dir()}
     missing = sorted(set(args.sets) - set(sets))
     if missing:
         print(f"skipping missing sets {missing} (generate with scripts/generate_scenarios.py [--heldout])")
-    res = evaluate(sets)
+    res = evaluate(sets, [m for m in METHODS if m.name in args.methods])
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(res, indent=1, default=list), encoding="utf-8")

@@ -299,6 +299,27 @@ class Stear:
             return Evaluation(status, cat, [], [h1] + competitors, ranked, sorted(P), sorted(P), 0.0, basis,
                               limitations, syms)
 
+        # Identifiability: if everything that confirms a selected cause is ALSO predicted by a surviving
+        # competitor, the current evidence cannot tell them apart. The competitor's own discriminating
+        # observation is then needed (the planner requests it); without it the outcome is ambiguous.
+        equivalent = []
+        for c in causes:
+            for h in competitors:
+                if h.missing and c.signature and set(c.signature) <= set(h.explained):
+                    equivalent.append((c, h))
+        if equivalent:
+            for c, h in equivalent[:4]:
+                basis.append(f"{c.hid} and {h.hid} are observationally equivalent on current evidence: "
+                             f"{h.fault} also predicts the confirming finding(s) {', '.join(c.signature)}; "
+                             f"discriminating observation missing: {sorted({cl for cl, _ in h.missing})}.")
+            alts, seen = [], set()
+            for h in [c for c, _ in equivalent] + [h for _, h in equivalent] + competitors:
+                if h.hid not in seen:
+                    seen.add(h.hid)
+                    alts.append(h)
+            return Evaluation("ambiguous", "ambiguous", [], alts, ranked, sorted(P), sorted(P), 0.0, basis,
+                              limitations, syms)
+
         n_sources = independent_sources(set().union(*(h.source_pairs for h in causes)))
         temporal = any(h.temporal_issues for h in causes)
         # A plausible (unverified) hypothesis that would explain symptoms the selected causes leave
@@ -424,6 +445,7 @@ class Stear:
         sig_present = [fid for st, ids in sig_states.values() if st == "present" for fid in ids]
         req_states = {c: self._claim_state(c, findings, at) for c in fault.get("require_absent", [])}
         con_states = {c: self._claim_state(c, findings, at) for c in fault.get("contradicted_by", [])}
+        cia_states = {c: self._claim_state(c, findings, at) for c in fault.get("contradicted_if_absent", [])}
 
         mode = fault.get("signature_contradiction", "all_absent")
         absent_claims = [c for c, (st, _) in sig_states.items() if st == "absent"]
@@ -444,6 +466,9 @@ class Stear:
         for c, (st, ids) in con_states.items():
             if st == "present":
                 h.contradictions.append(f"{c} present at {h.loc.key} ({', '.join(ids)}) contradicts {h.fault}")
+        for c, (st, ids) in cia_states.items():
+            if st == "absent":
+                h.contradictions.append(f"{c} observed normal at {h.loc.key} ({', '.join(ids)}) contradicts {h.fault}")
 
         local = set(fault["signature_any"]) | set(fault.get("corroborating", []))
         effects = set(fault.get("effects", []))

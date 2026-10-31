@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S18-ap-down",
+ "faults": [
+  {
+   "fault_type": "DEVICE_DOWN",
+   "location": "AP-1-1"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "diagnosed",
+ "notes": "",
+ "generator": "netcoop-scengen/1",
+ "seed": 118
+}

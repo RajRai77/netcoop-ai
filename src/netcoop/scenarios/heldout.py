@@ -26,6 +26,17 @@ SIGNATURE_SOURCE = {
     "DEVICE_DOWN": "nms", "WEAK_WIFI_SIGNAL": "wlc", "WIRELESS_INTERFERENCE": "wlc", "DNS_FAILURE": "dns-monitor",
     "DHCP_FAILURE": "dhcp-monitor", "UNMODELED_PATH_ISSUE": None,
 }
+
+
+def signature_source(fault: dict) -> str | None:
+    """Collector that observes the fault's signature in the generated world. AP status comes from
+    the wireless controller, switch status from the NMS (corrected for v3; v1/v2 annotated AP-down
+    as NMS-observable although the generator never emitted AP status)."""
+    if fault["type"] == "DEVICE_DOWN" and fault["location"].startswith("AP-"):
+        return "wlc"
+    return SIGNATURE_SOURCE[fault["type"]]
+
+
 CONDITIONS = {
     "full": (ALL_SOURCES, []),
     "probes+archive": (["probe-collector", "reachability-prober"],
@@ -89,7 +100,7 @@ def heldout_specs(n: int = 60, seed: int = 20261101) -> list[dict]:
             f["onset_step"] = rng.randint(1, 5)
         cond = rng.choices(list(CONDITIONS), weights=[45, 25, 10, 20])[0]
         init, arch = CONDITIONS[cond]
-        sig_sources = {SIGNATURE_SOURCE[f["type"]] for f in faults if SIGNATURE_SOURCE[f["type"]]}
+        sig_sources = {signature_source(f) for f in faults if signature_source(f)}
         if cond == "signature-in-archive":
             arch = sorted(sig_sources) or ["snmp-poller"]
             init = [s for s in ALL_SOURCES if s not in arch]

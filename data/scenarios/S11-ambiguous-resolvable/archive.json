@@ -7015,6 +7015,12 @@
      "observed_at": "2026-10-31T09:50:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -58.3,
        "unit": "dBm",
@@ -7041,6 +7047,12 @@
      },
      "observed_at": "2026-10-31T09:50:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -61.0,
@@ -7069,6 +7081,12 @@
      "observed_at": "2026-10-31T09:50:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -55.2,
        "unit": "dBm",
@@ -7095,6 +7113,12 @@
      },
      "observed_at": "2026-10-31T09:50:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -57.1,
@@ -7123,6 +7147,12 @@
      "observed_at": "2026-10-31T09:51:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -50.2,
        "unit": "dBm",
@@ -7149,6 +7179,12 @@
      },
      "observed_at": "2026-10-31T09:51:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -54.6,
@@ -7177,6 +7213,12 @@
      "observed_at": "2026-10-31T09:51:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -57.5,
        "unit": "dBm",
@@ -7203,6 +7245,12 @@
      },
      "observed_at": "2026-10-31T09:51:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -56.7,
@@ -7231,6 +7279,12 @@
      "observed_at": "2026-10-31T09:52:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -53.8,
        "unit": "dBm",
@@ -7257,6 +7311,12 @@
      },
      "observed_at": "2026-10-31T09:52:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -63.1,
@@ -7285,6 +7345,12 @@
      "observed_at": "2026-10-31T09:52:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -52.1,
        "unit": "dBm",
@@ -7311,6 +7377,12 @@
      },
      "observed_at": "2026-10-31T09:52:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -53.3,
@@ -7339,6 +7411,12 @@
      "observed_at": "2026-10-31T09:53:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -53.0,
        "unit": "dBm",
@@ -7365,6 +7443,12 @@
      },
      "observed_at": "2026-10-31T09:53:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -60.3,
@@ -7393,6 +7477,12 @@
      "observed_at": "2026-10-31T09:53:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -51.6,
        "unit": "dBm",
@@ -7419,6 +7509,12 @@
      },
      "observed_at": "2026-10-31T09:53:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -56.3,
@@ -7447,6 +7543,12 @@
      "observed_at": "2026-10-31T09:54:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -60.2,
        "unit": "dBm",
@@ -7473,6 +7575,12 @@
      },
      "observed_at": "2026-10-31T09:54:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -55.0,
@@ -7501,6 +7609,12 @@
      "observed_at": "2026-10-31T09:54:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -51.0,
        "unit": "dBm",
@@ -7527,6 +7641,12 @@
      },
      "observed_at": "2026-10-31T09:54:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -50.3,
@@ -7555,6 +7675,12 @@
      "observed_at": "2026-10-31T09:55:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -56.4,
        "unit": "dBm",
@@ -7581,6 +7707,12 @@
      },
      "observed_at": "2026-10-31T09:55:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -63.1,
@@ -7609,6 +7741,12 @@
      "observed_at": "2026-10-31T09:55:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -55.5,
        "unit": "dBm",
@@ -7635,6 +7773,12 @@
      },
      "observed_at": "2026-10-31T09:55:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -58.7,
@@ -7663,6 +7807,12 @@
      "observed_at": "2026-10-31T09:56:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -59.2,
        "unit": "dBm",
@@ -7689,6 +7839,12 @@
      },
      "observed_at": "2026-10-31T09:56:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -58.2,
@@ -7717,6 +7873,12 @@
      "observed_at": "2026-10-31T09:56:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -55.0,
        "unit": "dBm",
@@ -7743,6 +7905,12 @@
      },
      "observed_at": "2026-10-31T09:56:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -61.1,
@@ -7771,6 +7939,12 @@
      "observed_at": "2026-10-31T09:57:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -57.9,
        "unit": "dBm",
@@ -7797,6 +7971,12 @@
      },
      "observed_at": "2026-10-31T09:57:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -61.3,
@@ -7825,6 +8005,12 @@
      "observed_at": "2026-10-31T09:57:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -61.8,
        "unit": "dBm",
@@ -7851,6 +8037,12 @@
      },
      "observed_at": "2026-10-31T09:57:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -50.5,
@@ -7879,6 +8071,12 @@
      "observed_at": "2026-10-31T09:58:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -51.8,
        "unit": "dBm",
@@ -7905,6 +8103,12 @@
      },
      "observed_at": "2026-10-31T09:58:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -59.9,
@@ -7933,6 +8137,12 @@
      "observed_at": "2026-10-31T09:58:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -57.5,
        "unit": "dBm",
@@ -7959,6 +8169,12 @@
      },
      "observed_at": "2026-10-31T09:58:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -52.8,
@@ -7987,6 +8203,12 @@
      "observed_at": "2026-10-31T09:59:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -62.3,
        "unit": "dBm",
@@ -8013,6 +8235,12 @@
      },
      "observed_at": "2026-10-31T09:59:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -56.9,
@@ -8041,6 +8269,12 @@
      "observed_at": "2026-10-31T09:59:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -60.9,
        "unit": "dBm",
@@ -8067,6 +8301,12 @@
      },
      "observed_at": "2026-10-31T09:59:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -51.1,
@@ -8095,6 +8335,12 @@
      "observed_at": "2026-10-31T10:00:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -59.5,
        "unit": "dBm",
@@ -8121,6 +8367,12 @@
      },
      "observed_at": "2026-10-31T10:00:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -61.3,
@@ -8149,6 +8401,12 @@
      "observed_at": "2026-10-31T10:00:00Z",
      "measurements": [
       {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
+      {
        "metric": "rssi",
        "value": -50.9,
        "unit": "dBm",
@@ -8175,6 +8433,12 @@
      },
      "observed_at": "2026-10-31T10:00:00Z",
      "measurements": [
+      {
+       "metric": "device_status",
+       "value": "up",
+       "unit": "state",
+       "kind": "state"
+      },
       {
        "metric": "rssi",
        "value": -60.0,

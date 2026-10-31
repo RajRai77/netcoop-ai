@@ -167,8 +167,14 @@ class Telemetry:
                         {"metric": "device_status", "value": "up", "unit": "state", "kind": "state"}]})
                     self.records["nms"].append({"record_id": f"nms-{n}-{k}", "subject": {"device_id": n}, "observed_at": ts,
                                                 "measurements": [{"metric": "device_status", "value": "up", "unit": "state", "kind": "state"}]})
+                if meta["type"] == "ap" and n in self.down and k >= self.down[n]:
+                    # the wireless controller reports the AP it lost as down (only the failed AP itself,
+                    # same convention as the NMS for switches)
+                    self.records["wlc"].append({"record_id": f"wlc-status-{n}-{k}", "subject": {"device_id": n}, "observed_at": ts,
+                                                "measurements": [{"metric": "device_status", "value": "down", "unit": "state", "kind": "state"}]})
                 if meta["type"] == "ap" and not self.is_down(n, k):
                     self.records["wlc"].append({"record_id": f"wlc-{n}-{k}", "subject": {"device_id": n}, "observed_at": ts, "measurements": [
+                        {"metric": "device_status", "value": "up", "unit": "state", "kind": "state"},
                         {"metric": "rssi", "value": round(self.val(n, "rssi", k, r.uniform(-64, -50)), 1), "unit": "dBm", "kind": "gauge"},
                         {"metric": "snr", "value": round(self.val(n, "snr", k, r.uniform(28, 40)), 1), "unit": "dB", "kind": "gauge"},
                         {"metric": "wireless_retry_rate", "value": round(min(100, self.val(n, "wireless_retry_rate", k, r.uniform(2, 8))), 1), "unit": "percent", "kind": "gauge"}]})

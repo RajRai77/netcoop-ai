@@ -1,5 +1,5 @@
 {
-  "version": "fault-library/2",
+  "version": "fault-library/3",
   "status": "documented fault models for STEaR; not exhaustive - unmodeled causes are reported as unknown_fault",
   "semantics": {
     "signature_any": "Claims characteristic of the fault AT the hypothesis location. Any present -> signature confirmed. All observed absent -> hypothesis contradicted. Otherwise unconfirmed (plausible, needs evidence).",
@@ -10,7 +10,9 @@
     "effects": "Claims the fault can cause at any entity inside its impact scope (topology-derived).",
     "location_types": "Allowed topology node types for node-located faults (ignored without topology).",
     "signature_contradiction": "'all_absent' (default): contradicted only when every signature claim is observed normal. 'any_absent': contradicted when at least one signature claim is observed normal and none is present - used when the listed claims are alternative counters of ONE physical phenomenon, so one normal reading is informative.",
-    "service_kinds": "For service-located faults: allowed topology service_kind values (nodes without a declared kind are allowed, with a limitation)."
+    "service_kinds": "For service-located faults: allowed topology service_kind values (nodes without a declared kind are allowed, with a limitation).",
+    "contradicted_if_absent": "Claims whose fresh NORMAL reading at the location contradicts the hypothesis (e.g. a device that answers reachability probes is not down). Missing is fine.",
+    "identifiability": "If all findings confirming a selected cause are also predicted by a surviving competitor with missing discriminators, the outcome is ambiguous until the competitor's discriminating observation is obtained."
   },
   "symptom_claims": [
     "HIGH_LATENCY",
@@ -144,7 +146,10 @@
         "Check power, console access and last logs of {location}",
         "Confirm the outage scope and whether redundant devices took over"
       ],
-      "caveats": []
+      "caveats": [],
+      "contradicted_if_absent": [
+        "UNREACHABLE"
+      ]
     },
     "WEAK_WIFI_SIGNAL": {
       "location": "node",

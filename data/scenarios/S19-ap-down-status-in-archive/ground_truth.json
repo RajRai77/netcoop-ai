@@ -1,0 +1,14 @@
+{
+ "scenario_id": "S19-ap-down-status-in-archive",
+ "faults": [
+  {
+   "fault_type": "DEVICE_DOWN",
+   "location": "AP-2-1"
+  }
+ ],
+ "expected_status": "diagnosed",
+ "expected_status_without_verification": "ambiguous",
+ "notes": "The switch port facing the AP is down; AP failure and port/link failure predict the same evidence until the controller's AP status is obtained.",
+ "generator": "netcoop-scengen/1",
+ "seed": 119
+}
