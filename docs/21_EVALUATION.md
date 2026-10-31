@@ -43,3 +43,21 @@ Support categories are documented decision rules (`docs/05`, `src/netcoop/engine
 - Detector thresholds were chosen by the developers; they were frozen before the held-out set was generated but were not fitted on independent data.
 - The archive represents recorded collector history; no live read-only collectors were exercised.
 - Single run per scenario (deterministic); latency measured on a developer laptop.
+
+## Results so far (numbers copied from the generated RESULTS.md files)
+
+| held-out run | knowledge | file | D_full acceptable | D_full confident-wrong | D_full high-support-wrong | false healthy (C/D) |
+|---|---|---|---|---|---|---|
+| v1 (seed 20261101, 60 cases) | fault-library/1, commit 2ff9bca | `eval/results-frozen-2ff9bca/RESULTS.md` | 49/60 | 3/60 | 3/60 | 8/53 |
+| v2 (seed 20261102, 60 cases) | fault-library/2, commit 013a6d5 | `eval/results-heldout-v2/RESULTS.md` | 53/60 | 6/60 | 0/60 | 0/56 |
+
+On v2, STEaR without verification (C) has 55/60 acceptable vs 53/60 for full (D). D makes 39 exact diagnoses (of 46 diagnosable with
+the archive) vs 20 for C (of 22 diagnosable from the upload alone): verification turns many otherwise-abstained incidents into correct
+diagnoses but also adds wrong ones. Ablation: removing topology from D drops acceptable outcomes to 36/60. Threshold baseline: 18/60.
+
+**Remaining failure pattern (v2):** five of D's seven failures are an access point down being reported as
+`LINK_OR_PATH_FAILURE` on the switch port facing it, with `moderate_support`. The synthetic NMS publishes `device_status` only for
+switches, not APs, so the AP-down signature is never observable; both explanations fit, and the engine still picks the confirmed
+link failure instead of reporting ambiguity. Candidate rule change (not yet made; would need a v3 held-out set): when the leading
+cause is confirmed but an equal-coverage competitor's signature is *unobservable*, report `ambiguous`. The other two failures are
+compound faults where only one of two faults was reported (now `moderate_support`, no longer `high_support`).
