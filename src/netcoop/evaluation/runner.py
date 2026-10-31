@@ -193,9 +193,7 @@ def code_fingerprint() -> dict:
     files += [root / "ledger.py", root / "topology.py", root / "spec.py"]
     for p in files:
         h.update(p.relative_to(root).as_posix().encode())
-        h.update(p.read_bytes().replace(b"
-", b"
-"))
+        h.update(p.read_bytes().replace(b"\r\n", b"\n"))
     dirty = None
     try:
         out = subprocess.run(["git", "status", "--porcelain", "--", "src", "spec"], capture_output=True, text=True,
