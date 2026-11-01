@@ -75,7 +75,11 @@ def verify(zpath: Path) -> None:
         bad = [n for n in names if re.search(r"(^|/)(\.env|.*\.db|node_modules/|\.venv/)", n) and not n.endswith(".env.example")]
         if bad:
             raise SystemExit(f"release contains files that must not ship: {bad[:5]}")
-        hits = [n for n in names if not n.endswith("/") and SECRET.search(z.read(n))]
+        # Known non-secrets: the throwaway password of CI's own PostgreSQL container, and the fake password a
+        # test uses to check that database URLs are redacted in logs.
+        allowed = (b"ci-only-password", b"s3cret-pw")
+        hits = [n for n in names if not n.endswith("/")
+                and any(m.group(0) and not any(x in m.group(0) for x in allowed) for m in SECRET.finditer(z.read(n)))]
         if hits:
             raise SystemExit(f"secret-like content in: {hits}")
         print(f"archive: {len(names)} entries, no .env / databases / node_modules, no secret-like content")
