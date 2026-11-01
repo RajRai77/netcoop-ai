@@ -111,7 +111,8 @@ Not done: a frontend CI job (the browser scripts need a local Chrome and a runni
   (exit 0), build; browser e2e S19 18/18, organizer 10/10, preview/offline 14/14, a11y 11/11 routes.
 - UI: organizer scenarios are the default in the launcher, landing demo and Command Center welcome; data labeled
   "Organizer data · PS sample generator"; calibrated confidence shown with its basis beside the support category.
-- Not done: demo video (owner); PostgreSQL variants of the new tests run only in CI.
+- CI run 41264813009 on `bbc85f6`: test-linux, test-postgres, test-windows, evaluation, compose-smoke all **success**.
+- Not done: demo video (owner).
 
 ## Repository hygiene note
 
