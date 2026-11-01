@@ -23,6 +23,10 @@ The Render URL alone is a complete app (React served by the API, same origin). N
 
 Status log (append, do not rewrite):
 
+- 2026-11-01: owner deployed the service: https://netcoop-ai-07i3.onrender.com (Render, Neon), token mode
+  (`/health/ready` ready; `/api/meta` 401 without the token — checked).
+- 2026-11-01: Google sign-in (Clerk) implemented on branch `feat/clerk-google-auth`; enabling it needs the Clerk keys in
+  Render (docs/27). Until then the live service is unchanged.
 - 2026-11-01: `render-image` CI job green (run 41267165838): image builds; only `$PORT` on 0.0.0.0; agents on 127.0.0.1;
   `/api` returns 401 without the token; React served at `/` and `/command`; smoke diagnosis over A2A passes against
   PostgreSQL 17. Measured 407.5 MiB container memory: fits Render free (512 MB) with ~100 MiB headroom after one

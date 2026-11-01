@@ -89,3 +89,18 @@ Append each change with date, reason, impact on deployment/PS tests, migration, 
 - **Impact:** no change to detectors, fault library, engine decisions or deployment. Dev set (20 scenarios) unchanged: D_full 20/20.
 - **Status:** implemented; local pytest 309 passed, 0 failed (PostgreSQL variants run in CI).
 
+### 2026-11-01 — Google sign-in (Clerk), verified sessions, per-user incident ownership
+
+- **Decision:** hosted deployments authenticate users with Clerk (Google social connection) instead of a shared static
+  token typed into Settings. New explicit `NETCOOP_AUTH_MODE` = `clerk | token | none`; default unchanged (`token` if
+  `NETCOOP_API_TOKEN` is set, else `none`); `none` is refused in production; incomplete Clerk config fails closed.
+- **Verification:** official `clerk-backend-api` 7.x `authenticate_request` (RS256, exp/nbf, azp) plus an explicit issuer
+  check (the SDK skips it), session tokens only, Authorization header only (no cookie auth → no CSRF).
+- **Data model:** migration 0003 adds nullable `incidents.owner_id`; ownership is enforced for every incident route and
+  raw records; unowned (pre-auth) records are hidden from all Clerk users.
+- **Public in Clerk mode:** health, React app, `/api/meta`, `/api/agents`, `/api/evaluations` (non-personal catalog).
+- **Impact:** no change to agents, A2A protocol, STEaR, NDEP contracts, scenarios or evaluation results. Render image
+  +4.5 MiB (412 MiB container in Clerk mode after a diagnosis, CI-measured).
+- **Open question 16:** a Clerk *production* instance needs a domain with DNS control; on `onrender.com` only a
+  development instance is possible.
+

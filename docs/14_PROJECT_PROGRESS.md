@@ -130,6 +130,21 @@ Not done: a frontend CI job (the browser scripts need a local Chrome and a runni
 - Incident: a release attempt ran `npm ci` in the working frontend while the dev server held a lock; `node_modules` was
   repaired with `npm install` (lockfile unchanged). The release script now builds from a temporary export instead.
 
+## Google sign-in with Clerk (2026-11-01, branch `feat/clerk-google-auth`)
+
+- Backend: `src/netcoop/api/auth.py` (modes, fail-closed config, Clerk verification + issuer check), ownership
+  dependency in `api/app.py`, migration 0003 `incidents.owner_id`. Frontend: `src/auth/` (ClerkProvider bridge, Google
+  SSO + `/sso-callback`, gate, user menu, account panel), async session headers for every request and SSE (re)connect,
+  account-scoped query cache, no 401 retries.
+- Executed: `tests/api/test_clerk_auth.py` 22 passed (missing/expired/tampered/wrong-key/wrong-issuer/wrong-azp/non-user
+  tokens, static-token bypass, cookie, client-set owner, cross-user 404 on 12 routes + raw records, pre-auth records hidden,
+  fail-closed config); storage/API tests passed; browser regression on the new backend (none mode): S19 18/18,
+  organizer 10/10, preview/offline 14/14, a11y 11/11; Clerk-mode build without a live instance: `clerk-ui-check.mjs` 8/8.
+- CI run 41276594144: all 6 jobs green; `render-image` Clerk mode with real signed tokens (static token 401, cross-user
+  404, A2A smoke diagnosis) and 412 MiB container memory after a diagnosis (token mode 407.6 MiB).
+- **Not yet done:** a live Google sign-in (needs the owner's Clerk keys in Render) and the hosted verification after
+  merging into `gate0-skeleton`. Live service unchanged (token mode) until then.
+
 ## Repository hygiene note
 
 Commit `538e59c` (pushed) unintentionally included part of the separate `frontend/` work via `git add -A`. History is not rewritten; the owner decides. Since then, backend commits stage explicit paths only.

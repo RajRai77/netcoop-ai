@@ -11,7 +11,8 @@
 Self-check without a browser: `uv run python scripts/run_local.py --check` (starts the four processes, runs a real
 A2A diagnosis, verifies it, stops; exit code 0 = pass).
 
-Hosted demo: see [docs/26_HOSTED_DEPLOYMENT.md](docs/26_HOSTED_DEPLOYMENT.md) for the current URL and its smoke-test result.
+Hosted demo: https://netcoop-ai-07i3.onrender.com — sign in with Google (Clerk) when sign-in is enabled
+([docs/27](docs/27_AUTHENTICATION.md)); your investigations are private to your account. Status: [docs/26](docs/26_HOSTED_DEPLOYMENT.md).
 
 ## What to look at
 

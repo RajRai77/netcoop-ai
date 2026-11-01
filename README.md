@@ -235,6 +235,14 @@ Executed, not claimed:
 | Preview / offline modes, basic accessibility | `e2e-modes.mjs`, `a11y-check.mjs` | 14/14, 11/11 routes |
 | Release ZIP from a clean extraction | `uv run python scripts/make_release.py --verify` | see [Deployment](#deployment) |
 
+## Sign-in and data isolation
+
+Hosted deployments use **Google sign-in through Clerk**: the landing page is public, "Continue with Google" leads to
+the Command Center, and every API request carries a short-lived Clerk session token verified server-side with Clerk's
+official Python SDK (signature, expiry, authorized party, issuer). Each investigation belongs to the signed-in
+account; other accounts get 404. Local runs and CI keep explicit `none`/`token` modes. Details and the owner checklist:
+[docs/27_AUTHENTICATION.md](docs/27_AUTHENTICATION.md).
+
 ## Deployment
 
 | Option | Files | State |
@@ -242,7 +250,7 @@ Executed, not claimed:
 | **Local, one command** | `start.sh`, `start.ps1`, `scripts/run_local.py` | verified |
 | **Release ZIP** (includes the built React app) | `scripts/make_release.py --verify` | built and verified from a clean extraction; SHA-256 published with the release |
 | **Docker Compose** on one Linux host (reference deployment: 5 containers, PostgreSQL, Caddy HTTPS overlay) | `compose.yaml`, `compose.production.yaml`, `Dockerfile` | verified in CI; no public VPS deployment performed |
-| **Render** (one free web service, four processes in one container) + **Neon** PostgreSQL | `Dockerfile.render`, `render.yaml` | image verified in CI; see [docs/26](docs/26_HOSTED_DEPLOYMENT.md) for hosted status |
+| **Render** (one free web service, four processes in one container) + **Neon** PostgreSQL | `Dockerfile.render`, `render.yaml` | live at https://netcoop-ai-07i3.onrender.com; image verified in CI (token and Clerk modes); [docs/26](docs/26_HOSTED_DEPLOYMENT.md) |
 | **Netlify** (React app only, calls the Render API) | `netlify.toml` | see [docs/26](docs/26_HOSTED_DEPLOYMENT.md) |
 
 The Render image runs the API on `0.0.0.0:$PORT` and the three agents on `127.0.0.1` with dynamic ports; only the API is
