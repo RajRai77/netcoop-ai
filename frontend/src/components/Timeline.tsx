@@ -121,8 +121,8 @@ export function TimelineList({ items, incidentId, emptyText = 'No activity recor
         {items.map((it) => (
           <div className="tl-item" key={it.key} role="listitem">
             <div className="tl-time">{timeOf(it.at)}</div>
-            <div className="tl-node" style={{ background: toneVar(it.tone), color: toneVar(it.tone) }} />
-            <button className="tl-card" onClick={() => show(it)} style={{ textAlign: 'left', color: 'inherit', font: 'inherit' }}>
+            <div className="tl-node" style={{ background: toneVar(it.tone) }} />
+            <button className={`tl-card ${it.kind === 'CONCLUSION' ? 'conclusion' : ''}`} onClick={() => show(it)} style={{ textAlign: 'left', color: 'inherit', font: 'inherit' }}>
               <div className="tl-head">
                 <span className="from" style={{ color: toneVar(AGENT_TONE[it.from] ?? 'blue') }}>{agentLabel(it.from)}</span>
                 {it.to && <><span className="faint">→</span><span className="muted">{agentLabel(it.to)}</span></>}

@@ -27,7 +27,7 @@ try {
       await page.goto(base + route, { waitUntil: 'networkidle0', timeout: 60000 });
       await new Promise((r) => setTimeout(r, 1500)); // React Flow fitView + fonts
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      const file = `${out}/${route === '/' ? 'command-center' : route.replace(/\W+/g, '')}-${name}.png`;
+      const file = `${out}/${route === '/' ? 'landing' : route === '/command' ? 'command-center' : route.replace(/\W+/g, '')}-${name}.png`;
       await page.screenshot({ path: file, fullPage: name === '1920x1080' || name.startsWith('mobile') });
       console.log(`${file}  horizontal-overflow=${overflow}px`);
       await page.close();

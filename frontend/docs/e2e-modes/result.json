@@ -1,10 +1,10 @@
 {
-  "ran_at": "2026-10-31T23:29:47.779Z",
+  "ran_at": "2026-11-01T01:26:54.464Z",
   "ui": "http://127.0.0.1:5173",
   "passed": true,
   "steps": [
     {
-      "name": "preview /: labeled PREVIEW, writes disabled, no backend calls, no errors",
+      "name": "preview /command: labeled PREVIEW, writes disabled, no backend calls, no errors",
       "ok": true,
       "detail": "api calls=0 errors=0 runDisabled=true"
     },
@@ -54,7 +54,12 @@
       "detail": "api calls=0 errors=0 runDisabled=true"
     },
     {
-      "name": "offline /: explicit backend-offline state, no diagnosis shown",
+      "name": "preview /: landing labels the recorded mode, no backend calls",
+      "ok": true,
+      "detail": "api calls=0"
+    },
+    {
+      "name": "offline /command: explicit backend-offline state, no diagnosis shown",
       "ok": true,
       "detail": "errors=0"
     },

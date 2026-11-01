@@ -9,7 +9,7 @@ const [base = 'http://127.0.0.1:5173', out = 'docs/e2e-modes'] = process.argv.sl
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   '/usr/bin/google-chrome', '/usr/bin/chromium'].find((p) => existsSync(p));
 mkdirSync(out, { recursive: true });
-const ROUTES = ['/', '/incidents', '/topology', '/agents', '/evidence', '/reasoning', '/report', '/scenarios', '/evaluation', '/settings'];
+const ROUTES = ['/command', '/incidents', '/topology', '/agents', '/evidence', '/reasoning', '/report', '/scenarios', '/evaluation', '/settings'];
 const steps = [];
 const check = (name, ok, detail = '') => { steps.push({ name, ok: !!ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); };
 const browser = await puppeteer.launch({ executablePath: chrome, headless: true });
@@ -38,15 +38,20 @@ try {
     check(`preview ${route}: labeled PREVIEW, writes disabled, no backend calls, no errors`,
       text.includes('PREVIEW') && text.includes('recorded') && runDisabled === true && apiCalls.length === 0 && errors.length === 0,
       `api calls=${apiCalls.length}${apiCalls.length ? ' ' + apiCalls.join(',') : ''} errors=${errors.length} runDisabled=${runDisabled}`);
-    if (route === '/' || route === '/evaluation') await page.screenshot({ path: `${out}/preview${route === '/' ? '-command-center' : route.replace('/', '-')}.png` });
+    if (route === '/command' || route === '/evaluation') await page.screenshot({ path: `${out}/preview-${route.slice(1)}.png` });
     await page.close();
   }
   const offline = { ...preview, preview: false, apiBase: 'http://127.0.0.1:9' };
-  for (const route of ['/', '/report', '/evaluation']) {
+  {
+    const { page, text, apiCalls, errors } = await open(preview, '/');
+    check('preview /: landing labels the recorded mode, no backend calls', text.includes('Recorded preview mode') && apiCalls.length === 0 && errors.length === 0, `api calls=${apiCalls.length}`);
+    await page.close();
+  }
+  for (const route of ['/command', '/report', '/evaluation']) {
     const { page, text, errors } = await open(offline, route);
     check(`offline ${route}: explicit backend-offline state, no diagnosis shown`,
       /Backend offline/i.test(text) && !text.includes('Device down at AP-2-1') && errors.length === 0, `errors=${errors.length}`);
-    if (route === '/') await page.screenshot({ path: `${out}/offline-command-center.png` });
+    if (route === '/command') await page.screenshot({ path: `${out}/offline-command-center.png` });
     await page.close();
   }
 } catch (e) {

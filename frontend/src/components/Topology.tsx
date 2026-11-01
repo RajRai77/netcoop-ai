@@ -1,50 +1,63 @@
 import { memo, useMemo } from 'react';
 import { Background, Controls, Handle, Position, ReactFlow, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Globe, Laptop, Network, Router, Server, Users, Wifi } from 'lucide-react';
+import { Cloud, Laptop, Network, Router, Server, Users, Wifi } from 'lucide-react';
 import type { Finding, Report, TopologySnapshot } from '@/api/types';
 
-export type NodeState = 'cause' | 'affected' | 'symptom' | 'candidate' | 'healthy';
+export type NodeState = 'cause' | 'affected' | 'symptom' | 'candidate' | 'healthy' | 'unknown';
 export const NODE_COLOR: Record<NodeState, string> = {
-  cause: '#ef4444', affected: '#f59e0b', symptom: '#facc15', candidate: '#a78bfa', healthy: '#22d3ee',
+  cause: '#e5484d', affected: '#f59e0b', symptom: '#d4a106', candidate: '#7c4dff', healthy: '#4caf50', unknown: '#9aa8bc',
 };
 export const NODE_LABEL: Record<NodeState, string> = {
-  cause: 'Root-cause location', affected: 'Affected', symptom: 'Symptom observed', candidate: 'Candidate location', healthy: 'No issue reported',
+  cause: 'Root-cause location', affected: 'Affected', symptom: 'Symptom observed', candidate: 'Candidate location',
+  healthy: 'Checked · normal', unknown: 'No findings',
 };
 
 const SYMPTOM_FREE = new Set(['COMMON_UPSTREAM_DEPENDENCY', 'COMMON_SERVICE_DEPENDENCY']);
+const subjectNode = (f: Finding) => f.subject.device_id ?? f.subject.service_id ?? f.subject.segment_id;
 
+/** Node states derived only from stored findings and the report. "healthy" means a specialist checked the node and
+ * reported no anomaly; "unknown" means no specialist reported on it at all. */
 export function nodeStates(topo: TopologySnapshot, report?: Report | null, findings?: Finding[]): Map<string, NodeState> {
-  const st = new Map<string, NodeState>(topo.nodes.map((n) => [n.id, 'healthy']));
-  const set = (id: string | undefined, s: NodeState, rank: NodeState[]) => {
+  const st = new Map<string, NodeState>(topo.nodes.map((n) => [n.id, 'unknown']));
+  const rank: NodeState[] = ['cause', 'affected', 'symptom', 'candidate', 'healthy', 'unknown'];
+  const set = (id: string | undefined, s: NodeState) => {
     if (!id || !st.has(id)) return;
-    const cur = st.get(id)!;
-    if (rank.indexOf(s) < rank.indexOf(cur)) st.set(id, s);
+    if (rank.indexOf(s) < rank.indexOf(st.get(id)!)) st.set(id, s);
   };
-  const rank: NodeState[] = ['cause', 'affected', 'symptom', 'candidate', 'healthy'];
   for (const f of findings ?? []) {
-    if (f.polarity !== 'present' || SYMPTOM_FREE.has(f.claim)) continue;
-    set(f.subject.device_id ?? f.subject.service_id ?? f.subject.segment_id, 'symptom', rank);
+    if (SYMPTOM_FREE.has(f.claim)) continue;
+    set(subjectNode(f), f.polarity === 'present' ? 'symptom' : 'healthy');
   }
-  for (const h of report?.hypotheses ?? []) {
-    if (h.status !== 'contradicted') set(h.location.split(':')[0], 'candidate', rank);
-  }
-  for (const a of report?.affected_devices ?? []) set(a, 'affected', rank);
-  for (const rc of report?.root_causes ?? []) set(rc.location.split(':')[0], 'cause', rank);
+  for (const h of report?.hypotheses ?? []) if (h.status !== 'contradicted') set(h.location.split(':')[0], 'candidate');
+  for (const a of report?.affected_devices ?? []) set(a, 'affected');
+  for (const rc of report?.root_causes ?? []) set(rc.location.split(':')[0], 'cause');
   return st;
+}
+
+/** Topology impact scope of the selected root cause(s), as computed by the backend hypothesis. */
+export function impactScope(report?: Report | null): Set<string> {
+  const ids = new Set((report?.root_causes ?? []).map((c) => c.hypothesis_id));
+  const out = new Set<string>();
+  for (const h of report?.hypotheses ?? []) if (ids.has(h.hypothesis_id)) h.impact_scope.forEach((x) => out.add(x.split(':')[0]));
+  return out;
 }
 
 const ICONS: Record<string, typeof Router> = { device: Router, ap: Wifi, service: Server, segment: Users, host: Laptop };
 
-type TData = { label: string; sub: string; state: NodeState; type: string; role?: string; selected: boolean; small: boolean; count?: string };
+type TData = { label: string; sub: string; state: NodeState; type: string; role?: string; selected: boolean; small: boolean; count?: string; dim: boolean; scope: boolean };
 
 const TNode = memo(({ data }: NodeProps<Node<TData>>) => {
-  const Icon = data.role === 'core' ? Globe : data.type === 'device' && data.role === 'distribution' ? Network : ICONS[data.type] ?? Router;
+  const core = data.role === 'core';
+  const Icon = core ? Cloud : data.type === 'device' && data.role === 'distribution' ? Network : ICONS[data.type] ?? Router;
   return (
-    <div className={`tnode ${data.small ? 'small' : ''} ${data.state === 'cause' ? 'cause' : ''} ${data.selected ? 'selected' : ''}`}
-         style={{ ['--c' as string]: NODE_COLOR[data.state] }} title={`${data.label} · ${NODE_LABEL[data.state]}`}>
+    <div className={`tnode ${data.small ? 'small' : ''} ${core ? 'core' : ''} ${data.state === 'cause' ? 'cause' : ''} ${data.selected ? 'selected' : ''} ${data.dim ? 'dim' : ''}`}
+         style={{ ['--c' as string]: NODE_COLOR[data.state] }} title={`${data.label} · ${NODE_LABEL[data.state]}${data.scope ? ' · in impact scope' : ''}`}>
       <Handle type="target" position={Position.Top} />
-      <div className="tnode-orb"><Icon size={data.small ? 14 : 20} /></div>
+      <div className="tnode-orb" style={data.scope && data.state !== 'cause' ? { outline: '2px dashed #f59e0b', outlineOffset: 4 } : undefined}>
+        <Icon size={data.small ? 14 : core ? 24 : 20} />
+        {data.state === 'cause' && <span className="tnode-alert">!</span>}
+      </div>
       <div className="tnode-label">{data.label}</div>
       {data.sub && <div className="tnode-sub">{data.sub}</div>}
       {data.count && <div className="tnode-count">{data.count}</div>}
@@ -91,21 +104,22 @@ function layout(topo: TopologySnapshot) {
     lvl.forEach((id, i) => order.set(id, i));
   });
   const width = Math.max(...levels.map((l) => l?.length ?? 0), 1);
-  const gapX = topo.nodes.length <= 18 ? 150 : 120;
+  const gapX = topo.nodes.length <= 18 ? 128 : 112;
   const pos = new Map<string, { x: number; y: number }>();
   levels.forEach((lvl, d) => {
     if (!lvl) return;
     const off = ((width - lvl.length) * gapX) / 2;
-    lvl.forEach((id, i) => pos.set(id, { x: off + i * gapX, y: d * 130 }));
+    lvl.forEach((id, i) => pos.set(id, { x: off + i * gapX, y: d * 118 }));
   });
   return pos;
 }
 
-/** Compact view: healthy hosts/segments are folded into a count on the node they attach to.
+/** Compact view: hosts/segments without any reported problem are folded into a count on their parent node.
  * Anything with a reported state (symptom, affected, cause, candidate) always stays visible. */
 function collapse(topo: TopologySnapshot, states: Map<string, NodeState>) {
   const leafTypes = new Set(['host', 'segment']);
-  const hidden = new Set(topo.nodes.filter((n) => leafTypes.has(n.type) && (states.get(n.id) ?? 'healthy') === 'healthy').map((n) => n.id));
+  const quiet = (id: string) => ['healthy', 'unknown'].includes(states.get(id) ?? 'unknown');
+  const hidden = new Set(topo.nodes.filter((n) => leafTypes.has(n.type) && quiet(n.id)).map((n) => n.id));
   const counts = new Map<string, { host: number; segment: number }>();
   const typeOf = new Map(topo.nodes.map((n) => [n.id, n.type]));
   for (const l of topo.links) {
@@ -137,35 +151,47 @@ export function TopologyGraph({ topo, report, findings, selected, onSelect, comp
   onSelect?: (id: string | null) => void; compact?: boolean;
 }) {
   const states = useMemo(() => nodeStates(topo, report, findings), [topo, report, findings]);
+  const scope = useMemo(() => impactScope(report), [report]);
   const collapsed = useMemo(
     () => (compact ? collapse(topo, states) : { t: topo, label: new Map<string, string>() }), [compact, topo, states]);
   const view = collapsed.t;
   const countLabel = collapsed.label;
   const pos = useMemo(() => layout(view), [view]);
+  const related = useMemo(() => {
+    if (!selected) return null;
+    const r = new Set([selected]);
+    for (const l of view.links) {
+      if (l.from === selected) r.add(l.to);
+      if (l.to === selected) r.add(l.from);
+    }
+    return r;
+  }, [selected, view]);
   const nodes: Node<TData>[] = useMemo(() => view.nodes.map((n) => {
     const small = n.type === 'host' || n.type === 'segment';
-    const st = states.get(n.id) ?? 'healthy';
     return {
       id: n.id, type: 't', position: pos.get(n.id) ?? { x: 0, y: 0 },
       data: {
-        label: n.id, small, state: st, type: n.type, role: n.role, selected: selected === n.id,
+        label: n.id, small, state: states.get(n.id) ?? 'unknown', type: n.type, role: n.role, selected: selected === n.id,
         sub: n.service_kind ? n.service_kind.toUpperCase() : n.role && !small ? n.role : '',
-        count: countLabel.get(n.id),
+        count: countLabel.get(n.id), dim: !!related && !related.has(n.id), scope: scope.has(n.id),
       },
       draggable: false,
     };
-  }), [view, pos, states, selected, countLabel]);
+  }), [view, pos, states, selected, countLabel, related, scope]);
   const edges: Edge[] = useMemo(() => view.links.map((l) => {
     const a = states.get(l.from), b = states.get(l.to);
-    const hot = (a === 'cause' || a === 'affected') && (b === 'cause' || b === 'affected');
+    const bad = (s?: NodeState) => s === 'cause' || s === 'affected';
+    const hot = bad(a) && bad(b) || (bad(a) && b !== 'unknown' && scope.has(l.to)) || (bad(b) && scope.has(l.from));
     const dep = l.type === 'dependency';
-    const color = hot ? (a === 'cause' || b === 'cause' ? '#ef4444' : '#f59e0b') : dep ? 'rgba(196,181,253,.45)' : 'rgba(125,211,252,.42)';
+    const sel = !!selected && (l.from === selected || l.to === selected);
+    const ok = a === 'healthy' && b === 'healthy';
+    const color = sel ? '#1a73e8' : hot ? (a === 'cause' || b === 'cause' ? '#e5484d' : '#f59e0b') : dep ? '#a48bff' : ok ? '#8fcf92' : '#c3cfdf';
     return {
-      id: l.id, source: l.from, target: l.to, type: dep ? 'default' : 'straight',
-      style: { stroke: color, strokeWidth: hot ? 2.6 : 1.4, strokeDasharray: dep ? '5 5' : undefined,
-        filter: hot ? `drop-shadow(0 0 4px ${color})` : undefined },
+      id: l.id, source: l.from, target: l.to, type: dep ? 'default' : 'smoothstep',
+      style: { stroke: color, strokeWidth: hot || sel ? 2.6 : 1.6, strokeDasharray: dep ? '5 5' : undefined, opacity: related && !sel ? 0.35 : 1 },
+      animated: hot,
     };
-  }), [view, states]);
+  }), [view, states, selected, related, scope]);
 
   return (
     <ReactFlow
@@ -173,7 +199,7 @@ export function TopologyGraph({ topo, report, findings, selected, onSelect, comp
       edges={edges}
       nodeTypes={nodeTypes}
       fitView
-      fitViewOptions={{ padding: compact ? 0.08 : 0.15 }}
+      fitViewOptions={{ padding: compact ? 0.06 : 0.12 }}
       minZoom={0.2}
       maxZoom={2}
       nodesConnectable={false}
@@ -182,22 +208,23 @@ export function TopologyGraph({ topo, report, findings, selected, onSelect, comp
       onNodeClick={(_e, n) => onSelect?.(n.id === selected ? null : n.id)}
       onPaneClick={() => onSelect?.(null)}
       proOptions={{ hideAttribution: true }}
-      colorMode="dark"
+      colorMode="light"
       style={{ background: 'transparent' }}
     >
-      <Background color="rgba(125,211,252,.08)" gap={28} size={1} />
+      <Background color="#dfe6f0" gap={26} size={1.2} />
       {!compact && <Controls showInteractive={false} position="bottom-left" />}
     </ReactFlow>
   );
 }
 
 export function TopologyLegend({ counts, strip = false }: { counts?: Map<NodeState, number>; strip?: boolean }) {
+  const order: NodeState[] = ['cause', 'affected', 'symptom', 'candidate', 'healthy', 'unknown'];
   return (
-    <div className={`glass soft topo-legend ${strip ? 'strip' : ''}`}>
-      {(Object.keys(NODE_COLOR) as NodeState[]).map((s) => (
-        <span key={s}><i style={{ background: NODE_COLOR[s], boxShadow: `0 0 8px ${NODE_COLOR[s]}` }} />{NODE_LABEL[s]}{counts ? ` · ${counts.get(s) ?? 0}` : ''}</span>
+    <div className={`topo-legend ${strip ? 'strip' : 'glass soft'}`}>
+      {order.filter((s) => !counts || (counts.get(s) ?? 0) > 0 || s === 'cause' || s === 'healthy').map((s) => (
+        <span key={s}><i style={{ background: NODE_COLOR[s] }} />{NODE_LABEL[s]}{counts ? ` (${counts.get(s) ?? 0})` : ''}</span>
       ))}
-      <span><i style={{ background: 'transparent', border: '1px dashed #c4b5fd', borderRadius: 2, width: 14, height: 0 }} />Service dependency</span>
+      <span><i style={{ background: 'transparent', border: '2px dashed #f59e0b', borderRadius: 4 }} />Impact scope</span>
     </div>
   );
 }

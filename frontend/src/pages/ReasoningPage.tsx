@@ -4,6 +4,7 @@ import type { Hypothesis, HypothesisStatus } from '@/api/types';
 import { agentLabel, claimLabel, faultLabel, HYP_LABEL, HYP_TONE, subjectText } from '@/lib/format';
 import { Chip, Empty, ErrorState, Loading, Panel, Tabs } from '@/components/ui';
 import { HypothesisDrawer, HypothesisRow, verdictTitle } from '@/components/Reasoning';
+import { runFacts, splitHyp } from '@/lib/run';
 import { useActive } from './useActive';
 
 export default function ReasoningPage() {
@@ -18,6 +19,7 @@ export default function ReasoningPage() {
   const max = Math.max(1, ...(r?.hypotheses ?? []).map((h) => h.explained_findings.length));
   const causeIds = new Set((r?.root_causes ?? []).map((c) => c.hypothesis_id));
   const counts = (s: HypothesisStatus) => (r?.hypotheses ?? []).filter((h) => h.status === s).length;
+  const facts = useMemo(() => runFacts(a.timeline.data, a.runId, a.findings.data?.findings, a.running), [a.timeline.data, a.runId, a.findings.data, a.running]);
 
   if (!a.id) return <Panel><Empty title="No active incident" /></Panel>;
   if (a.report.isLoading) return <Loading />;
@@ -56,6 +58,27 @@ export default function ReasoningPage() {
               </div>
             </div>
           ))}
+          {facts.rounds.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontWeight: 650, marginBottom: 8 }}>What changed, round by round</div>
+              <ol className="story">
+                {facts.rounds.map((rd, i) => {
+                  const chBefore = facts.challenges.filter((c) => c.created_at > rd.at && (!facts.rounds[i + 1] || c.created_at < facts.rounds[i + 1].at));
+                  return (
+                    <li key={rd.at}><span>
+                      <b>Round {rd.round + 1}: {rd.status.replace(/_/g, ' ')}</b> · {rd.hypotheses} hypotheses · {rd.competitors.length} still competing
+                      {rd.status === 'ambiguous' && rd.competitors.length > 1 && <div className="panel-sub">Tied: {rd.competitors.map((h) => { const [f, l] = splitHyp(h); return `${faultLabel(f)} at ${l}`; }).join(' vs ')}</div>}
+                      {rd.causes.length > 0 && <div className="panel-sub">Selected: {rd.causes.map((h) => { const [f, l] = splitHyp(h); return `${faultLabel(f)} at ${l}`; }).join(' + ')}</div>}
+                      {chBefore.map((c) => (
+                        <div key={c.challenge.challenge_id} className="panel-sub">→ asked {agentLabel(c.challenge.target_agent_id)} for {c.challenge.requested_observation.metric} of {subjectText(c.challenge.requested_observation.subject)}:
+                          {' '}{c.outcomes.at(-1)?.outcome.replace(/_/g, ' ') ?? 'pending'}{c.outcomes.at(-1)?.detail.new_observation_ids?.length ? ` (${c.outcomes.at(-1)!.detail.new_observation_ids!.length} observations)` : ''}</div>
+                      ))}
+                    </span></li>
+                  );
+                })}
+              </ol>
+            </div>
+          )}
         </Panel>
       </div>
       <Panel title="All hypotheses" icon={<BrainCircuit size={19} />} sub={`${hyps.length} shown · top 40 stored per report revision`}

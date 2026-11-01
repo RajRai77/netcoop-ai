@@ -5,7 +5,9 @@ A2A exchanges between specialist agents, the competing hypotheses, targeted veri
 report. It does not diagnose anything itself and never invents telemetry, agent messages or scores.
 
 React 19 · TypeScript (strict) · Vite 8 · TanStack Query · Zustand · React Flow (`@xyflow/react`) · Lucide icons ·
-plain-CSS glass design system (`src/styles/app.css`). Fonts (Inter, JetBrains Mono) are bundled via `@fontsource`; nothing
+plain-CSS design system (`src/styles/app.css`): light glass workspace (#F8F9FA / white, primary #1A73E8, success #4CAF50), navy
+navigation, and a dark navy landing hero with neon-green accents. Branding uses the supplied NetCoop AI logo
+(`src/assets/netcoop-logo.webp`, `netcoop-mark.webp`, made transparent from the original). Fonts (Inter, JetBrains Mono) are bundled via `@fontsource`; nothing
 is loaded from a CDN, so the UI works offline.
 
 ## Run
@@ -45,7 +47,8 @@ Preview data is never mixed with live data: query caches are keyed by mode.
 
 | Route | Page | Backend endpoints |
 |---|---|---|
-| `/` | Command Center: incident hero, lifecycle, 4 KPIs, agent timeline, topology, hypotheses, conclusion | incident, timeline, topology, findings, report, agents, SSE stream |
+| `/` | Landing page: what NetCoop AI is, why it is needed, how one investigation flows, capabilities, held-out results with caveats; "View demo incident" runs S19 live (or opens the labeled recording when offline) | health, meta, agents, evaluations |
+| `/command` | Command Center: investigation hero with data-source label, 5 KPIs, **agent collaboration & reasoning flow** (incident → 3 specialists → STEaR → verification loop → diagnosis, with stage tracker), topology with affected scope, timeline, competing hypotheses with "why it leads", report summary with "how the system got here" | incident, timeline, topology, findings, report, agents, SSE stream |
 | `/incidents` | Incident history: filter by text and status | `GET /api/incidents` |
 | `/topology` | Full graph, collapsed or every host; node drill-down (findings, hypotheses, links, impact scope) | topology, findings, report |
 | `/agents` | Agent cards (A2A URL, version, skills, metrics) and the exchange timeline; each attempt opens its raw NDEP artifact | `/api/agents`, timeline, `/attempts/{id}` |
@@ -59,6 +62,19 @@ Preview data is never mixed with live data: query caches are keyed by mode.
 Live updates: while a run is in progress the UI reads `GET /api/incidents/{id}/stream`. It handles the `workflow`,
 `attempt`, `challenge`, `report` and `end` events, deduplicates by `seq`, attempt id and challenge outcome, reconnects
 with `?after=<last seq>` and exponential backoff, and refetches the affected queries.
+
+## What is real and what is not
+
+- **Live (CONNECTED API):** every number, agent card, timeline step, hypothesis, verification request and report comes from the
+  running backend. The flow diagram is drawn from persisted workflow events, A2A attempts, challenges and findings; its
+  connector lines are measured from the rendered cards; nothing is animated unless the matching stage is actually running.
+- **Topology node states:** *Root cause*, *Affected*, *Candidate* come from the report; *Symptom observed* from a present finding;
+  *Checked · normal* means a specialist reported on the node without an anomaly; *No findings* means no specialist reported on it.
+  The dashed ring is the backend's topology impact scope of the selected cause.
+- **Data source label:** all packaged scenarios are synthetic (generator `netcoop-scengen`), so they are labeled
+  "Synthetic scenario". Nothing is labeled "Organizer Scenario (PS)": no organizer-provided data is in the repository.
+- **Preview:** a labeled recording of one real S19 run; no writes, no backend calls.
+- **Static text:** the landing page's explanations of the approach are descriptive copy, not data.
 
 ## Display rules followed
 
@@ -77,10 +93,10 @@ with `?after=<last seq>` and exponential backoff, and refetches the affected que
 | Type check | `npx tsc --noEmit` | OK |
 | Lint | `npm run lint` (oxlint) | exit 0; only `only-export-components` / `set-state-in-effect` warnings remain |
 | Build | `npm run build` | OK |
-| S19 golden workflow, live backend | `node scripts/e2e-s19.mjs http://127.0.0.1:5173 docs/e2e-s19` | 16/16 checks passed ([result](docs/e2e-s19/result.json)) |
-| Preview and offline modes | `node scripts/e2e-modes.mjs http://127.0.0.1:5173 docs/e2e-modes` | 13/13 checks passed ([result](docs/e2e-modes/result.json)) |
-| Basic accessibility | `node scripts/a11y-check.mjs` | 10/10 routes passed |
-| Responsive screenshots | `node scripts/screenshots.mjs http://127.0.0.1:5173 <incident> docs/screenshots / /incidents …` | 1920×1080, 1536×960, 1366×768 and 390×844; no horizontal overflow |
+| S19 golden workflow, live backend | `node scripts/e2e-s19.mjs http://127.0.0.1:5173 docs/e2e-s19` | 18/18 checks passed ([result](docs/e2e-s19/result.json)) |
+| Preview and offline modes | `node scripts/e2e-modes.mjs http://127.0.0.1:5173 docs/e2e-modes` | 14/14 checks passed ([result](docs/e2e-modes/result.json)) |
+| Basic accessibility | `node scripts/a11y-check.mjs` | 11/11 routes passed |
+| Responsive screenshots | `node scripts/screenshots.mjs http://127.0.0.1:5173 <incident> docs/screenshots / /command /incidents …` | 1920×1080, 1536×960, 1366×768 and 390×844; no horizontal overflow |
 
 The S19 test drives the UI: it selects "AP down · needs verification", clicks Run diagnosis, follows the SSE stream
 to a terminal state, and checks the following against the backend's own responses for the new incident:
@@ -97,6 +113,7 @@ subset converted to WebP to keep the repository small.
 
 - The accessibility check is a scripted basic check (names, labels, headings, focus), not a full WCAG/axe audit.
   Colour contrast and screen-reader flow were not audited.
+- The Command Center places the flow and the topology side by side only at 1700 px and wider; below that they stack.
 - The topology layout is a simple tree layout from the core. It is readable for campus-sized graphs (around 25 nodes);
   large topologies are not tested.
 - The Evidence Explorer loads the first 2000 observations and renders at most 500 rows. It does not page further.

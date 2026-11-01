@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 
 const [base = 'http://127.0.0.1:5173', incident = 'INC-b2e30992c4e04543'] = process.argv.slice(2);
 const chrome = ['C:/Program Files/Google/Chrome/Application/chrome.exe', '/usr/bin/google-chrome', '/usr/bin/chromium'].find((p) => existsSync(p));
-const ROUTES = ['/', '/incidents', '/topology', '/agents', '/evidence', '/reasoning', '/report', '/scenarios', '/evaluation', '/settings'];
+const ROUTES = ['/', '/command', '/incidents', '/topology', '/agents', '/evidence', '/reasoning', '/report', '/scenarios', '/evaluation', '/settings'];
 const browser = await puppeteer.launch({ executablePath: chrome, headless: true });
 let failures = 0;
 try {

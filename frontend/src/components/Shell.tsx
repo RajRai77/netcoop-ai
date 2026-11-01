@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Activity, BarChart3, BrainCircuit, ChevronDown, Database, FileText, LayoutDashboard, ListTree, Menu, Network, Play,
+  Activity, BarChart3, BrainCircuit, Database, FileText, LayoutDashboard, ListTree, Menu, Network, Play,
   Search, Settings, Upload, Users, Wifi, WifiOff,
 } from 'lucide-react';
-import { useAgents, useCreateFromScenario, useDiagnose, useHealth, useIncident, useIncidents, useScenarios } from '@/api/hooks';
+import { useAgents, useCreateFromScenario, useDiagnose, useHealth, useIncident, useIncidents, useMeta, useScenarios } from '@/api/hooks';
 import { errorText } from '@/api/client';
 import { useApp } from '@/state/settings';
 import { agentLabel, STATE_LABEL, STATUS_LABEL } from '@/lib/format';
@@ -12,33 +12,39 @@ import { Chip, Logo } from './ui';
 import { TERMINAL_STATES } from '@/api/types';
 
 const NAV = [
-  { to: '/', label: 'Command Center', icon: LayoutDashboard, end: true },
-  { to: '/incidents', label: 'Incidents', icon: ListTree },
-  { to: '/topology', label: 'Network Topology', icon: Network },
+  { to: '/command', label: 'Command Center', icon: LayoutDashboard, end: true },
+  { to: '/incidents', label: 'Investigations', icon: ListTree },
+  { to: '/topology', label: 'Topology', icon: Network },
   { to: '/agents', label: 'Agent Collaboration', icon: Users },
-  { to: '/evidence', label: 'Evidence Explorer', icon: Database },
   { to: '/reasoning', label: 'STEaR Reasoning', icon: BrainCircuit },
-  { to: '/report', label: 'Diagnostic Report', icon: FileText },
-  { to: '/scenarios', label: 'Scenarios & Upload', icon: Upload },
+  { to: '/evidence', label: 'Evidence Explorer', icon: Database },
+  { to: '/report', label: 'Reports', icon: FileText },
+  { to: '/scenarios', label: 'Datasets & Upload', icon: Upload },
   { to: '/evaluation', label: 'Evaluation', icon: BarChart3 },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 // Curated launcher entries; only shown if the backend actually offers the scenario.
 const LAUNCHER = [
-  ['S00-healthy', 'Normal operation', '#10b981'],
-  ['S01-congestion', 'Link congestion', '#22d3ee'],
-  ['S05-weak-wifi', 'Weak Wi-Fi', '#e879f9'],
-  ['S02-interface-degradation', 'Interface fault', '#f59e0b'],
-  ['S07-dns-failure', 'DNS failure', '#8b5cf6'],
-  ['S13-csv-vendor-profile', 'Interop: vendor CSV', '#3b82f6'],
-  ['S19-ap-down-status-in-archive', 'AP down · needs verification', '#ef4444'],
+  ['S19-ap-down-status-in-archive', 'AP down · needs verification'],
+  ['S11-ambiguous-resolvable', 'Ambiguous · resolvable by verification'],
+  ['S16-ambiguous-unresolvable', 'Ambiguous · cannot be resolved'],
+  ['S09-upstream-outage', 'Upstream outage'],
+  ['S01-congestion', 'Link congestion'],
+  ['S05-weak-wifi', 'Weak Wi-Fi'],
+  ['S02-interface-degradation', 'Interface fault'],
+  ['S07-dns-failure', 'DNS failure'],
+  ['S10-compound', 'Two simultaneous faults'],
+  ['S13-csv-vendor-profile', 'Interop: vendor CSV'],
+  ['S00-healthy', 'Normal operation'],
 ] as const;
 
 function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   const { selectedScenarioId, set, preview } = useApp();
   const scenarios = useScenarios();
   const agents = useAgents();
+  const health = useHealth();
+  const meta = useMeta();
   const create = useCreateFromScenario();
   const diagnose = useDiagnose();
   const nav = useNavigate();
@@ -54,21 +60,22 @@ function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }
       await diagnose.mutateAsync({ id: r.incident.incident_id, verification: true });
       set({ activeIncidentId: r.incident.incident_id });
       onNavigate();
-      nav('/');
+      nav('/command');
     } catch (e) {
       setErr(errorText(e));
     }
   };
   const ag = agents.data?.agents ?? [];
+  const apiOk = health.isSuccess;
   return (
-    <aside className={`glass sidebar ${open ? 'open' : ''}`} aria-label="Primary">
-      <div className="brand">
+    <aside className={`sidebar ${open ? 'open' : ''}`} aria-label="Primary">
+      <Link to="/" className="brand" onClick={onNavigate} title="NetCoop AI overview">
         <Logo size={42} />
         <div>
           <div className="brand-name">NetCoop <b>AI</b></div>
-          <div className="brand-tag">Evidence-seeking diagnosis</div>
+          <div className="brand-tag">Evidence-seeking network diagnosis</div>
         </div>
-      </div>
+      </Link>
       <nav className="nav">
         {NAV.map(({ to, label, icon: I, end }) => (
           <NavLink key={to} to={to} end={end} onClick={onNavigate} className={({ isActive }) => (isActive ? 'active' : '')}>
@@ -77,30 +84,36 @@ function Sidebar({ open, onNavigate }: { open: boolean; onNavigate: () => void }
         ))}
       </nav>
       <div className="side-section">
-        <div className="side-label">Scenario launcher</div>
-        {scenarios.isError && <div className="faint" style={{ fontSize: 12.5, padding: '0 10px' }}>Scenarios unavailable</div>}
-        {entries.map(([id, label, color]) => (
-          <button key={id} className={`scenario-btn ${selectedScenarioId === id ? 'selected' : ''}`} onClick={() => set({ selectedScenarioId: id })} aria-pressed={selectedScenarioId === id}>
-            <span className="dot" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />{label}
+        <div className="side-label">New investigation</div>
+        <div className="side-card" style={{ display: 'grid', gap: 8 }}>
+          <select className="select" value={selectedScenarioId ?? ''} onChange={(e) => set({ selectedScenarioId: e.target.value })}
+                  aria-label="Scenario to run" disabled={!entries.length}>
+            {!entries.length && <option value="">{scenarios.isError ? 'Scenarios unavailable' : 'Loading scenarios…'}</option>}
+            {entries.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+          <button className="btn primary" disabled={busy || preview || !selectedScenarioId} title={preview ? 'Preview mode is read-only' : undefined} onClick={run}>
+            <Play size={16} />{busy ? 'Starting…' : 'Run diagnosis'}
           </button>
-        ))}
-        <button className="btn primary big" style={{ marginTop: 6 }} disabled={busy || preview || !selectedScenarioId}
-                title={preview ? 'Preview mode is read-only' : undefined} onClick={run}>
-          <Play size={17} />{busy ? 'Starting…' : 'Run diagnosis'}
-        </button>
-        {err && <div className="err" style={{ fontSize: 12.5 }}>{err}</div>}
-        <NavLink to="/scenarios#upload" onClick={onNavigate} className="btn sm" style={{ marginTop: 2 }}><Upload size={15} />Upload telemetry (JSON / CSV)</NavLink>
+          <NavLink to="/scenarios#upload" onClick={onNavigate} className="btn sm"><Upload size={14} />Upload telemetry</NavLink>
+          {err && <div className="err" style={{ fontSize: 12.5 }}>{err}</div>}
+        </div>
       </div>
       <div className="side-foot">
-        <div className="side-label">Specialist agents</div>
-        {agents.isError && <div className="faint" style={{ fontSize: 12.5, padding: '0 10px' }}>Agent status unavailable</div>}
-        <div className="agent-row">
+        <div className="side-label">System status</div>
+        <div className="side-card" style={{ display: 'grid', gap: 2 }}>
+          <div className="sys-row">
+            <span className="sys-dot" style={{ background: preview ? '#f59e0b' : apiOk ? '#4caf50' : '#e5484d' }} />Coordinator API
+            <span className={`tag ${apiOk || preview ? 'on' : 'off'}`}>{preview ? 'Recorded' : apiOk ? 'Online' : 'Offline'}</span>
+          </div>
           {ag.map((a) => (
-            <span key={a.agent_id} className="agent-pill" title={`${agentLabel(a.agent_id)} · ${a.status}${a.url ? ' · ' + a.url : ''}`}>
-              <span className={a.status === 'available' ? 'live-dot' : ''} style={a.status !== 'available' ? { width: 8, height: 8, borderRadius: '50%', background: 'var(--red)' } : undefined} />
-              {({ 'performance-agent': 'Perf', 'infrastructure-agent': 'Infra', 'connectivity-agent': 'Conn' } as Record<string, string>)[a.agent_id] ?? a.agent_id}
-            </span>
+            <div key={a.agent_id} className="sys-row" title={`${a.name ?? a.agent_id}${a.url ? ' · ' + a.url : ''}`}>
+              <span className="sys-dot" style={{ background: a.status === 'available' ? '#4caf50' : '#e5484d' }} />
+              {agentLabel(a.agent_id).replace(' & Services', '')} Agent
+              <span className={`tag ${a.status === 'available' ? 'on' : 'off'}`}>{a.status === 'available' ? 'Online' : 'Offline'}</span>
+            </div>
           ))}
+          {agents.isError && <div className="sys-row">Agent status unavailable</div>}
+          {meta.data && <div className="sys-row" style={{ marginTop: 4, color: '#8ea3c9', fontSize: 12 }}>v{meta.data.version} · {meta.data.agent_transport.toUpperCase()} · {meta.data.fault_library}</div>}
         </div>
       </div>
     </aside>
@@ -126,7 +139,7 @@ function IncidentPicker() {
     <div ref={ref} style={{ position: 'relative', flex: 1, maxWidth: 560 }}>
       <div style={{ position: 'relative' }}>
         <Search size={17} style={{ position: 'absolute', left: 12, top: 11, color: 'var(--text-faint)' }} />
-        <input className="input" style={{ paddingLeft: 38 }} placeholder="Search incidents, scenarios, root causes…" value={q}
+        <input className="input" style={{ paddingLeft: 38 }} placeholder="Search investigations, scenarios, root causes…" value={q}
                onChange={(e) => { setQ(e.target.value); setOpen(true); }} onFocus={() => setOpen(true)} aria-label="Search incidents" />
       </div>
       {open && (
@@ -217,7 +230,7 @@ export function Shell() {
       <main className="main">
         <div className="glass mobile-bar">
           <button className="btn ghost sm" onClick={() => setMenu((m) => !m)} aria-label="Menu"><Menu size={20} /></button>
-          <Logo size={28} /><strong>NetCoop AI</strong><ChevronDown size={14} className="faint" />
+          <Logo size={30} /><strong>NetCoop AI</strong>
         </div>
         <Header />
         <ModeBanner />

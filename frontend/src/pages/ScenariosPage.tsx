@@ -37,7 +37,7 @@ function ScenarioGrid() {
       const r = await create.mutateAsync(sid);
       await diagnose.mutateAsync({ id: r.incident.incident_id, verification: verify });
       set({ activeIncidentId: r.incident.incident_id, selectedScenarioId: sid });
-      nav('/');
+      nav('/command');
     } catch (e) {
       setErr(errorText(e));
     } finally {
@@ -142,7 +142,7 @@ function UploadPanel() {
     setErr(null);
     try {
       await diagnose.mutateAsync({ id: result.id, verification: verify });
-      nav('/');
+      nav('/command');
     } catch (e) {
       setErr(errorText(e));
     }

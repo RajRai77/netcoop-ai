@@ -1,10 +1,15 @@
 {
   "scenario": "S19-ap-down-status-in-archive",
-  "incident_id": "INC-e896d069b7834f7a",
-  "ran_at": "2026-10-31T23:40:59.507Z",
+  "incident_id": "INC-69e4beeca3774e6a",
+  "ran_at": "2026-11-01T01:26:17.475Z",
   "ui": "http://127.0.0.1:5173",
   "passed": true,
   "steps": [
+    {
+      "name": "Landing page explains the product and shows the live backend",
+      "ok": true,
+      "detail": ""
+    },
     {
       "name": "UI shows CONNECTED API (live backend, not preview)",
       "ok": true,
@@ -18,12 +23,17 @@
     {
       "name": "Run diagnosis created a new S19 incident on the backend",
       "ok": true,
-      "detail": "INC-e896d069b7834f7a"
+      "detail": "INC-69e4beeca3774e6a"
     },
     {
       "name": "UI opened the SSE stream for the incident",
       "ok": true,
       "detail": "1 stream request(s)"
+    },
+    {
+      "name": "Command Center flow shows the verification request to the infrastructure agent",
+      "ok": true,
+      "detail": ""
     },
     {
       "name": "Backend: first correlation round was ambiguous (AP down vs port failure)",
@@ -33,7 +43,7 @@
     {
       "name": "Backend: challenge to infrastructure-agent for device_status of AP-2-1",
       "ok": true,
-      "detail": "CH-4dd030ac96b90a0055b493aa {\"device_id\":\"AP-2-1\"}"
+      "detail": "CH-e1de9d2c34ec2718db242b2e {\"device_id\":\"AP-2-1\"}"
     },
     {
       "name": "Backend: challenge returned archived observations",
@@ -43,7 +53,7 @@
     {
       "name": "Backend: verify task went over A2A",
       "ok": true,
-      "detail": "3c321827-3260-4ddf-8247-96b4f8d34706"
+      "detail": "2273978c-5369-4a4a-9535-8693a715ab2d"
     },
     {
       "name": "UI timeline shows the QUERY to Infrastructure for device_status@AP-2-1",
@@ -78,7 +88,7 @@
     {
       "name": "Exported report JSON equals the backend report",
       "ok": true,
-      "detail": "INC-e896d069b7834f7a-r1.json"
+      "detail": "INC-69e4beeca3774e6a-r1.json"
     },
     {
       "name": "No browser errors",

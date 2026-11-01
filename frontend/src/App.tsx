@@ -4,6 +4,7 @@ import { Shell } from './components/Shell';
 import { Loading } from './components/ui';
 import { CommandCenter } from './pages/CommandCenter';
 
+const Landing = lazy(() => import('./pages/Landing'));
 const Incidents = lazy(() => import('./pages/Incidents'));
 const TopologyPage = lazy(() => import('./pages/TopologyPage'));
 const AgentsPage = lazy(() => import('./pages/AgentsPage'));
@@ -18,8 +19,9 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route index element={<Suspense fallback={<Loading />}><Landing /></Suspense>} />
         <Route element={<Shell />}>
-          <Route index element={<CommandCenter />} />
+          <Route path="command" element={<CommandCenter />} />
           {[
             ['incidents', Incidents], ['topology', TopologyPage], ['agents', AgentsPage], ['evidence', EvidencePage],
             ['reasoning', ReasoningPage], ['report', ReportPage], ['scenarios', ScenariosPage], ['evaluation', EvaluationPage],
@@ -28,7 +30,7 @@ export function App() {
             const Page = C as ComponentType;
             return <Route key={path as string} path={path as string} element={<Suspense fallback={<Loading />}><Page /></Suspense>} />;
           })}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/command" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

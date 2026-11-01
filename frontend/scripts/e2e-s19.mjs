@@ -50,17 +50,19 @@ try {
 
   // 1. Backend reachable and connected (not preview)
   await page.goto(base + '/', { waitUntil: 'networkidle0', timeout: 60000 });
+  const landing = await page.evaluate(() => document.body.innerText);
+  check('Landing page explains the product and shows the live backend', landing.includes('Evidence-Seeking Federated Network Diagnosis') && landing.includes('Backend online'));
+  await page.goto(base + '/command', { waitUntil: 'networkidle0', timeout: 60000 });
   await page.waitForFunction(() => document.body.innerText.includes('CONNECTED API'), { timeout: 20000 });
   check('UI shows CONNECTED API (live backend, not preview)', true);
   const agents = await api('/api/agents');
   check('3 specialist agents available over A2A', agents.agents.filter((a) => a.status === 'available' && a.transport === 'a2a').length === 3,
     agents.agents.map((a) => `${a.agent_id}:${a.status}/${a.transport}`).join(', '));
 
-  // 2. Select S19 in the launcher and run
-  const btn = await page.waitForSelector('xpath/.//button[contains(@class,"scenario-btn")][contains(., "AP down")]');
-  await btn.click();
-  await page.waitForFunction(() => document.querySelector('.scenario-btn.selected')?.textContent?.includes('AP down'));
-  const run = await page.waitForSelector('xpath/.//button[contains(., "Run diagnosis")]');
+  // 2. Select S19 in the sidebar launcher and run
+  await page.waitForSelector('select[aria-label="Scenario to run"] option[value="' + SCENARIO + '"]');
+  await page.select('select[aria-label="Scenario to run"]', SCENARIO);
+  const run = await page.waitForSelector('xpath/.//aside//button[contains(., "Run diagnosis")]');
   await run.click();
   await page.waitForFunction(() => JSON.parse(localStorage.getItem('netcoop-ui-v2') || '{}').state?.activeIncidentId, { timeout: 30000 });
   incidentId = await page.evaluate(() => JSON.parse(localStorage.getItem('netcoop-ui-v2')).state.activeIncidentId);
@@ -76,6 +78,9 @@ try {
   const report = await api(`/api/incidents/${incidentId}/report`);
   const tl = await api(`/api/incidents/${incidentId}/timeline`);
   await page.screenshot({ path: `${outDir}/2-command-center.png`, fullPage: true });
+  const ccText = await page.evaluate(() => document.querySelector('.flow')?.textContent ?? '');
+  check('Command Center flow shows the verification request to the infrastructure agent',
+    ccText.includes('ASKED TO VERIFY') && ccText.includes('device_status') && ccText.includes('AP-2-1') && ccText.includes('DEVICE_DOWN'));
 
   // 4. Initial ambiguity + verification challenge (backend truth), and that the UI shows it
   const rounds = tl.events.filter((e) => e.state === 'CORRELATING' && e.run_id === inc.workflow?.run_id);

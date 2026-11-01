@@ -39,7 +39,7 @@ export default function Incidents() {
               <thead><tr><th>Incident</th><th>Scenario</th><th>Data mode</th><th>Created</th><th>Workflow</th><th>Latest result</th><th>Support</th></tr></thead>
               <tbody>
                 {rows.map((i) => (
-                  <tr key={i.incident_id} className="click" onClick={() => { set({ activeIncidentId: i.incident_id }); nav('/'); }}
+                  <tr key={i.incident_id} className="click" onClick={() => { set({ activeIncidentId: i.incident_id }); nav('/command'); }}
                       style={i.incident_id === activeIncidentId ? { background: 'rgba(34,211,238,.08)' } : undefined}>
                     <td><div style={{ fontWeight: 600 }}>{i.title ?? '—'}</div><div className="mono faint">{i.incident_id}</div></td>
                     <td className="mono">{i.scenario_id ?? 'upload'}</td>

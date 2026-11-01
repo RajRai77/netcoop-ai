@@ -62,10 +62,18 @@ export const AGENT_LABEL: Record<string, string> = {
   coordinator: 'Coordinator',
 };
 export const AGENT_TONE: Record<string, Tone> = {
-  'performance-agent': 'cyan',
+  'performance-agent': 'blue',
   'infrastructure-agent': 'violet',
-  'connectivity-agent': 'magenta',
+  'connectivity-agent': 'green',
   coordinator: 'blue',
+};
+export const AGENT_COLOR: Record<string, string> = {
+  'performance-agent': '#1a73e8', 'infrastructure-agent': '#7c4dff', 'connectivity-agent': '#43a047', coordinator: '#1a73e8',
+};
+export const AGENT_ROLE: Record<string, string> = {
+  'performance-agent': 'Latency, loss, jitter, utilization',
+  'infrastructure-agent': 'Device, interface, CPU and Wi-Fi state',
+  'connectivity-agent': 'Reachability, DNS and DHCP',
 };
 export const agentLabel = (a: string) => AGENT_LABEL[a] ?? a;
 
@@ -127,4 +135,17 @@ export function downloadBlob(name: string, content: string, type: string) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+/** Honest data-source label. Only backend facts are used; nothing is called "organizer" or "live" unless it is. */
+export function dataSourceLabel(inc: { data_mode: string; scenario_id: string | null }, preview: boolean): string {
+  if (preview) return 'Recorded investigation (preview)';
+  if (inc.scenario_id) return inc.data_mode === 'synthetic' ? 'Synthetic scenario' : `Scenario (${inc.data_mode})`;
+  return ({ recorded: 'Uploaded telemetry (recorded)', emulated: 'Uploaded telemetry (emulated)', synthetic: 'Uploaded telemetry (synthetic)', live: 'Live telemetry' } as Record<string, string>)[inc.data_mode] ?? inc.data_mode;
+}
+
+export function clock(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) return '—';
+  const s = Math.round(ms / 1000);
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 }
