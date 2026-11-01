@@ -172,6 +172,9 @@ jobs:
           sleep 6
           docker logs nr 2>&1 | grep "memory RSS" | tail -3
           docker stats --no-stream --format "container {{.Name}}: {{.MemUsage}}" nr
+          # annotations are readable without login, so the measurement is public
+          echo "::notice title=render-image memory (after a diagnosis)::$(docker logs nr 2>&1 | grep 'memory RSS' | tail -1 | sed 's/.*memory/memory/')"
+          echo "::notice title=render-image docker stats::$(docker stats --no-stream --format '{{.MemUsage}}' nr)"
       - name: Logs on failure
         if: failure()
         run: docker logs nr
