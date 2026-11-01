@@ -94,6 +94,8 @@ Executed on Windows 11 / Chrome 157, with the backend on port 8010 and Vite on 5
 - `node scripts/a11y-check.mjs`: 10/10 routes passed (basic checks only; not a WCAG audit).
 - Screenshots at 1920/1536/1366/390 px: no horizontal overflow.
 
+Second pass (same day): light glass workspace with navy navigation, a dark landing page at `/` using the supplied logo, Command Center moved to `/command`, a reasoning-flow diagram built from persisted events/attempts/challenges, and a topology view with "checked · normal" vs "no findings" states and the impact scope. Re-run after the change: tsc, oxlint (exit 0), build OK; `e2e-s19` **18/18**, `e2e-modes` 14/14, a11y 11/11 routes, 44 screenshots with no overflow. All scenarios are labeled "Synthetic scenario"; no data is labeled as organizer-provided.
+
 Not done: a frontend CI job (the browser scripts need a local Chrome and a running backend), a full axe/WCAG audit, and Compose serving of the new `dist/`.
 
 ## Repository hygiene note
