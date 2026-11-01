@@ -4,7 +4,7 @@
     uv run python scripts/make_release.py --verify   # ...and verify it from a clean extraction
 
 Contents: `git archive` of HEAD (tracked files only, so no .env, local data or untracked files) plus the React
-app built from the same commit (frontend/dist) so no Node.js is needed to run it. Refuses to build from a dirty
+app built from a fresh export of the same commit (frontend/dist) so no Node.js is needed to run it. Refuses to build from a dirty
 working tree. --verify extracts into an empty temporary folder, runs `uv sync --locked` and the launcher's own
 end-to-end check (API + three A2A agents + React app), and scans the archive for secret-like content.
 """
@@ -41,17 +41,22 @@ def build() -> Path:
     npm = shutil.which("npm") or shutil.which("npm.cmd")
     if not npm:
         raise SystemExit("npm is required to build the React app for the release")
-    sh([npm, "ci", "--no-audit", "--no-fund"], cwd=ROOT / "frontend")
-    sh([npm, "run", "build"], cwd=ROOT / "frontend")
     OUT.mkdir(exist_ok=True)
     prefix = f"netcoop-ai-{commit}/"
     zpath = OUT / f"netcoop-ai-{commit}.zip"
     archive = subprocess.run(["git", "archive", "--format=zip", f"--prefix={prefix}", "HEAD"], cwd=ROOT,
                              capture_output=True, check=True).stdout
+    # Build the React app from the committed sources (a fresh export), not from the working tree.
+    build_dir = Path(tempfile.mkdtemp(prefix="netcoop-ui-build-"))
+    with zipfile.ZipFile(io.BytesIO(archive)) as src:
+        src.extractall(build_dir)
+    fe = build_dir / prefix / "frontend"
+    sh([npm, "ci", "--no-audit", "--no-fund"], cwd=fe)
+    sh([npm, "run", "build"], cwd=fe)
     with zipfile.ZipFile(io.BytesIO(archive)) as src, zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as dst:
         for info in src.infolist():
             dst.writestr(info, src.read(info))
-        dist = ROOT / "frontend" / "dist"
+        dist = fe / "dist"
         for f in sorted(p for p in dist.rglob("*") if p.is_file()):
             dst.write(f, prefix + "frontend/dist/" + f.relative_to(dist).as_posix())
         dst.writestr(prefix + "RELEASE.txt",
