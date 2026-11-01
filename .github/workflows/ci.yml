@@ -153,7 +153,7 @@ jobs:
           echo "TOKEN=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
           . "$GITHUB_ENV"
           docker run -d --name nr -p 10000:10000 --add-host=host.docker.internal:host-gateway \
-            -e PORT=10000 -e NETCOOP_ENV=production -e NETCOOP_LOG_MEMORY_S=5 \
+            -e PORT=10000 -e NETCOOP_ENV=production -e NETCOOP_LOG_MEMORY_S=5 -e NETCOOP_AUTH_MODE=token \
             -e NETCOOP_DATABASE_URL=postgresql://netcoop:ci-only-password@host.docker.internal:5432/netcoop \
             -e NETCOOP_API_TOKEN="$TOKEN" netcoop-render
           for i in $(seq 1 60); do curl -fsS http://127.0.0.1:10000/health/ready && break; sleep 2; done

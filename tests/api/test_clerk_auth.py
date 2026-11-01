@@ -152,7 +152,6 @@ def test_pre_auth_records_are_not_exposed(make_client):
 
 
 @pytest.mark.parametrize("kw,missing", [
-    (dict(clerk_jwt_key=None, clerk_secret_key=None), "CLERK_SECRET_KEY"),
     (dict(clerk_publishable_key=None), "CLERK_PUBLISHABLE_KEY"),
     (dict(clerk_authorized_parties=()), "CLERK_AUTHORIZED_PARTIES"),
 ])
@@ -176,3 +175,41 @@ def test_legacy_token_mode_is_unchanged(make_client):
     assert c.get("/api/meta").status_code == 401
     assert c.get("/api/incidents", headers=bearer("ci-token")).status_code == 200
     assert c.get("/api/incidents", headers=bearer(token())).status_code == 401
+
+
+def _jwks(*keys):
+    from jwt.algorithms import RSAAlgorithm
+    import json as _json
+    out = []
+    for kid, k in keys:
+        d = _json.loads(RSAAlgorithm.to_jwk(k.public_key()))
+        d.update(kid=kid, use="sig", alg="RS256")
+        out.append(d)
+    return {"keys": out}
+
+
+def test_public_jwks_verification_without_any_secret():
+    from netcoop.api.auth import ClerkVerifier, AuthError
+    calls = []
+    def fetch():
+        calls.append(1)
+        return _jwks(("ins_test", KEY))
+    v = ClerkVerifier(secret_key=None, jwt_key=None, issuer=ISS, authorized_parties=(ORIGIN,), jwks_fetch=fetch)
+    assert v.verify("Bearer " + token("user_alice")) == "user_alice"
+    assert v.verify("Bearer " + token("user_bob")) == "user_bob"
+    assert len(calls) == 1  # cached
+    with pytest.raises(AuthError):
+        v.verify("Bearer " + jwt.encode({"sub": "user_x"}, OTHER_KEY, algorithm="RS256", headers={"kid": "ins_other"}))
+    with pytest.raises(AuthError):  # right kid, wrong key
+        v.verify("Bearer " + token(key=OTHER_KEY))
+    with pytest.raises(AuthError):
+        v.verify("Bearer " + token(iss="https://evil.clerk.accounts.dev"))
+
+
+def test_public_jwks_unreachable_fails_closed():
+    from netcoop.api.auth import ClerkVerifier, AuthError
+    def fetch():
+        raise OSError("network down")
+    v = ClerkVerifier(secret_key=None, jwt_key=None, issuer=ISS, authorized_parties=(ORIGIN,), jwks_fetch=fetch)
+    with pytest.raises(AuthError):
+        v.verify("Bearer " + token())

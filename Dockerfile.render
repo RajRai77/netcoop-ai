@@ -13,8 +13,10 @@ COPY frontend/ ./
 # Clerk's PUBLISHABLE key is public by design and must be known at build time (it is compiled into the bundle).
 # Only this one variable is declared as a build argument; secrets (CLERK_SECRET_KEY, database URL) are never
 # declared here, so they cannot reach an image layer or the JavaScript. Empty = no Clerk (token/none mode UI).
-ARG VITE_CLERK_PUBLISHABLE_KEY=""
-RUN case "$VITE_CLERK_PUBLISHABLE_KEY" in ""|pk_test_*|pk_live_*) ;; *) echo "VITE_CLERK_PUBLISHABLE_KEY must be a Clerk publishable key (pk_...)"; exit 1;; esac     && VITE_CLERK_PUBLISHABLE_KEY="$VITE_CLERK_PUBLISHABLE_KEY" npm run build
+# Default: the NetCoop AI Clerk development instance (uncommon-gar-47.clerk.accounts.dev). Public, not a secret.
+ARG VITE_CLERK_PUBLISHABLE_KEY="pk_test_dW5jb21tb24tZ2FyLTQ3LmNsZXJrLmFjY291bnRzLmRldiQ"
+RUN case "$VITE_CLERK_PUBLISHABLE_KEY" in ""|pk_test_*|pk_live_*) ;; *) echo "VITE_CLERK_PUBLISHABLE_KEY must be a Clerk publishable key (pk_...)"; exit 1;; esac \
+    && VITE_CLERK_PUBLISHABLE_KEY="$VITE_CLERK_PUBLISHABLE_KEY" npm run build
 
 FROM python:3.12-slim-bookworm AS build
 COPY --from=ghcr.io/astral-sh/uv:0.11.24 /uv /bin/uv
@@ -39,6 +41,11 @@ ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 \
     NETCOOP_HOST=0.0.0.0 NETCOOP_DATA_DIR=/app/var \
     NETCOOP_SCENARIOS_DIR=/app/data/scenarios NETCOOP_EVAL_DIR=/app/eval \
     NETCOOP_FRONTEND_DIST=/app/frontend-dist NETCOOP_TASK_TIMEOUT_S=60 NETCOOP_LOG_MEMORY_S=300
+# Google sign-in (docs/27). Public values only: sessions are verified with the instance's published JWKS, or with
+# CLERK_SECRET_KEY if it is set in the platform's runtime environment. Platform env vars override these defaults.
+ENV NETCOOP_AUTH_MODE=clerk \
+    CLERK_PUBLISHABLE_KEY=pk_test_dW5jb21tb24tZ2FyLTQ3LmNsZXJrLmFjY291bnRzLmRldiQ \
+    CLERK_AUTHORIZED_PARTIES=https://netcoop-ai-07i3.onrender.com
 USER app
 EXPOSE 10000
 HEALTHCHECK --interval=15s --timeout=3s --start-period=40s --retries=3 \

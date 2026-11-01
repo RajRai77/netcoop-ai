@@ -16,6 +16,10 @@ from __future__ import annotations
 import base64
 import binascii
 import hmac
+import json
+import threading
+import time
+import urllib.request
 from dataclasses import dataclass
 from types import SimpleNamespace
 
@@ -55,17 +59,71 @@ def issuer_from_publishable_key(pk: str) -> str | None:
     return None
 
 
+class PublicJwks:
+    """The instance's PUBLIC signing keys from <issuer>/.well-known/jwks.json (no secret needed). Cached for an hour;
+    an unknown key id triggers at most one refetch per minute (key rotation)."""
+
+    def __init__(self, issuer: str, fetch=None):
+        self.url = issuer.rstrip("/") + "/.well-known/jwks.json"
+        self._fetch = fetch or self._http
+        self._keys: dict[str, str] = {}
+        self._at = 0.0
+        self._lock = threading.Lock()
+
+    def _http(self) -> dict:
+        with urllib.request.urlopen(self.url, timeout=10) as r:
+            return json.loads(r.read())
+
+    def _refresh(self) -> None:
+        from jwt.algorithms import RSAAlgorithm
+        from cryptography.hazmat.primitives import serialization
+
+        keys = {}
+        for k in self._fetch().get("keys", []):
+            if k.get("kty") == "RSA" and k.get("kid"):
+                pub = RSAAlgorithm.from_jwk(json.dumps(k))
+                keys[k["kid"]] = pub.public_bytes(serialization.Encoding.PEM,
+                                                  serialization.PublicFormat.SubjectPublicKeyInfo).decode()
+        self._keys, self._at = keys, time.monotonic()
+
+    def pem_for(self, kid: str | None) -> str | None:
+        with self._lock:
+            age = time.monotonic() - self._at
+            if not self._keys or age > 3600 or (kid not in self._keys and age > 60):
+                try:
+                    self._refresh()
+                except Exception:  # network failure: keep the cached keys; unknown kid -> rejected (fail closed)
+                    pass
+            return self._keys.get(kid) if kid else None
+
+
 class ClerkVerifier:
-    def __init__(self, *, secret_key: str | None, jwt_key: str | None, issuer: str, authorized_parties: tuple[str, ...]):
+    def __init__(self, *, secret_key: str | None, jwt_key: str | None, issuer: str, authorized_parties: tuple[str, ...],
+                 jwks_fetch=None):
         from clerk_backend_api.security.types import AuthenticateRequestOptions
 
         self.issuer = issuer.rstrip("/")
-        self.options = AuthenticateRequestOptions(
-            secret_key=secret_key or None,
-            jwt_key=(jwt_key or "").replace("\\n", "\n") or None,
-            authorized_parties=list(authorized_parties),
-            accepts_token=["session_token"],  # no machine / API-key / OAuth tokens
-        )
+        self.authorized_parties = list(authorized_parties)
+        self.secret_key = secret_key or None
+        self.jwt_key = (jwt_key or "").replace("\\n", "\n") or None
+        # Without a secret or a configured PEM key, verify against the instance's published public keys.
+        self.jwks = PublicJwks(self.issuer, jwks_fetch) if not (self.secret_key or self.jwt_key) else None
+        self._opts = AuthenticateRequestOptions
+
+    def _options(self, token: str):
+        jwt_key = self.jwt_key
+        if self.jwks is not None:
+            import jwt as pyjwt
+
+            try:
+                kid = pyjwt.get_unverified_header(token).get("kid")  # only selects which public key to verify with
+            except pyjwt.PyJWTError:
+                kid = None
+            jwt_key = self.jwks.pem_for(kid)
+            if jwt_key is None:
+                raise AuthError("session not verified (unknown signing key)")
+        return self._opts(secret_key=self.secret_key, jwt_key=jwt_key, authorized_parties=self.authorized_parties,
+                          accepts_token=["session_token"])  # no machine / API-key / OAuth tokens
 
     def verify(self, authorization: str | None) -> str:
         from clerk_backend_api.security import authenticate_request
@@ -74,8 +132,8 @@ class ClerkVerifier:
             raise AuthError("session token missing")
         # Only the Authorization header is passed on: the SDK would otherwise also accept a __session cookie,
         # which would make state-changing requests forgeable cross-site (CSRF).
-        state = authenticate_request(SimpleNamespace(headers={"Authorization": "Bearer " + authorization[7:].strip()}),
-                                     self.options)
+        token = authorization[7:].strip()
+        state = authenticate_request(SimpleNamespace(headers={"Authorization": "Bearer " + token}), self._options(token))
         if not state.is_signed_in or not state.payload:
             raise AuthError(f"session not verified ({state.reason.name if state.reason else 'unknown'})")
         claims = state.payload
@@ -104,8 +162,6 @@ class Authenticator:
             self.token = settings.api_token
         if mode == "clerk":
             missing = []
-            if not (settings.clerk_secret_key or settings.clerk_jwt_key):
-                missing.append("CLERK_SECRET_KEY (or CLERK_JWT_KEY)")
             issuer = settings.clerk_issuer or issuer_from_publishable_key(settings.clerk_publishable_key or "")
             if not issuer:
                 missing.append("CLERK_PUBLISHABLE_KEY (or CLERK_ISSUER)")
@@ -113,6 +169,8 @@ class Authenticator:
                 missing.append("CLERK_AUTHORIZED_PARTIES (the app's https origins)")
             if missing:
                 raise AuthConfigError("NETCOOP_AUTH_MODE=clerk is missing " + ", ".join(missing))
+            # Key material: CLERK_SECRET_KEY (SDK fetches JWKS via the Backend API), CLERK_JWT_KEY (PEM), or neither:
+            # then the instance's public JWKS endpoint, derived from the issuer, is used.
             self.clerk = ClerkVerifier(secret_key=settings.clerk_secret_key, jwt_key=settings.clerk_jwt_key,
                                        issuer=issuer, authorized_parties=settings.clerk_authorized_parties)
 

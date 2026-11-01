@@ -21,7 +21,9 @@
 Unset `NETCOOP_AUTH_MODE` = `token` if `NETCOOP_API_TOKEN` is set, else `none` (the behaviour before Clerk).
 
 Clerk verification, per request:
-- signature RS256 against the instance keys (JWKS via `CLERK_SECRET_KEY`, or networkless with `CLERK_JWT_KEY`),
+- signature RS256 against the instance keys: by default the instance's **public** JWKS
+  (`<issuer>/.well-known/jwks.json`, cached 1 h, refetched once per minute at most for an unknown key id); or JWKS via
+  `CLERK_SECRET_KEY`; or a configured PEM `CLERK_JWT_KEY`. No secret is required;
   `exp`/`nbf` with 5 s skew, authorized party `azp` ∈ `CLERK_AUTHORIZED_PARTIES` (default: `RENDER_EXTERNAL_URL` plus
   `NETCOOP_CORS_ORIGINS`) — done by the SDK;
 - **issuer**: the SDK does not check `iss`, so NetCoop requires it to equal the instance's frontend-API URL, derived
@@ -49,7 +51,12 @@ Public in Clerk mode: `/health/live`, `/health/ready`, the React app, and the no
 
 ## Owner checklist (needs your Clerk and, for production, Google Cloud access)
 
-**A. Development instance — works today with the Render URL** (Clerk shows a small "Development mode" badge)
+**Deployed configuration (2026-11-01):** Clerk development instance `uncommon-gar-47.clerk.accounts.dev`, Google enabled.
+`Dockerfile.render` carries only its public values (`NETCOOP_AUTH_MODE=clerk`, the publishable key,
+`CLERK_AUTHORIZED_PARTIES=https://netcoop-ai-07i3.onrender.com`); sessions are verified with the instance's public
+JWKS, so no Clerk secret is stored anywhere. Render environment variables override these defaults.
+
+**A. Development instance — works with the Render URL** (Clerk shows a small "Development mode" badge)
 1. <https://dashboard.clerk.com> → **Create application** → name *NetCoop AI* → enable **Google** only (Clerk's shared
    development OAuth credentials are used; no Google Cloud setup needed) → Create.
 2. **API keys**: copy the **Publishable key** (`pk_test_…`) and the **Secret key** (`sk_test_…`).
