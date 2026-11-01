@@ -52,12 +52,12 @@ Architecture unchanged (ADR-001..006). Implementation decisions recorded here:
 New open questions:
 13. Live read-only collectors (gNMI/SNMP) for `read_only` challenges are not implemented; only `recorded_replay`.
 14. Healthy verdicts are limited to monitored domains; should missing domains (e.g. no DNS monitor) block `healthy`?
-15. Independent (organizer or lab) labeled data is still needed for a non-self-referential accuracy claim.
+15. Independent (organizer or lab) labeled data is still needed for a non-self-referential accuracy claim. (2026-11-01: the organizer's sample generator labels only symptom classes, so it supports presence/localization tests but not root-cause accuracy.)
 
 ## Unresolved, must verify before irreversible implementation
 
 1. Host OS, CPU/RAM, Docker availability, public domain and VPS provider/budget. No assumption of campus privileges.
-2. Organizer-provided data generator's actual schema/units and sample scenarios; verify rather than invent aliases.
+2. **(RESOLVED 2026-11-01)** Organizer-provided data generator's actual schema/units and sample scenarios. The PS sample generator is kept verbatim in `data/organizer/`; units come from its field suffixes (`_pct`, `_ms`); `queue_drops`, `interface_errors` and `status` have no defined semantics and are left unmapped (reported as UNMAPPED_FIELD), not guessed.
 3. Pinned A2A SDK/protocol versions, exact A2A binding and Inspector compatibility.
 4. Which first fault classes have ground-truth examples and discriminating observations available.
 5. Freshness windows, metric ontology and detailed temporal/semantic validation rules.
@@ -72,3 +72,20 @@ New open questions:
 ## ADR amendment log
 
 Append each change with date, reason, impact on deployment/PS tests, migration, exact status. See ADR template in `03_ARCHITECTURE_DECISIONS.md`.
+
+### 2026-11-01 — Calibrated numeric confidence; organizer sample-generator data
+
+- **Decision:** add `confidence` and `confidence_basis` to the report (NDEP report schema **1.2.0**, additive; 1.0.0/1.1.0 still validate).
+  The PS asks for "a confidence estimate or a clearly defined confidence category" based on "a documented scoring method or calibrated
+  model". `confidence` = (k+1)/(n+2) of how often the same (status, category) was correct on held-out set `heldout-v3` (D_full), with a
+  95 % Wilson interval and n. It is calibrated data, not a heuristic score, and is withheld (`null` + reason) when the knowledge files
+  differ from the calibration's fingerprint. The support category is unchanged and remains the primary verdict.
+- **Provenance:** calibration measured on a replay of `heldout-v3` with the current code (`eval/results-heldout-v3-replay-dfull/`);
+  per-case results are identical to the original v3 run (60/60). Stored in `src/netcoop/knowledge/calibration/confidence.json`
+  (outside the top-level knowledge fingerprint, so held-out frozen-knowledge checks are unaffected).
+- **Organizer data:** source profiles gain optional `field_path_separator` (json-records) for nested fields; new profile
+  `organizer-colab-json`; `scripts/build_organizer_scenarios.py` builds `ORG-01..04` (scenario-manifest `split: "organizer"`, excluded from
+  the dev accuracy set and tested in `tests/inference/test_organizer_scenarios.py` with expectations written before the first run).
+- **Impact:** no change to detectors, fault library, engine decisions or deployment. Dev set (20 scenarios) unchanged: D_full 20/20.
+- **Status:** implemented; local pytest 309 passed, 0 failed (PostgreSQL variants run in CI).
+

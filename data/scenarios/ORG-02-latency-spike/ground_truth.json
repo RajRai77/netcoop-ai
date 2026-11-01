@@ -1,0 +1,17 @@
+{
+ "scenario_id": "ORG-02-latency-spike",
+ "faults": [],
+ "organizer_faults": [
+  {
+   "generator_fault_type": "latency_spike",
+   "device_id": "SW_CAMPUS_7",
+   "from": "2026-10-31T09:55:00Z"
+  }
+ ],
+ "expected": {
+  "status_not": "healthy",
+  "anomalies_only_at": "SW_CAMPUS_7",
+  "root_cause_location_if_diagnosed": "SW_CAMPUS_7"
+ },
+ "notes": "The generator's fault types are symptom classes, not root causes in the NetCoop fault library, so only fault presence and the faulted device are used as ground truth. Written by the harness before any diagnosis was run."
+}

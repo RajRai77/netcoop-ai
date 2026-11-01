@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "profile_id": "organizer-colab-json",
+  "version": "1",
+  "description": "Records produced by the organizer's sample input generator (PS section 5, 'Sample-Input-generator-code-COLAB'; copy in data/organizer/). Units are taken from the organizer's field-name suffixes (_pct = percent, _ms = milliseconds). queue_drops, interface_errors and status are deliberately NOT mapped: the generator does not say whether the counts are running totals or per-interval counts, nor over what interval, and status is the generator's own label derived from the same metrics (using it would double-count). They are reported as UNMAPPED_FIELD on every ingestion.",
+  "format": "json-records",
+  "field_path_separator": ".",
+  "source": {
+    "source_id": "ps-sample-generator",
+    "data_mode": "synthetic",
+    "source_type": "organizer-sample-generator"
+  },
+  "record_id": {
+    "derive": "content"
+  },
+  "timestamp": {
+    "field": "timestamp"
+  },
+  "subject": {
+    "device_id": "device_id"
+  },
+  "measurements": {
+    "metrics.cpu_utilization_pct": {
+      "metric": "cpu_utilization",
+      "unit": "percent",
+      "kind": "gauge"
+    },
+    "metrics.link_utilization_pct": {
+      "metric": "link_utilization",
+      "unit": "percent",
+      "kind": "gauge"
+    },
+    "metrics.packet_loss_pct": {
+      "metric": "packet_loss",
+      "unit": "percent",
+      "kind": "gauge"
+    },
+    "metrics.latency_ms": {
+      "metric": "latency",
+      "unit": "ms",
+      "kind": "gauge"
+    },
+    "metrics.jitter_ms": {
+      "metric": "jitter",
+      "unit": "ms",
+      "kind": "gauge"
+    }
+  }
+}

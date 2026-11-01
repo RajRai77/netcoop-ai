@@ -84,6 +84,8 @@ Keep-alive comments are sent every ~15 s. Reconnect with `?after=<last seq>`.
 ## Honesty requirements for the UI
 
 - Always show the incident `data_mode`. Scenarios are `synthetic`.
+- Report 1.2.0 adds `confidence` (calibrated on held-out data, may be `null`) and `confidence_basis` (n, correct, Wilson 95 % interval, set, caveats). Show it with its basis; keep `confidence_category` as the verdict and never render the category as a percentage.
+- Scenarios with `split: "organizer"` come from the organizer's PS sample generator; label them as such.
 - Do not show a diagnosis that is not in a report. Do not animate fake agent chatter.
 - Show `limitations` and `alternative_causes`.
 - Mock fixtures in the frontend must be clearly labeled and switched off when the backend is reachable.

@@ -1,0 +1,35 @@
+{
+ "schema_version": "1.1.0",
+ "scenario_id": "ORG-01-normal",
+ "title": "Organizer data: normal operation (10 campus switches)",
+ "data_mode": "synthetic",
+ "source_description": "Records produced by the organizer's sample input generator (PS section 5), values unmodified; seeded, fixed clock, device chosen by rejection sampling.",
+ "telemetry_file": "telemetry.json",
+ "telemetry_profile": "organizer-colab-json",
+ "topology_file": "topology.json",
+ "archive_file": null,
+ "ground_truth_file": "ground_truth.json",
+ "time_window": {
+  "start": "2026-10-31T09:50:00Z",
+  "end": "2026-10-31T10:00:00Z"
+ },
+ "reference_time": "2026-10-31T10:00:05Z",
+ "seed": 9001,
+ "split": "organizer",
+ "tags": [
+  "organizer",
+  "healthy"
+ ],
+ "generator": {
+  "version": "ps-sample-generator (organizer, unmodified)",
+  "file": "data/organizer/ps_sample_generator.py",
+  "sha256": "8597f90a6f2bbe599beae8c177d6ec656fe199f5a76aa64f4b5780ae2bcdbe0e",
+  "harness": "scripts/build_organizer_scenarios.py",
+  "seed": 9001
+ },
+ "limitations": [
+  "Synthetic data from the organizer's sample generator (PS section 5), not real network data",
+  "The generator provides no topology; the star topology is an assumption by NetCoop",
+  "queue_drops, interface_errors and status are not used: their meaning is not defined by the generator"
+ ]
+}

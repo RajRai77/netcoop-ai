@@ -19,7 +19,7 @@ from netcoop.scenarios.loader import list_scenarios, load_into
 from netcoop.spec import validator
 
 BASE = Path(__file__).resolve().parents[2] / "data" / "scenarios"
-IDS = [s["scenario_id"] for s in list_scenarios(BASE)]
+IDS = [s["scenario_id"] for s in list_scenarios(BASE) if s.get("split") != "organizer"]  # see test_organizer_scenarios
 
 
 def run(store, sid, verify):

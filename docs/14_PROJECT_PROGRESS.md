@@ -1,6 +1,6 @@
 # CURRENT IMPLEMENTATION STATUS — UPDATE EVERY CLAUDE CODE SESSION
 
-**Last updated:** 2026-11-01 (frontend redesign and integration checkpoint)
+**Last updated:** 2026-11-01 (organizer data + calibrated confidence)
 **State:** Backend complete for the approved local/CI scope. Telemetry → validated evidence → 3 independent A2A specialist processes → competing hypotheses → spatio-temporal, topology-aware reasoning → bounded evidence-seeking verification → evidence-backed JSON report → API/SSE/UI. No LLM is used, and all data is synthetic. **Ready for frontend integration** (see "Readiness").
 **Branch:** `gate0-skeleton` (pushed, user-authorized; `main` untouched). Latest commit and CI: see "CI".
 **Deployed URL:** NONE. VPS/HTTPS deployment is out of the current scope (owner decision).
@@ -97,6 +97,21 @@ Executed on Windows 11 / Chrome 157, with the backend on port 8010 and Vite on 5
 Second pass (same day): light glass workspace with navy navigation, a dark landing page at `/` using the supplied logo, Command Center moved to `/command`, a reasoning-flow diagram built from persisted events/attempts/challenges, and a topology view with "checked · normal" vs "no findings" states and the impact scope. Re-run after the change: tsc, oxlint (exit 0), build OK; `e2e-s19` **18/18**, `e2e-modes` 14/14, a11y 11/11 routes, 44 screenshots with no overflow. All scenarios are labeled "Synthetic scenario"; no data is labeled as organizer-provided.
 
 Not done: a frontend CI job (the browser scripts need a local Chrome and a running backend), a full axe/WCAG audit, and Compose serving of the new `dist/`.
+
+## Organizer data and calibrated confidence (2026-11-01)
+
+- Organizer PS sample generator kept verbatim (`data/organizer/ps_sample_generator.py`); scenarios `ORG-01-normal`, `ORG-02-latency-spike`,
+  `ORG-03-hardware-failure`, `ORG-04-schema-drift` built by `scripts/build_organizer_scenarios.py` (reproducible: two builds byte-identical).
+  Profile `spec/profiles/organizer-colab-json.json`; the adapter supports declared nested paths.
+- Results: ORG-01 healthy; ORG-02 unknown_fault at SW_CAMPUS_7; ORG-03 DEVICE_CPU_OVERLOAD at SW_CAMPUS_3 (moderate, single source);
+  ORG-04 as ORG-02 plus 2 rejected / 2 partially rejected / 1 duplicate record reported.
+- Report 1.2.0 `confidence` from a `heldout-v3` replay (identical to the original v3 run on 60/60 cases): diagnosed/high 0.97 (30/30),
+  diagnosed/moderate 0.88 (14/15), ambiguous 0.92 (11/11), healthy 0.83 (4/4).
+- Executed: full `uv run pytest` 309 passed, 0 failed, 107 skipped (PostgreSQL variants); dev-set check D_full 20/20; frontend tsc, oxlint
+  (exit 0), build; browser e2e S19 18/18, organizer 10/10, preview/offline 14/14, a11y 11/11 routes.
+- UI: organizer scenarios are the default in the launcher, landing demo and Command Center welcome; data labeled
+  "Organizer data · PS sample generator"; calibrated confidence shown with its basis beside the support category.
+- Not done: demo video (owner); PostgreSQL variants of the new tests run only in CI.
 
 ## Repository hygiene note
 

@@ -100,8 +100,10 @@
     "split": {
       "enum": [
         "dev",
-        "heldout"
-      ]
+        "heldout",
+        "organizer"
+      ],
+      "description": "'organizer' = scenarios built from the organizer's sample generator (PS section 5); not part of the dev or held-out accuracy sets."
     },
     "tags": {
       "type": "array",

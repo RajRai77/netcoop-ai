@@ -66,6 +66,18 @@ def list_builtin_profiles() -> list[str]:
     return sorted(p.stem for p in d.glob("*.json")) if d.is_dir() else []
 
 
+def _flatten(row: dict, sep: str, prefix: str = "") -> dict:
+    """Nested JSON object -> {"a.b": value}. Only objects are descended; lists and scalars are kept as values."""
+    out: dict[str, Any] = {}
+    for k, v in row.items():
+        key = f"{prefix}{sep}{k}" if prefix else str(k)
+        if isinstance(v, dict) and v:
+            out.update(_flatten(v, sep, key))
+        else:
+            out[key] = v
+    return out
+
+
 def _csv_value(raw: str, value_type: str) -> Any:
     """CSV cells are text; convert only by the target metric's declared type."""
     text = raw.strip()
@@ -105,6 +117,7 @@ def adapt(payload: bytes | str, profile: dict, registry: MetricRegistry | None =
             if None in r:  # more cells than header columns
                 raise EvidenceError.single(IssueCode.CSV_MALFORMED, f"row {i + 2} has more cells than the header")
         typed = False
+        originals = rows
     else:
         try:
             rows = json.loads(text)
@@ -113,6 +126,10 @@ def adapt(payload: bytes | str, profile: dict, registry: MetricRegistry | None =
         if not isinstance(rows, list) or not all(isinstance(r, dict) for r in rows):
             raise EvidenceError.single(IssueCode.SCHEMA_INVALID, "json-records payload must be an array of objects")
         typed = True
+    originals = rows  # raw records keep the payload exactly as received
+    sep = profile.get("field_path_separator")
+    if sep and profile["format"] == "json-records":
+        rows = [_flatten(r, sep) for r in rows]
     if not rows:
         raise EvidenceError.single(IssueCode.SCHEMA_INVALID, "no data rows")
     if len(rows) > max_rows:
@@ -177,5 +194,5 @@ def adapt(payload: bytes | str, profile: dict, registry: MetricRegistry | None =
         issues.append(Issue(code=IssueCode.TIMEZONE_FROM_PROFILE, severity=Severity.WARNING,
                             message=f"{tz_applied} timestamp(s) had no offset; applied declared profile timezone {tz}"))
     batch = {"schema_version": "1.0.0", "source": dict(profile["source"]), "records": records}
-    return AdaptedBatch(batch=batch, originals=rows, source_schema=f"profile:{profile['profile_id']}@{profile['version']}",
+    return AdaptedBatch(batch=batch, originals=originals, source_schema=f"profile:{profile['profile_id']}@{profile['version']}",
                         issues=issues)

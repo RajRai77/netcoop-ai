@@ -1,0 +1,2345 @@
+{
+ "generated_by": "netcoop.evaluation.runner",
+ "git_commit": "17b70ccbdca5b093a8e6156a9d8add89b4fad16b",
+ "code": {
+  "diagnosis_code_sha256": "e3f69ad9fe41c563f81b8276bc8d641b4e60996a0ce4fd553465bb7ab89a9f56",
+  "uncommitted_changes": [
+   "spec/profiles/organizer-colab-json.json",
+   "spec/scenario-manifest.schema.json",
+   "spec/source-profile.schema.json",
+   "src/netcoop/evaluation/runner.py",
+   "src/netcoop/evidence/adapters.py"
+  ]
+ },
+ "platform": "Windows 11 / Python 3.12.10",
+ "knowledge": {
+  "detector_rules": "detector-rules/1",
+  "fault_library": "fault-library/3",
+  "sha256": {
+   "detector_rules.json": "d5dc3c3cd31ed0525b81f9d50ebc9703907c5d803c08372d08920bbdc37f76a4",
+   "fault_library.json": "c7cbca62d2ad46373bade16c3ccd39186e0893f690eed6d75a42bca392dffda0"
+  }
+ },
+ "transport": "in-process (same specialist code and NDEP payloads as A2A; see integration tests)",
+ "sets": {
+  "heldout-v3": {
+   "path": "E:\\netcoop-ai\\data\\heldout-v3",
+   "scenarios": 60,
+   "knowledge_frozen_before_generation": true,
+   "summary": {
+    "D_full": {
+     "cases": 60,
+     "acceptable_outcome": {
+      "count": 59,
+      "of": 60
+     },
+     "exact_cause_on_diagnosable": {
+      "count": 44,
+      "of": 45
+     },
+     "fault_type_on_diagnosable": {
+      "count": 44,
+      "of": 45
+     },
+     "localization_on_diagnosable": {
+      "count": 44,
+      "of": 45
+     },
+     "confident_wrong_all": {
+      "count": 1,
+      "of": 60
+     },
+     "high_support_wrong_all": {
+      "count": 0,
+      "of": 60
+     },
+     "abstained_when_not_diagnosable": {
+      "count": 11,
+      "of": 11
+     },
+     "false_healthy_on_faulty": {
+      "count": 0,
+      "of": 56
+     },
+     "healthy_correct": {
+      "count": 4,
+      "of": 4
+     },
+     "unknown_detected": {
+      "count": 0,
+      "of": 4
+     },
+     "multi_fault_full_recall": {
+      "count": 1,
+      "of": 2
+     },
+     "checks_requested_total": 124,
+     "checks_obtained_total": 80,
+     "seconds_median": 4.641,
+     "seconds_max": 20.907
+    }
+   },
+   "cases": {
+    "D_full": [
+     {
+      "scenario_id": "V03-000-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-1-1"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at ACC-1-1",
+      "seconds": 4.401,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-1-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-001-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at DIST-2",
+      "seconds": 4.247,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-002-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "suspected_root_cause": "DNS_FAILURE at DNS-1",
+      "seconds": 1.561,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 33,
+      "truth": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-003-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_DOWN",
+        "DIST-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_DOWN at DIST-2",
+      "seconds": 3.853,
+      "checks_requested": 1,
+      "checks_obtained": 1,
+      "new_observations": 11,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "DIST-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-004-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-3-2:ge1/1"
+       ]
+      ],
+      "suspected_root_cause": "INTERFACE_DEGRADATION at ACC-3-2:ge1/1",
+      "seconds": 2.657,
+      "checks_requested": 3,
+      "checks_obtained": 1,
+      "new_observations": 44,
+      "truth": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-3-2:ge1/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-005-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 0.986,
+      "checks_requested": 2,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "AP-3-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-006-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-3-3:ge1/1"
+       ]
+      ],
+      "suspected_root_cause": "INTERFACE_DEGRADATION at ACC-3-3:ge1/1",
+      "seconds": 1.481,
+      "checks_requested": 3,
+      "checks_obtained": 2,
+      "new_observations": 88,
+      "truth": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-3-3:ge1/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-007-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-2-2"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-2-2",
+      "seconds": 4.67,
+      "checks_requested": 3,
+      "checks_obtained": 1,
+      "new_observations": 44,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-2-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-008-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-1"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-1-1",
+      "seconds": 4.703,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-009-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 14.568,
+      "checks_requested": 2,
+      "checks_obtained": 2,
+      "new_observations": 22,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-010-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 6.469,
+      "checks_requested": 2,
+      "checks_obtained": 2,
+      "new_observations": 22,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-011-unmodeled",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.416,
+      "checks_requested": 6,
+      "checks_obtained": 4,
+      "new_observations": 154,
+      "truth": [
+       [
+        "UNMODELED_PATH_ISSUE",
+        "ACC-2-3"
+       ]
+      ],
+      "unmodeled": true,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-012-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "suspected_root_cause": "DNS_FAILURE at DNS-1",
+      "seconds": 5.981,
+      "checks_requested": 2,
+      "checks_obtained": 2,
+      "new_observations": 22,
+      "truth": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-013-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-2-3",
+      "seconds": 6.016,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-014-compound",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at DIST-2",
+      "seconds": 2.103,
+      "checks_requested": 4,
+      "checks_obtained": 3,
+      "new_observations": 110,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-2"
+       ],
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": true,
+       "confident_wrong": true,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": 0.5,
+       "diagnosable": true,
+       "acceptable": false
+      }
+     },
+     {
+      "scenario_id": "V03-015-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 1.093,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-2-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-016-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 5.374,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-017-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-3"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at ACC-3-3",
+      "seconds": 3.476,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 121,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-018-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-2-3",
+      "seconds": 5.727,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-019-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 1.124,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-020-healthy",
+      "method": "D_full",
+      "status": "healthy",
+      "category": "not_applicable",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.022,
+      "checks_requested": 6,
+      "checks_obtained": 5,
+      "new_observations": 121,
+      "truth": [],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": true,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-021-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "LINK_CONGESTION",
+        "CORE-1:ge0/1"
+       ]
+      ],
+      "suspected_root_cause": "LINK_CONGESTION at CORE-1:ge0/1",
+      "seconds": 5.426,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "LINK_CONGESTION",
+        "CORE-1:ge0/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-022-healthy",
+      "method": "D_full",
+      "status": "healthy",
+      "category": "not_applicable",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.292,
+      "checks_requested": 6,
+      "checks_obtained": 5,
+      "new_observations": 121,
+      "truth": [],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": true,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-023-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 5.003,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-024-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 4.67,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-025-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-1"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-3-1",
+      "seconds": 1.427,
+      "checks_requested": 3,
+      "checks_obtained": 2,
+      "new_observations": 88,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-026-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 1.148,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "LINK_CONGESTION",
+        "DIST-3:ge0/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-027-healthy",
+      "method": "D_full",
+      "status": "healthy",
+      "category": "not_applicable",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.022,
+      "checks_requested": 6,
+      "checks_obtained": 5,
+      "new_observations": 121,
+      "truth": [],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": true,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-028-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-1"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at DIST-1",
+      "seconds": 1.857,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 110,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-029-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 4.932,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-030-unmodeled",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.233,
+      "checks_requested": 6,
+      "checks_obtained": 4,
+      "new_observations": 154,
+      "truth": [
+       [
+        "UNMODELED_PATH_ISSUE",
+        "ACC-2-3"
+       ]
+      ],
+      "unmodeled": true,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-031-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_DOWN",
+        "AP-1-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_DOWN at AP-1-2",
+      "seconds": 4.71,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "AP-1-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-032-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 0.919,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "ACC-1-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-033-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 4.774,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-034-unmodeled",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 0.982,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "UNMODELED_PATH_ISSUE",
+        "ACC-3-2"
+       ]
+      ],
+      "unmodeled": true,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-035-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_DOWN",
+        "ACC-1-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_DOWN at ACC-1-2",
+      "seconds": 1.726,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 108,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "ACC-1-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-036-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 1.984,
+      "checks_requested": 4,
+      "checks_obtained": 4,
+      "new_observations": 77,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-037-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 4.641,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-038-compound",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "INTERFACE_DEGRADATION",
+        "DIST-3:ge0/2"
+       ],
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-3"
+       ]
+      ],
+      "suspected_root_cause": "INTERFACE_DEGRADATION at DIST-3:ge0/2 + WIRELESS_INTERFERENCE at AP-3-3",
+      "seconds": 4.479,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "INTERFACE_DEGRADATION",
+        "DIST-3:ge0/2"
+       ],
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": 1.0,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-039-unmodeled",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.226,
+      "checks_requested": 6,
+      "checks_obtained": 4,
+      "new_observations": 154,
+      "truth": [
+       [
+        "UNMODELED_PATH_ISSUE",
+        "ACC-3-3"
+       ]
+      ],
+      "unmodeled": true,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-040-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-2-3",
+      "seconds": 1.604,
+      "checks_requested": 3,
+      "checks_obtained": 2,
+      "new_observations": 88,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-2-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-041-healthy",
+      "method": "D_full",
+      "status": "healthy",
+      "category": "not_applicable",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 6.467,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": true,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-042-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-1-3",
+      "seconds": 5.54,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-043-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-3"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-1-3",
+      "seconds": 5.049,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-044-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 1.006,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-1-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-045-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-2"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-3-2",
+      "seconds": 6.065,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-3-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-046-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_DOWN",
+        "DIST-2"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_DOWN at DIST-2",
+      "seconds": 12.089,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "DIST-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-047-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-1-3",
+      "seconds": 5.503,
+      "checks_requested": 3,
+      "checks_obtained": 2,
+      "new_observations": 88,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-048-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "suspected_root_cause": "DHCP_FAILURE at DHCP-1",
+      "seconds": 20.907,
+      "checks_requested": 2,
+      "checks_obtained": 2,
+      "new_observations": 22,
+      "truth": [
+       [
+        "DHCP_FAILURE",
+        "DHCP-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-049-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_DOWN",
+        "ACC-2-3"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_DOWN at ACC-2-3",
+      "seconds": 15.527,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_DOWN",
+        "ACC-2-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-050-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "LINK_CONGESTION",
+        "ACC-3-3:ge1/1"
+       ]
+      ],
+      "suspected_root_cause": "LINK_CONGESTION at ACC-3-3:ge1/1",
+      "seconds": 10.842,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "LINK_CONGESTION",
+        "ACC-3-3:ge1/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-051-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-3"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at DIST-3",
+      "seconds": 2.224,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 110,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "DIST-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-052-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-1"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at ACC-3-1",
+      "seconds": 14.928,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-053-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "suspected_root_cause": "DNS_FAILURE at DNS-1",
+      "seconds": 4.611,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 33,
+      "truth": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-054-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "suspected_root_cause": "WIRELESS_INTERFERENCE at AP-1-3",
+      "seconds": 15.085,
+      "checks_requested": 0,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WIRELESS_INTERFERENCE",
+        "AP-1-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-055-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-2-2:ge1/1"
+       ]
+      ],
+      "suspected_root_cause": "INTERFACE_DEGRADATION at ACC-2-2:ge1/1",
+      "seconds": 11.93,
+      "checks_requested": 3,
+      "checks_obtained": 1,
+      "new_observations": 44,
+      "truth": [
+       [
+        "INTERFACE_DEGRADATION",
+        "ACC-2-2:ge1/1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-056-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-1"
+       ]
+      ],
+      "suspected_root_cause": "DEVICE_CPU_OVERLOAD at ACC-3-1",
+      "seconds": 7.25,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 121,
+      "truth": [
+       [
+        "DEVICE_CPU_OVERLOAD",
+        "ACC-3-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-057-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "high_support",
+      "causes": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-2"
+       ]
+      ],
+      "suspected_root_cause": "WEAK_WIFI_SIGNAL at AP-1-2",
+      "seconds": 5.098,
+      "checks_requested": 3,
+      "checks_obtained": 2,
+      "new_observations": 88,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-1-2"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-058-single",
+      "method": "D_full",
+      "status": "diagnosed",
+      "category": "moderate_support",
+      "causes": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "suspected_root_cause": "DNS_FAILURE at DNS-1",
+      "seconds": 5.227,
+      "checks_requested": 3,
+      "checks_obtained": 3,
+      "new_observations": 33,
+      "truth": [
+       [
+        "DNS_FAILURE",
+        "DNS-1"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": true,
+       "fault_type_correct": true,
+       "localization_correct": true,
+       "any_cause_correct": true,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": false,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": true,
+       "acceptable": true
+      }
+     },
+     {
+      "scenario_id": "V03-059-single",
+      "method": "D_full",
+      "status": "ambiguous",
+      "category": "ambiguous",
+      "causes": [],
+      "suspected_root_cause": null,
+      "seconds": 2.976,
+      "checks_requested": 3,
+      "checks_obtained": 0,
+      "new_observations": 0,
+      "truth": [
+       [
+        "WEAK_WIFI_SIGNAL",
+        "AP-3-3"
+       ]
+      ],
+      "unmodeled": false,
+      "score": {
+       "exact_cause": false,
+       "fault_type_correct": false,
+       "localization_correct": false,
+       "any_cause_correct": false,
+       "confident_wrong": false,
+       "high_support_wrong": false,
+       "abstained": true,
+       "false_healthy": false,
+       "healthy_correct": false,
+       "unknown_detected": false,
+       "multi_fault_recall": null,
+       "diagnosable": false,
+       "acceptable": true
+      }
+     }
+    ]
+   }
+  }
+ }
+}

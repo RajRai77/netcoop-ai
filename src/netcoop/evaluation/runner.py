@@ -228,7 +228,8 @@ def evaluate(sets: dict[str, Path], methods: list[Method] = METHODS, progress=pr
         "sets": {},
     }
     for set_name, base in sets.items():
-        scen = list_scenarios(base)
+        # organizer-generator scenarios have no root-cause ground truth; they are tested separately
+        scen = [s for s in list_scenarios(base) if s.get("split") != "organizer"]
         frozen_ok = None
         cases_by_method: dict[str, list[dict]] = {m.name: [] for m in methods}
         for sc in scen:

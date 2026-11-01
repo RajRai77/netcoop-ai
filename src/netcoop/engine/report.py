@@ -1,4 +1,4 @@
-"""Build the structured JSON diagnosis (spec/report.schema.json 1.1.0) from an evaluation.
+"""Build the structured JSON diagnosis (spec/report.schema.json 1.2.0) from an evaluation.
 
 Every number in supporting_evidence is copied from a stored observation (value + unit);
 the text explanation is generated from the structured fields and adds no facts.
@@ -9,7 +9,7 @@ from __future__ import annotations
 from netcoop.engine.stear import ENGINE_VERSION, Evaluation
 from netcoop.evidence.models import Finding, NormalizedObservation
 from netcoop.evidence.timeutil import to_canonical
-from netcoop.knowledge import detector_rules, fault_library
+from netcoop.knowledge import confidence_for, detector_rules, fault_library
 from netcoop.spec import validator
 
 MAX_EVIDENCE = 60
@@ -102,8 +102,13 @@ def build_report(*, incident, revision: int, run_id: str, ev: Evaluation, findin
         actions.append("No action needed; keep monitoring")
     actions = list(dict.fromkeys(actions)) or ["No action recommended"]
 
+    confidence, confidence_basis = confidence_for(ev.status, ev.confidence_category)
+    conf_note = ([f"confidence {confidence:.2f} = how often this conclusion ({ev.status}, {ev.confidence_category}) was "
+                  f"correct on the synthetic held-out set {confidence_basis['set']} ({confidence_basis['correct']}/"
+                  f"{confidence_basis['n']}); not validated on other data sources"] if confidence is not None
+                 else [f"No calibrated confidence: {confidence_basis['reason']}"])
     limitations = list(dict.fromkeys(
-        ["confidence_category is a documented support category, not a probability"]
+        ["confidence_category is a documented support category, not a probability"] + conf_note
         + [c for h in causes for c in lib["faults"][h.fault].get("caveats", [])]
         + ev.limitations + extra_limitations
         + ([f"Data mode: {incident.data_mode}; no live network was accessed"] if incident.data_mode != "live" else [])))
@@ -115,8 +120,9 @@ def build_report(*, incident, revision: int, run_id: str, ev: Evaluation, findin
 
     rank = {h.hid: i + 1 for i, h in enumerate(ev.hypotheses)}
     report = {
-        "schema_version": "1.1.0", "incident_id": incident.incident_id, "revision": revision, "status": ev.status,
-        "suspected_root_cause": suspected, "confidence_category": ev.confidence_category,
+        "schema_version": "1.2.0", "incident_id": incident.incident_id, "revision": revision, "status": ev.status,
+        "suspected_root_cause": suspected, "confidence": confidence, "confidence_category": ev.confidence_category,
+        "confidence_basis": confidence_basis,
         "affected_devices": affected, "supporting_evidence": evidence, "alternative_causes": alternatives,
         "recommended_actions": actions, "evidence_sources": used_agents, "limitations": limitations,
         "evidence_snapshot_id": snapshot_id, "topology_snapshot_id": topology_snapshot_id,

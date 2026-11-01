@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:netcoop:ndep:report:1.1.0",
-  "title": "NDEP StructuredDiagnosis v1.1.0 (draft)",
+  "$id": "urn:netcoop:ndep:report:1.2.0",
+  "title": "NDEP StructuredDiagnosis v1.2.0 (draft)",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -27,7 +27,8 @@
     "schema_version": {
       "enum": [
         "1.0.0",
-        "1.1.0"
+        "1.1.0",
+        "1.2.0"
       ]
     },
     "incident_id": {
@@ -54,6 +55,15 @@
         "null"
       ]
     },
+    "confidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1,
+      "description": "1.2.0. Calibrated probability that this conclusion is correct, measured on a held-out evaluation set for the same (status, confidence_category); see confidence_basis. null when no calibration applies."
+    },
     "confidence_category": {
       "enum": [
         "high_support",
@@ -62,6 +72,64 @@
         "insufficient",
         "not_applicable"
       ]
+    },
+    "confidence_basis": {
+      "type": "object",
+      "required": [
+        "method"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "empirical_heldout",
+            "none"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "calibration_version": {
+          "type": "string"
+        },
+        "conclusion": {
+          "type": "string"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "correct": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wilson_95": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "estimator": {
+          "type": "string"
+        },
+        "set": {
+          "type": "string"
+        },
+        "evaluation_method": {
+          "type": "string"
+        },
+        "meaning": {
+          "type": "string"
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "1.2.0. How confidence was obtained (or why it is null)."
     },
     "affected_devices": {
       "type": "array",

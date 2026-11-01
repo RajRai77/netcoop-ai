@@ -50,6 +50,13 @@ Original PS requires JSON; field set remains easy to understand for judges: `inc
 
 - `status`: `diagnosed`, `ambiguous`, `insufficient_evidence`, `unknown_fault`, `healthy`, `operational_error`.
 - `confidence_category`: `high_support`, `moderate_support`, `ambiguous`, `insufficient`, `not_applicable`. Support is **not** a statistical probability.
+- `confidence` (report 1.2.0, 2026-11-01): calibrated estimate that a conclusion with this (`status`, `confidence_category`) is correct,
+  measured on a held-out set: (k+1)/(n+2) with a 95 % Wilson interval, recorded in `confidence_basis` (method, n, correct, set,
+  caveats). Source: `src/netcoop/knowledge/calibration/confidence.json`, produced by `scripts/calibrate_confidence.py`. `null` with a
+  reason when no calibration applies (e.g. knowledge changed). The category remains the rule-based verdict; the number never
+  replaces it and is never displayed as the category.
+- Source profiles may declare `field_path_separator: "."` (json-records only) to address nested fields such as
+  `metrics.latency_ms`; without it nested objects are UNMAPPED_FIELD. Used by `organizer-colab-json`.
 - `suspected_root_cause`: nullable for non-diagnosed outcomes. Do not force a diagnosis when evidence cannot establish one.
 - Each supporting evidence item must reference a real stored observation/finding and provide a unit where it presents a numeric value.
 - `recommended_actions` are operator recommendations, not automatically executed changes.

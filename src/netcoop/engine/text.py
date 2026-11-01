@@ -10,6 +10,12 @@ def report_to_text(r: dict) -> str:
              f"transport {r.get('transport', '?')}")
     L.append("")
     L.append(f"STATUS: {r['status']}    SUPPORT: {r['confidence_category']} (a support category, not a probability)")
+    b = r.get("confidence_basis") or {}
+    if r.get("confidence") is not None:
+        L.append(f"CONFIDENCE: {r['confidence']:.2f} (calibrated on held-out set {b.get('set')}: this conclusion was correct "
+                 f"{b.get('correct')}/{b.get('n')} times, 95% interval {b.get('wilson_95')})")
+    elif b:
+        L.append(f"CONFIDENCE: not available ({b.get('reason', 'no calibration')})")
     L.append(f"Probable root cause: {r['suspected_root_cause'] or 'not determined'}")
     if r["affected_devices"]:
         L.append(f"Affected: {', '.join(r['affected_devices'])}")

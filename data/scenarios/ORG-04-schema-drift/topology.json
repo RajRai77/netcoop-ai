@@ -1,0 +1,128 @@
+{
+ "schema_version": "1.1.0",
+ "topology_snapshot_id": "TOPO-ORG-04-schema-drift",
+ "kind": "modeled",
+ "observed_at": "2026-10-31T09:50:00Z",
+ "nodes": [
+  {
+   "id": "ASSUMED-CORE",
+   "type": "device",
+   "role": "core"
+  },
+  {
+   "id": "SW_CAMPUS_1",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_2",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_3",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_4",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_5",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_6",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_7",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_8",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_9",
+   "type": "device",
+   "role": "access"
+  },
+  {
+   "id": "SW_CAMPUS_10",
+   "type": "device",
+   "role": "access"
+  }
+ ],
+ "links": [
+  {
+   "id": "L-CORE-SW_CAMPUS_1",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_1",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_2",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_2",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_3",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_3",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_4",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_4",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_5",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_5",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_6",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_6",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_7",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_7",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_8",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_8",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_9",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_9",
+   "type": "physical"
+  },
+  {
+   "id": "L-CORE-SW_CAMPUS_10",
+   "from": "ASSUMED-CORE",
+   "to": "SW_CAMPUS_10",
+   "type": "physical"
+  }
+ ],
+ "limitations": [
+  "Assumed star topology authored by NetCoop: the organizer's generator provides no topology. ASSUMED-CORE is a placeholder node without telemetry."
+ ]
+}

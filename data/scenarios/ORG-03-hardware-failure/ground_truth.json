@@ -1,0 +1,17 @@
+{
+ "scenario_id": "ORG-03-hardware-failure",
+ "faults": [],
+ "organizer_faults": [
+  {
+   "generator_fault_type": "hardware_failure",
+   "device_id": "SW_CAMPUS_3",
+   "from": "2026-10-31T09:55:00Z"
+  }
+ ],
+ "expected": {
+  "status_not": "healthy",
+  "anomalies_only_at": "SW_CAMPUS_3",
+  "root_cause_location_if_diagnosed": "SW_CAMPUS_3"
+ },
+ "notes": "The generator's fault types are symptom classes, not root causes in the NetCoop fault library, so only fault presence and the faulted device are used as ground truth. Written by the harness before any diagnosis was run."
+}

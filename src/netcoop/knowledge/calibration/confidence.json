@@ -1,0 +1,78 @@
+{
+ "calibration_version": "confidence-calibration/1",
+ "meaning": "Probability that a conclusion of this status and support category is correct, estimated as (k+1)/(n+2) from how often the same conclusion was correct on a held-out evaluation set.",
+ "correct_means": {
+  "diagnosed": "reported root cause(s) exactly match the injected fault(s)",
+  "other": "outcome acceptable: correct healthy call, or abstention where the data cannot identify the cause"
+ },
+ "estimator": "laplace (k+1)/(n+2), interval: Wilson 95 %",
+ "source": {
+  "results": "eval/results-heldout-v3-replay-dfull/results.json",
+  "results_sha256_canonical": "1fd2e15b648887d692588fbef6928107959de8c92a2a14a49a849b163f2f7f9a",
+  "set": "heldout-v3",
+  "scenarios": 60,
+  "method": "D_full",
+  "git_commit": "17b70ccbdca5b093a8e6156a9d8add89b4fad16b",
+  "code": {
+   "diagnosis_code_sha256": "e3f69ad9fe41c563f81b8276bc8d641b4e60996a0ce4fd553465bb7ab89a9f56",
+   "uncommitted_changes": [
+    "spec/profiles/organizer-colab-json.json",
+    "spec/scenario-manifest.schema.json",
+    "spec/source-profile.schema.json",
+    "src/netcoop/evaluation/runner.py",
+    "src/netcoop/evidence/adapters.py"
+   ]
+  },
+  "knowledge_frozen_before_generation": true
+ },
+ "knowledge": {
+  "detector_rules": "detector-rules/1",
+  "fault_library": "fault-library/3",
+  "sha256": {
+   "detector_rules.json": "d5dc3c3cd31ed0525b81f9d50ebc9703907c5d803c08372d08920bbdc37f76a4",
+   "fault_library.json": "c7cbca62d2ad46373bade16c3ccd39186e0893f690eed6d75a42bca392dffda0"
+  }
+ },
+ "caveats": [
+  "Measured on synthetic scenarios from the project's own generator (same authors as the engine); not validated on real networks or on other data sources",
+  "Small samples: see n and the 95 % interval for each category"
+ ],
+ "cells": {
+  "ambiguous|ambiguous": {
+   "n": 11,
+   "correct": 11,
+   "confidence": 0.92,
+   "wilson_95": [
+    0.741,
+    1.0
+   ]
+  },
+  "diagnosed|high_support": {
+   "n": 30,
+   "correct": 30,
+   "confidence": 0.97,
+   "wilson_95": [
+    0.886,
+    1.0
+   ]
+  },
+  "diagnosed|moderate_support": {
+   "n": 15,
+   "correct": 14,
+   "confidence": 0.88,
+   "wilson_95": [
+    0.702,
+    0.988
+   ]
+  },
+  "healthy|not_applicable": {
+   "n": 4,
+   "correct": 4,
+   "confidence": 0.83,
+   "wilson_95": [
+    0.51,
+    1.0
+   ]
+  }
+ }
+}

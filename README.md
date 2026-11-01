@@ -68,10 +68,52 @@ telemetry (JSON / CSV via declared profile)
 
 ### Report (excerpt of a real `S11` run)
 
-`status`, `suspected_root_cause`, `confidence_category` (a documented **support category**, not a probability),
+`status`, `suspected_root_cause`, `confidence` (calibrated, see below), `confidence_category` (a documented
+**support category**), `confidence_basis` (n, correct, interval, set),
 `affected_devices`, `supporting_evidence[]` (observation id, finding id, metric, value, unit), `alternative_causes`,
 `recommended_actions`, `evidence_sources` (agents), `limitations`, `evidence_snapshot_id`, `topology_snapshot_id`,
 plus `root_causes`, `hypotheses`, `verification.challenges[]`, `coverage`, `decision_basis`, `transport`.
+
+### Confidence (report schema 1.2.0)
+
+`confidence` is a **documented, calibrated estimate**: how often the same conclusion (status + support category)
+was correct on the held-out set `heldout-v3` (60 cases, knowledge frozen before generation), estimated as
+(k+1)/(n+2) and reported with n and a 95 % Wilson interval in `confidence_basis`. "Correct" means the exact
+injected root cause for `diagnosed`, and an acceptable outcome (correct healthy call, or abstention where the data
+cannot identify the cause) otherwise. Derived by `scripts/calibrate_confidence.py` from a replay of that set with the
+current code (`eval/results-heldout-v3-replay-dfull/`, identical to the original v3 run on all 60 cases). The engine
+emits no number if the knowledge files differ from those the calibration was measured with.
+
+| Conclusion (`status` / `confidence_category`) | Correct on held-out v3 | `confidence` | 95 % Wilson |
+|---|---|---|---|
+| `ambiguous` / `ambiguous` | 11/11 | **0.92** | 0.74–1.00 |
+| `diagnosed` / `high_support` | 30/30 | **0.97** | 0.89–1.00 |
+| `diagnosed` / `moderate_support` | 14/15 | **0.88** | 0.70–0.99 |
+| `healthy` / `not_applicable` | 4/4 | **0.83** | 0.51–1.00 |
+
+Scope: synthetic scenarios from the project's own generator; not validated on real networks or other sources
+(stated in every report's `limitations`). The support category stays the primary, rule-based verdict.
+
+## Organizer data (PS section 5 sample generator)
+
+The organizer's generator is kept verbatim in [data/organizer/ps_sample_generator.py](data/organizer/ps_sample_generator.py).
+`uv run python scripts/build_organizer_scenarios.py` builds four reproducible scenarios from it (seeded, fixed clock,
+device chosen by rejection sampling; values untouched): `ORG-01-normal`, `ORG-02-latency-spike` (SW_CAMPUS_7),
+`ORG-03-hardware-failure` (SW_CAMPUS_3) and `ORG-04-schema-drift` (the latency case with six documented corrupted
+records). The records are ingested through the declared source profile
+[spec/profiles/organizer-colab-json.json](spec/profiles/organizer-colab-json.json) (nested `metrics.*` paths, units
+from the field suffixes). `queue_drops`, `interface_errors` and `status` are **not** used: the generator does not
+define whether the counts are totals or per-interval, and `status` is derived from the same metrics. They appear as
+`UNMAPPED_FIELD` warnings on every ingestion. The generator gives no topology; an assumed star topology is supplied
+and labeled as an assumption.
+
+Results (tested in `tests/inference/test_organizer_scenarios.py`; expectations written before the first run):
+normal → `healthy`; latency spike → `unknown_fault` at SW_CAMPUS_7 (symptoms persist, CPU overload ruled out, no
+modeled cause fits); hardware failure → `DEVICE_CPU_OVERLOAD at SW_CAMPUS_3`, moderate support (CPU 99.9 % observed;
+"hardware failure" is not a fault type in the library, and all evidence comes from one source, so no high support);
+schema drift → same conclusion as the clean latency case, with 2 rejected, 2 partially rejected and 1 duplicate
+record reported. The generator's labels are symptom classes, so only fault presence and the faulted device are used
+as ground truth; these scenarios are not part of the accuracy sets.
 
 ## Scenarios
 
@@ -113,10 +155,12 @@ VPS deployment has **not** been performed.
 
 ## Honest limitations
 
-- Synthetic evaluation data from one generator family. Same-author generator and engine. No organizer dataset yet.
+- Accuracy numbers come from synthetic data of one generator family (same authors as the engine). The organizer's
+  sample generator is supported and tested, but its labels are symptom classes, so it cannot measure root-cause accuracy.
 - Detector thresholds are engineering defaults, and the fault library covers 9 fault types. Anything else is reported
   as `unknown_fault`.
 - Verification queries recorded archives (`recorded_replay`). Live read-only collectors (gNMI/SNMP) are adapter points
   and are not implemented.
-- Support categories are rule-based, not calibrated probabilities.
+- Support categories are rule-based. The numeric `confidence` is calibrated only on synthetic held-out data with small
+  samples (n = 4 to 30 per conclusion); see its interval.
 - Single-node Compose is not highly available. The public HTTPS (Caddy) deployment on a VPS has not been performed; backup/restore is drilled in CI only.

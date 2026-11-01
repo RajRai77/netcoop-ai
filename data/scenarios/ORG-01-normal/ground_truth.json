@@ -1,0 +1,9 @@
+{
+ "scenario_id": "ORG-01-normal",
+ "faults": [],
+ "organizer_faults": [],
+ "expected": {
+  "status": "healthy"
+ },
+ "notes": "The generator's fault types are symptom classes, not root causes in the NetCoop fault library, so only fault presence and the faulted device are used as ground truth. Written by the harness before any diagnosis was run."
+}

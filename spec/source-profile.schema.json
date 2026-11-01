@@ -116,6 +116,10 @@
       "type": "string",
       "minLength": 1
     },
+    "field_path_separator": {
+      "const": ".",
+      "description": "json-records only. When set, nested objects are addressed as dotted paths (e.g. 'metrics.latency_ms'). Without it, only top-level fields are read and a nested object is an UNMAPPED_FIELD."
+    },
     "subject": {
       "type": "object",
       "additionalProperties": false,
