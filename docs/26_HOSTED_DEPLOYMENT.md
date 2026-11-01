@@ -18,11 +18,15 @@ The Render URL alone is a complete app (React served by the API, same origin). N
 | Fact | Source |
 |---|---|
 | Image builds; only `$PORT` listens on 0.0.0.0, the agents on loopback; `/api` needs the token; React served; smoke diagnosis over A2A passes | CI job `render-image` (Linux, PostgreSQL 17) |
-| Memory of the four processes on Linux | CI job `render-image`, step "Memory …" (recorded below once measured) |
+| Memory on Linux after one diagnosis: **407.5 MiB container (cgroup)**; process RSS API 125, agents 99–105 each, launcher 84 MiB (RSS double-counts shared pages) | CI run 41267165838, job `render-image`, public annotations |
 | Hosted URLs and hosted smoke test | recorded below only after they were executed |
 
 Status log (append, do not rewrite):
 
+- 2026-11-01: `render-image` CI job green (run 41267165838): image builds; only `$PORT` on 0.0.0.0; agents on 127.0.0.1;
+  `/api` returns 401 without the token; React served at `/` and `/command`; smoke diagnosis over A2A passes against
+  PostgreSQL 17. Measured 407.5 MiB container memory: fits Render free (512 MB) with ~100 MiB headroom after one
+  diagnosis. This is one measurement; heavier runs or uploads may need more, and Render restarts a container that exceeds it.
 - 2026-11-01: deployment files committed (`Dockerfile.render`, `render.yaml`, `netlify.toml`). Hosted services not yet
   created: they need the owner's Neon, Render and Netlify accounts.
 

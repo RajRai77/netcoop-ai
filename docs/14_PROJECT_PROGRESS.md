@@ -1,6 +1,6 @@
 # CURRENT IMPLEMENTATION STATUS — UPDATE EVERY CLAUDE CODE SESSION
 
-**Last updated:** 2026-11-01 (organizer data + calibrated confidence)
+**Last updated:** 2026-11-01 (submission packaging + hosted-deployment preparation)
 **State:** Backend complete for the approved local/CI scope. Telemetry → validated evidence → 3 independent A2A specialist processes → competing hypotheses → spatio-temporal, topology-aware reasoning → bounded evidence-seeking verification → evidence-backed JSON report → API/SSE/UI. No LLM is used, and all data is synthetic. **Ready for frontend integration** (see "Readiness").
 **Branch:** `gate0-skeleton` (pushed, user-authorized; `main` untouched). Latest commit and CI: see "CI".
 **Deployed URL:** NONE. VPS/HTTPS deployment is out of the current scope (owner decision).
@@ -113,6 +113,22 @@ Not done: a frontend CI job (the browser scripts need a local Chrome and a runni
   "Organizer data · PS sample generator"; calibrated confidence shown with its basis beside the support category.
 - CI run 41264813009 on `bbc85f6`: test-linux, test-postgres, test-windows, evaluation, compose-smoke all **success**.
 - Not done: demo video (owner).
+
+## Submission packaging and hosted deployment (2026-11-01)
+
+- One command: `start.sh` / `start.ps1` (uv sync --locked + launcher). The launcher serves the built React app at `/`
+  (minimal UI at `/legacy`), API host is separate from the agents, which always bind 127.0.0.1 on dynamic ports; `--port`
+  defaults to `$PORT`.
+- Executed: `run_local.py --check` PASS (React served, 3 agents, A2A diagnosis, >=2 contributing agents); `--host 0.0.0.0`
+  check: only the API port on 0.0.0.0, agent ports on 127.0.0.1; browser e2e on the single-origin app: S19 18/18,
+  organizer 10/10; `tests/api/test_spa.py` + launcher/A2A/API tests 30 passed.
+- Release: `scripts/make_release.py --verify` builds `release/netcoop-ai-<commit>.zip` (git archive + React built from a
+  fresh export of HEAD), scans for secrets, extracts to an empty folder, `uv sync --locked`, `run_local.py --check`: PASS.
+- Render image (`Dockerfile.render`, `render.yaml`): CI `render-image` green; 407.5 MiB container memory after a diagnosis
+  (docs/26). Netlify config (`netlify.toml`, `VITE_API_BASE`).
+- **Hosted URLs: none yet.** Blocked on the owner's Neon, Render and Netlify accounts (docs/26 has the exact steps).
+- Incident: a release attempt ran `npm ci` in the working frontend while the dev server held a lock; `node_modules` was
+  repaired with `npm install` (lockfile unchanged). The release script now builds from a temporary export instead.
 
 ## Repository hygiene note
 
