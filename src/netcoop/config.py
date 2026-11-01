@@ -39,6 +39,15 @@ def _default_scenarios_dir() -> str | None:
     return str(d) if d.is_dir() else None
 
 
+def _authorized_parties() -> tuple[str, ...]:
+    """Origins allowed as a session token's `azp`: CLERK_AUTHORIZED_PARTIES, else this service's own public URL
+    (Render sets RENDER_EXTERNAL_URL) plus the configured CORS origins (e.g. a Netlify frontend)."""
+    explicit = os.environ.get("CLERK_AUTHORIZED_PARTIES", "")
+    raw = explicit.split(",") if explicit.strip() else [os.environ.get("RENDER_EXTERNAL_URL", ""),
+                                                         *os.environ.get("NETCOOP_CORS_ORIGINS", "").split(",")]
+    return tuple(dict.fromkeys(o.strip().rstrip("/") for o in raw if o.strip() and o.strip() != "*"))
+
+
 @dataclass(frozen=True)
 class Settings:
     # SQLAlchemy URL: sqlite:///path/to/netcoop.db  or  postgresql://user:pass@host:5432/db
@@ -64,6 +73,17 @@ class Settings:
     eval_dir: str | None = None
     # Optional built React app (frontend/dist). When set, it is served at / and the minimal UI moves to /legacy.
     frontend_dist: str | None = None
+    # Authentication (src/netcoop/api/auth.py). None = derived: "token" if api_token is set, else "none".
+    auth_mode: str | None = None
+    clerk_publishable_key: str | None = None
+    clerk_secret_key: str | None = None
+    clerk_jwt_key: str | None = None
+    clerk_issuer: str | None = None
+    clerk_authorized_parties: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.auth_mode is None:
+            object.__setattr__(self, "auth_mode", "token" if self.api_token else "none")
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -84,4 +104,11 @@ class Settings:
             eval_dir=os.environ.get("NETCOOP_EVAL_DIR") or (str(REPO_ROOT / "eval") if (REPO_ROOT / "eval").is_dir() else None),
             cors_origins=tuple(o.strip() for o in os.environ.get("NETCOOP_CORS_ORIGINS", "").split(",") if o.strip()),
             frontend_dist=os.environ.get("NETCOOP_FRONTEND_DIST") or None,
+            auth_mode=(os.environ.get("NETCOOP_AUTH_MODE") or "").strip().lower() or None,
+            # the same public key the frontend is built with may be reused (it only identifies the instance)
+            clerk_publishable_key=os.environ.get("CLERK_PUBLISHABLE_KEY") or os.environ.get("VITE_CLERK_PUBLISHABLE_KEY") or None,
+            clerk_secret_key=os.environ.get("CLERK_SECRET_KEY") or None,
+            clerk_jwt_key=os.environ.get("CLERK_JWT_KEY") or None,
+            clerk_issuer=os.environ.get("CLERK_ISSUER") or None,
+            clerk_authorized_parties=_authorized_parties(),
         )

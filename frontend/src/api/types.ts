@@ -22,6 +22,7 @@ export interface Meta {
   fault_library: string;
   agent_transport: 'a2a' | 'in-process' | 'none';
   auth_required: boolean;
+  auth_mode?: 'none' | 'token' | 'clerk';
   max_upload_bytes: number;
   uploads_archive_enabled: boolean;
 }

@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Shell } from './components/Shell';
 import { Loading } from './components/ui';
 import { CommandCenter } from './pages/CommandCenter';
+import { CLERK_ENABLED } from './auth/session';
+import { RequireAuth, SsoCallback } from './auth/clerk';
 
 const Landing = lazy(() => import('./pages/Landing'));
 const Incidents = lazy(() => import('./pages/Incidents'));
@@ -20,7 +22,8 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<Suspense fallback={<Loading />}><Landing /></Suspense>} />
-        <Route element={<Shell />}>
+        {CLERK_ENABLED && <Route path="sso-callback" element={<SsoCallback />} />}
+        <Route element={<RequireAuth><Shell /></RequireAuth>}>
           <Route path="command" element={<CommandCenter />} />
           {[
             ['incidents', Incidents], ['topology', TopologyPage], ['agents', AgentsPage], ['evidence', EvidencePage],

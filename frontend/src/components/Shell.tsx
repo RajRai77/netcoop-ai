@@ -10,6 +10,8 @@ import { useApp } from '@/state/settings';
 import { agentLabel, STATE_LABEL, STATUS_LABEL } from '@/lib/format';
 import { Chip, Logo } from './ui';
 import { TERMINAL_STATES } from '@/api/types';
+import { CLERK_ENABLED } from '@/auth/session';
+import { UserMenu } from '@/auth/clerk';
 
 const NAV = [
   { to: '/command', label: 'Command Center', icon: LayoutDashboard, end: true },
@@ -190,6 +192,7 @@ function Header() {
       ) : (
         <Chip tone="red" title={health.error ? errorText(health.error) : 'checking'}><WifiOff size={13} />{health.isLoading ? 'Connecting…' : 'Backend offline'}</Chip>
       )}
+      {CLERK_ENABLED && !preview && <UserMenu />}
     </header>
   );
 }
@@ -197,7 +200,16 @@ function Header() {
 function ModeBanner() {
   const { preview, set } = useApp();
   const health = useHealth();
+  const meta = useMeta();
   const nav = useNavigate();
+  if (!preview && !CLERK_ENABLED && meta.data?.auth_mode === 'clerk') {
+    return (
+      <div className="glass mode-banner offline">
+        <strong>Sign-in is not configured in this build.</strong>
+        <span className="muted">The backend requires Google sign-in (Clerk), but the frontend was built without VITE_CLERK_PUBLISHABLE_KEY. Rebuild with the publishable key.</span>
+      </div>
+    );
+  }
   if (preview) {
     return (
       <div className="glass mode-banner preview">

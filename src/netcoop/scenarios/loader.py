@@ -41,7 +41,8 @@ def list_scenarios(base: Path) -> list[dict]:
     return out
 
 
-def load_into(store, base: Path, scenario_id: str, *, incident_id: str | None = None, now=None) -> dict:
+def load_into(store, base: Path, scenario_id: str, *, incident_id: str | None = None, now=None,
+              owner_id: str | None = None) -> dict:
     d = scenario_dir(base, scenario_id)
     m = json.loads((d / "manifest.json").read_text(encoding="utf-8"))
     errs = [e.message for e in validator("scenario-manifest").iter_errors(m)]
@@ -54,7 +55,7 @@ def load_into(store, base: Path, scenario_id: str, *, incident_id: str | None = 
         incident_id or f"INC-{uuid.uuid4().hex[:16]}", m["data_mode"], created_at=now,
         topology_snapshot_id=topo.topology_snapshot_id, title=m.get("title"),
         archive_ref=f"scenario:{scenario_id}" if m.get("archive_file") else None, scenario_id=scenario_id,
-        reference_time=parse_timestamp(m["reference_time"]) if m.get("reference_time") else None)
+        reference_time=parse_timestamp(m["reference_time"]) if m.get("reference_time") else None, owner_id=owner_id)
     reports = []
     raw = (d / m["telemetry_file"]).read_bytes()
     if m.get("telemetry_profile"):

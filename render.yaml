@@ -17,7 +17,15 @@ services:
         value: production
       - key: NETCOOP_DATABASE_URL        # postgresql://USER:PASSWORD@HOST/DB?sslmode=require (Neon "pooled" or direct)
         sync: false
-      - key: NETCOOP_API_TOKEN           # optional: if set, /api/* needs "Authorization: Bearer <token>"
+      - key: NETCOOP_AUTH_MODE           # "clerk" for Google sign-in (docs/27); "token" = legacy static token
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY  # Clerk publishable key (pk_...): public, compiled into the React build
+        sync: false
+      - key: CLERK_SECRET_KEY            # Clerk secret key (sk_...): runtime only, verifies session tokens
+        sync: false
+      - key: CLERK_AUTHORIZED_PARTIES    # optional; default: this service's URL (+ NETCOOP_CORS_ORIGINS)
+        sync: false
+      - key: NETCOOP_API_TOKEN           # legacy token mode only; ignored when NETCOOP_AUTH_MODE=clerk
         sync: false
       - key: NETCOOP_CORS_ORIGINS        # the Netlify site origin, e.g. https://netcoop-ai.netlify.app
         sync: false

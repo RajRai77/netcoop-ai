@@ -6,6 +6,8 @@ import { useHealth, useMeta } from '@/api/hooks';
 import type { Meta } from '@/api/types';
 import { useApp } from '@/state/settings';
 import { Chip, Panel } from '@/components/ui';
+import { CLERK_ENABLED } from '@/auth/session';
+import { AccountPanel } from '@/auth/clerk';
 
 export default function SettingsPage() {
   const s = useApp();
@@ -40,6 +42,12 @@ export default function SettingsPage() {
     <>
       <div className="page-head"><div><h1>Settings</h1><p>Backend connection and display preferences. Stored in this browser only.</p></div></div>
       <div className="cols-2">
+        {CLERK_ENABLED ? (
+          <Panel title="Account" icon={<PlugZap size={19} />}
+                 actions={health.isSuccess ? <Chip tone="green" pip>Backend connected</Chip> : <Chip tone="red" pip>Backend offline</Chip>}>
+            <AccountPanel />
+          </Panel>
+        ) : (
         <Panel title="Backend connection" icon={<PlugZap size={19} />}
                actions={s.preview ? <Chip tone="amber" pip>Preview</Chip> : health.isSuccess ? <Chip tone="green" pip>Connected</Chip> : <Chip tone="red" pip>Offline</Chip>}>
           <div className="stack" style={{ gap: 12 }}>
@@ -57,6 +65,7 @@ export default function SettingsPage() {
             {test && <div className={test.ok ? 'ok-box' : 'err'} role="status">{test.text}</div>}
           </div>
         </Panel>
+        )}
         <Panel title="Mode & display" icon={<Settings2 size={19} />}>
           <div className="stack" style={{ gap: 14 }}>
             <label className="check">

@@ -9,6 +9,8 @@ export interface Settings {
   /** Preview = recorded responses of a real backend run, clearly labeled; never mixed with live data. */
   preview: boolean;
   reducedMotion: boolean;
+  /** Clerk user id the persisted UI state belongs to (never a token); a different account resets it. */
+  authUser: string | null;
 }
 
 interface AppState extends Settings {
@@ -25,6 +27,7 @@ export const useApp = create<AppState>()(
       apiToken: '',
       preview: false,
       reducedMotion: false,
+      authUser: null,
       activeIncidentId: null,
       selectedScenarioId: 'ORG-03-hardware-failure',
       set: (p) => set(p),

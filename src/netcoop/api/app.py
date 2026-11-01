@@ -7,7 +7,6 @@ allowed when NETCOOP_ALLOW_IN_PROCESS_AGENTS=true (tests); reports label the tra
 
 from __future__ import annotations
 
-import hmac
 import json
 import threading
 import uuid
@@ -118,12 +117,15 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
         resume()
         yield
 
+    from netcoop.api.auth import AuthError, Authenticator, Principal
+
+    authenticator = Authenticator(settings)  # raises AuthConfigError: unsafe or incomplete auth config never starts
     app = FastAPI(title="NetCoop AI", version=__version__, lifespan=lifespan)
     if settings.cors_origins:
         from fastapi.middleware.cors import CORSMiddleware
 
-        if "*" in settings.cors_origins and settings.api_token:
-            raise ValueError("NETCOOP_CORS_ORIGINS='*' is not allowed together with NETCOOP_API_TOKEN")
+        if "*" in settings.cors_origins and authenticator.mode != "none":
+            raise ValueError("NETCOOP_CORS_ORIGINS='*' is not allowed when authentication is enabled")
         app.add_middleware(CORSMiddleware, allow_origins=list(settings.cors_origins), allow_credentials=False,
                            allow_methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type"],
                            expose_headers=["Content-Disposition"])
@@ -149,15 +151,34 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
             raise HTTPException(503, "database not configured (set NETCOOP_DATABASE_URL)")
         return store
 
-    def require_auth(request: Request) -> None:
-        if settings.api_token is None:
-            return
-        header = request.headers.get("authorization", "")
-        supplied = header[7:] if header.lower().startswith("bearer ") else ""
-        if not hmac.compare_digest(supplied.encode(), settings.api_token.encode()):
-            raise HTTPException(401, "missing or invalid bearer token", headers={"WWW-Authenticate": "Bearer"})
+    def require_auth(request: Request) -> Principal:
+        """Authenticate, and in multi-user (Clerk) mode enforce incident ownership for every route that has an
+        {incident_id} path parameter (reads, uploads, diagnosis, SSE stream, exports). Unknown and foreign incidents
+        get the same 404, so incident ids of other users cannot be probed."""
+        try:
+            p = authenticator.authenticate(request.headers.get("authorization"))
+        except AuthError as exc:
+            raise HTTPException(401, exc.reason, headers={"WWW-Authenticate": "Bearer"}) from None
+        request.state.principal = p
+        iid = request.path_params.get("incident_id")
+        if iid is not None and p.multi_user:
+            inc = store.get_incident(iid) if store is not None else None
+            if inc is None or inc.owner_id != p.user_id:
+                raise HTTPException(404, f"incident {iid!r} not found")
+        return p
+
+    def catalog_auth(request: Request) -> None:
+        """Shared, non-personal catalog (meta, agent status, recorded evaluation results): public in Clerk mode so
+        the landing page can show live status to signed-out visitors; unchanged (token required) in token mode."""
+        if authenticator.mode != "clerk":
+            require_auth(request)
 
     api = [Depends(require_auth)]
+    catalog = [Depends(catalog_auth)]
+
+    def owner_of(request: Request) -> str | None:
+        p: Principal = request.state.principal
+        return p.user_id if p.multi_user else None
 
     def incident_or_404(s: SqlEvidenceStore, iid: str):
         inc = s.get_incident(iid)
@@ -189,16 +210,16 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
                              "checks": {"database": {"ok": db.ok, "detail": db.detail}}},
                             status_code=200 if db.ok else 503)
 
-    @app.get("/api/meta", dependencies=api)
+    @app.get("/api/meta", dependencies=catalog)
     def meta() -> dict:
         return {"version": __version__, "environment": settings.deployment_env,
                 "metric_registry_version": default_registry().version,
                 "detector_rules": detector_rules()["version"], "fault_library": fault_library()["version"],
                 "agent_transport": "a2a" if a2a_ports else ("in-process" if settings.allow_in_process_agents else "none"),
-                "auth_required": settings.api_token is not None, "max_upload_bytes": settings.max_upload_bytes,
+                "auth_required": authenticator.mode != "none", "auth_mode": authenticator.mode, "max_upload_bytes": settings.max_upload_bytes,
                 "uploads_archive_enabled": uploads_dir is not None}
 
-    @app.get("/api/agents", dependencies=api)
+    @app.get("/api/agents", dependencies=catalog)
     async def agents() -> dict:
         out = []
         for p in make_ports():
@@ -219,7 +240,7 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
             return {}
         return {d.name: d / "results.json" for d in sorted(eval_dir.iterdir()) if (d / "results.json").is_file()}
 
-    @app.get("/api/evaluations", dependencies=api)
+    @app.get("/api/evaluations", dependencies=catalog)
     def evaluations() -> dict:
         """Generated evaluation results committed in eval/ (summaries only; nothing computed here)."""
         out = []
@@ -232,7 +253,7 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
                                      "summary": v["summary"]} for k, v in doc["sets"].items()}})
         return {"evaluations": out, "note": "Synthetic data; generator and engine share authors (docs/21)."}
 
-    @app.get("/api/evaluations/{name}", dependencies=api)
+    @app.get("/api/evaluations/{name}", dependencies=catalog)
     def evaluation(name: str) -> JSONResponse:
         sets = _eval_sets()
         if name not in sets:
@@ -249,21 +270,23 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
 
     # -- incidents & evidence -------------------------------------------------------------
     @app.get("/api/incidents", dependencies=api)
-    def incidents(limit: int = 100, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+    def incidents(request: Request, limit: int = 100, s: SqlEvidenceStore = Depends(require_store)) -> dict:
         summaries = s.latest_report_summaries()
         out = []
-        for inc in s.list_incidents(min(max(limit, 1), 500)):
+        p: Principal = request.state.principal
+        for inc in s.list_incidents(min(max(limit, 1), 500), owner_id=p.user_id, owned_only=p.multi_user):
             out.append({**inc.model_dump(mode="json"), "workflow": s.workflow_state(inc.incident_id),
                         "latest_report": summaries.get(inc.incident_id)})
         return {"incidents": out}
 
     @app.post("/api/incidents", status_code=201, dependencies=api)
-    def create_incident(body: CreateIncident, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+    def create_incident(body: CreateIncident, request: Request, s: SqlEvidenceStore = Depends(require_store)) -> dict:
         now = utcnow()
+        owner = owner_of(request)  # from the verified session only; never from the request body
         if body.scenario_id:
             if scenarios_dir is None:
                 raise HTTPException(404, "no scenario directory configured")
-            loaded = load_into(s, scenarios_dir, body.scenario_id, now=now)
+            loaded = load_into(s, scenarios_dir, body.scenario_id, now=now, owner_id=owner)
             return {"incident": loaded["incident"].model_dump(mode="json"),
                     "ingestions": [r.model_dump(mode="json") for r in loaded["ingestions"]]}
         if body.data_mode is None:
@@ -284,7 +307,8 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
                 raise EvidenceError.single(IssueCode.INVALID_TIMESTAMP, f"reference_time: {exc}") from None
         iid = f"INC-{uuid.uuid4().hex[:16]}"
         inc = s.create_incident(iid, body.data_mode, created_at=now, topology_snapshot_id=topo_id, title=body.title,
-                                archive_ref=f"upload:{iid}" if uploads_dir else None, reference_time=ref)
+                                archive_ref=f"upload:{iid}" if uploads_dir else None, reference_time=ref,
+                                owner_id=owner)
         return {"incident": inc.model_dump(mode="json"), "ingestions": []}
 
     @app.post("/api/incidents/{incident_id}/telemetry", dependencies=api)
@@ -462,8 +486,13 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
         return PlainTextResponse(report_to_text(r))
 
     @app.get("/api/raw-records/{raw_id}", dependencies=api)
-    def get_raw(raw_id: str, s: SqlEvidenceStore = Depends(require_store)) -> dict:
+    def get_raw(raw_id: str, request: Request, s: SqlEvidenceStore = Depends(require_store)) -> dict:
         raw = s.get_raw_record(raw_id)
+        p: Principal = request.state.principal
+        if raw is not None and p.multi_user:
+            inc = s.get_incident(raw.incident_id)
+            if inc is None or inc.owner_id != p.user_id:
+                raw = None  # same answer as a missing record
         if raw is None:
             raise HTTPException(404, f"raw record {raw_id!r} not found")
         return raw.model_dump(mode="json")

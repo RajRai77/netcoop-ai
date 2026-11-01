@@ -60,10 +60,10 @@ class SqlEvidenceStore(InvestigationStoreMixin):
 
     # -- incidents -------------------------------------------------------------
     def create_incident(self, incident_id, data_mode, *, created_at, topology_snapshot_id=None, title=None,
-                        archive_ref=None, scenario_id=None, reference_time=None) -> Incident:
+                        archive_ref=None, scenario_id=None, reference_time=None, owner_id=None) -> Incident:
         inc = Incident(incident_id=incident_id, data_mode=data_mode, topology_snapshot_id=topology_snapshot_id,
                        title=title, created_at=created_at, archive_ref=archive_ref, scenario_id=scenario_id,
-                       reference_time=reference_time)
+                       reference_time=reference_time, owner_id=owner_id)
         with self.engine.begin() as conn:
             if topology_snapshot_id is not None and conn.execute(
                 select(topology_snapshots.c.topology_snapshot_id).where(
@@ -77,6 +77,7 @@ class SqlEvidenceStore(InvestigationStoreMixin):
                     title=title, created_at=to_canonical(inc.created_at), archive_ref=archive_ref,
                     scenario_id=scenario_id,
                     reference_time=to_canonical(inc.reference_time) if inc.reference_time else None,
+                    owner_id=owner_id,
                 ))
             except IntegrityError:
                 raise EvidenceError.single(IssueCode.SCHEMA_INVALID,
@@ -85,8 +86,11 @@ class SqlEvidenceStore(InvestigationStoreMixin):
                         {"data_mode": data_mode, "topology_snapshot_id": topology_snapshot_id}, inc.created_at)
         return inc
 
-    def list_incidents(self, limit: int = 100) -> list[Incident]:
-        q = select(incidents).order_by(incidents.c.created_at.desc(), incidents.c.incident_id).limit(limit)
+    def list_incidents(self, limit: int = 100, *, owner_id: str | None = None, owned_only: bool = False) -> list[Incident]:
+        q = select(incidents)
+        if owned_only:  # multi-user mode: only this owner's incidents (never the unowned ones)
+            q = q.where(incidents.c.owner_id == owner_id)
+        q = q.order_by(incidents.c.created_at.desc(), incidents.c.incident_id).limit(limit)
         with self.engine.connect() as conn:
             return [Incident.model_validate(dict(r)) for r in conn.execute(q).mappings()]
 

@@ -37,6 +37,8 @@ incidents = Table(
     Column("scenario_id", String(ID), nullable=True),
     # Declared capture time used as the freshness reference for recorded/synthetic replays.
     Column("reference_time", String(TS), nullable=True),
+    # Added in 0003: verified Clerk user id of the creator (None = single-operator / pre-auth record).
+    Column("owner_id", String(ID), nullable=True),
 )
 
 topology_snapshots = Table(
@@ -88,6 +90,7 @@ observations = Table(
     Column("registry_version", String(20), nullable=False),
     Column("body", Text, nullable=False),
 )
+Index("ix_incidents_owner_created", incidents.c.owner_id, incidents.c.created_at)
 Index("ix_obs_incident_metric", observations.c.incident_id, observations.c.metric)
 Index("ix_obs_incident_time", observations.c.incident_id, observations.c.observed_at)
 Index("ix_obs_lineage", observations.c.lineage_group)

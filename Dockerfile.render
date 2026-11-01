@@ -10,7 +10,11 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 # Same-origin build: the app calls /api on the host that served it.
-RUN npm run build
+# Clerk's PUBLISHABLE key is public by design and must be known at build time (it is compiled into the bundle).
+# Only this one variable is declared as a build argument; secrets (CLERK_SECRET_KEY, database URL) are never
+# declared here, so they cannot reach an image layer or the JavaScript. Empty = no Clerk (token/none mode UI).
+ARG VITE_CLERK_PUBLISHABLE_KEY=""
+RUN case "$VITE_CLERK_PUBLISHABLE_KEY" in ""|pk_test_*|pk_live_*) ;; *) echo "VITE_CLERK_PUBLISHABLE_KEY must be a Clerk publishable key (pk_...)"; exit 1;; esac     && VITE_CLERK_PUBLISHABLE_KEY="$VITE_CLERK_PUBLISHABLE_KEY" npm run build
 
 FROM python:3.12-slim-bookworm AS build
 COPY --from=ghcr.io/astral-sh/uv:0.11.24 /uv /bin/uv

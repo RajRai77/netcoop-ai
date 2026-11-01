@@ -1,5 +1,7 @@
 // Fetch-based Server-Sent Events client for GET /api/incidents/{id}/stream.
-// - works with Authorization headers (EventSource cannot send them)
+// - works with Authorization headers (EventSource cannot send them); a fresh session token is fetched for every
+//   (re)connect, so an expired token never breaks the stream permanently
+// - stops (no retry loop) on 401/403/404: signed out, or not this user's incident
 // - reconnects with ?after=<last workflow seq> and exponential backoff
 // - de-duplicates `attempt` (attempt_id) and `challenge` ((challenge_id, at)) across reconnects
 // - stops after the `end` event
@@ -55,10 +57,13 @@ export function openIncidentStream(
       ctrl = new AbortController();
       onStatus(attempt === 0 ? 'connecting' : 'reconnecting');
       try {
-        const res = await fetch(apiUrl(`/api/incidents/${incidentId}/stream?after=${lastSeq}`), {
-          headers: { Accept: 'text/event-stream', ...authHeaders() },
-          signal: ctrl.signal,
-        });
+        const headers = { Accept: 'text/event-stream', ...(await authHeaders()) };
+        if (closed) return;
+        const res = await fetch(apiUrl(`/api/incidents/${incidentId}/stream?after=${lastSeq}`), { headers, signal: ctrl.signal });
+        if ([401, 403, 404].includes(res.status)) {
+          onStatus('error');
+          return;
+        }
         if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
         onStatus('open');
         attempt = 0;

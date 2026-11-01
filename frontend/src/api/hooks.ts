@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useApp } from '@/state/settings';
+import { userScope } from '@/auth/session';
 import { apiGet, apiSend } from './client';
 import { openIncidentStream, type StreamEvent } from './sse';
 import type {
@@ -8,7 +9,8 @@ import type {
   IncidentListItem, IngestionReport, Meta, Report, Scenario, SourceProfile, Timeline, TopologySnapshot,
 } from './types';
 
-const mode = () => (useApp.getState().preview ? 'preview' : 'live');
+// Cache keys are scoped by mode AND by signed-in account, so one user's results are never shown to another.
+const mode = () => (useApp.getState().preview ? 'preview' : `live:${userScope()}`);
 
 export const qk = {
   meta: () => [mode(), 'meta'] as const,

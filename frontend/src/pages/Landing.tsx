@@ -10,6 +10,8 @@ import type { Rate } from '@/api/types';
 import { useApp } from '@/state/settings';
 import { agentLabel } from '@/lib/format';
 import { Logo } from '@/components/ui';
+import { CLERK_ENABLED } from '@/auth/session';
+import { GoogleButton, LandingAuth, UserMenu } from '@/auth/clerk';
 
 const DEMO = 'ORG-03-hardware-failure';
 const SHOWCASE = 'S19-ap-down-status-in-archive';
@@ -54,7 +56,11 @@ export default function Landing() {
             <a className="link" href="#how">How it works</a>
             <a className="link" href="#capabilities">Capabilities</a>
             <a className="link" href="#evidence">Results</a>
-            <Link className="btn glassy sm" to="/command">Command Center <ArrowRight size={15} /></Link>
+            {CLERK_ENABLED ? (
+              <LandingAuth
+                signedIn={<><Link className="btn glassy sm" to="/command">Command Center <ArrowRight size={15} /></Link><div className="on-dark"><UserMenu /></div></>}
+                signedOut={<GoogleButton label="Sign in" className="btn glassy sm" />} />
+            ) : <Link className="btn glassy sm" to="/command">Command Center <ArrowRight size={15} /></Link>}
           </nav>
 
           <section className="l-hero">
@@ -67,11 +73,22 @@ export default function Landing() {
                 explanations, and when the evidence is tied it asks for the one observation that decides — before it concludes.
               </p>
               <div className="l-ctas">
-                <button className="btn neon big" onClick={() => demo()} disabled={busy}>
-                  <Play size={17} />{busy ? 'Starting investigation…' : live ? 'Diagnose organizer data (live run)' : 'View demo incident (recorded)'}
-                </button>
-                <Link className="btn glassy big" to="/scenarios">Start investigation</Link>
-                <Link className="btn glassy big" to="/command">Explore Command Center</Link>
+                {CLERK_ENABLED && live ? (
+                  <LandingAuth
+                    signedOut={<><GoogleButton label="Continue with Google" className="btn neon big" />
+                      <button className="btn glassy big" onClick={() => { set({ preview: true, activeIncidentId: 'INC-b2e30992c4e04543' }); nav('/command'); }}>View recorded demo</button></>}
+                    signedIn={<><button className="btn neon big" onClick={() => demo()} disabled={busy}>
+                      <Play size={17} />{busy ? 'Starting investigation…' : 'Diagnose organizer data (live run)'}</button>
+                      <Link className="btn glassy big" to="/command">Open Command Center</Link></>} />
+                ) : (
+                  <>
+                    <button className="btn neon big" onClick={() => demo()} disabled={busy}>
+                      <Play size={17} />{busy ? 'Starting investigation…' : live ? 'Diagnose organizer data (live run)' : 'View demo incident (recorded)'}
+                    </button>
+                    <Link className="btn glassy big" to="/scenarios">Start investigation</Link>
+                    <Link className="btn glassy big" to="/command">Explore Command Center</Link>
+                  </>
+                )}
               </div>
               {err && <div className="err" style={{ marginTop: 12, maxWidth: 560 }}>{err}</div>}
               <div className="l-facts">
@@ -193,8 +210,16 @@ export default function Landing() {
           <h2 style={{ marginTop: 14 }}>See a full investigation</h2>
           <p style={{ color: '#aebfe0', margin: '10px auto 0', maxWidth: 660 }}>Diagnose the organizer's sample telemetry, or run the verification showcase: the evidence is first ambiguous, the system asks the infrastructure agent for the AP status, and concludes.</p>
           <div className="l-ctas" style={{ justifyContent: 'center' }}>
-            <button className="btn neon big" onClick={() => demo()} disabled={busy}><Play size={17} />Diagnose organizer data</button>
-            <button className="btn glassy big" onClick={() => demo(SHOWCASE)} disabled={busy || !live}>Verification showcase</button>
+            {CLERK_ENABLED && live ? (
+              <LandingAuth signedOut={<GoogleButton label="Continue with Google" className="btn neon big" />}
+                signedIn={<><button className="btn neon big" onClick={() => demo()} disabled={busy}><Play size={17} />Diagnose organizer data</button>
+                  <button className="btn glassy big" onClick={() => demo(SHOWCASE)} disabled={busy}>Verification showcase</button></>} />
+            ) : (
+              <>
+                <button className="btn neon big" onClick={() => demo()} disabled={busy}><Play size={17} />Diagnose organizer data</button>
+                <button className="btn glassy big" onClick={() => demo(SHOWCASE)} disabled={busy || !live}>Verification showcase</button>
+              </>
+            )}
             <Link className="btn glassy big" to="/command">Enter Command Center <ArrowRight size={16} /></Link>
           </div>
         </div>

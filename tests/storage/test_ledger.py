@@ -32,7 +32,7 @@ def finding(fid, obs_refs, agent="performance-agent", supersedes=None, created="
 # --- migrations -----------------------------------------------------------------------
 
 def test_schema_at_head(store):
-    assert store.schema_revision() == migrate.head_revision() == "0002"
+    assert store.schema_revision() == migrate.head_revision() == "0003"
 
 
 def test_migration_matches_table_metadata(store):
@@ -52,7 +52,7 @@ def test_downgrade_then_upgrade_is_repeatable(db_url):
         migrate.downgrade(engine, "base")
         assert migrate.current_revision(engine) is None
         migrate.upgrade(engine)
-        assert migrate.current_revision(engine) == "0002"
+        assert migrate.current_revision(engine) == "0003"
     finally:
         engine.dispose()
 
@@ -293,7 +293,7 @@ def test_evidence_survives_engine_restart(db_url):
     e2 = make_engine(db_url)
     try:
         s2 = SqlEvidenceStore(e2)
-        assert s2.schema_revision() == "0002"
+        assert s2.schema_revision() == "0003"
         assert s2.get_incident("INC-1").data_mode == "synthetic"
         assert s2.list_observations("INC-1") == before
         assert len(before) == rep.observations_added == 3
