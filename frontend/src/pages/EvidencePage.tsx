@@ -8,6 +8,8 @@ import { Chip, Drawer, Empty, ErrorState, Json, Loading, Panel, Tabs } from '@/c
 import { useActive } from './useActive';
 
 type Tab = 'observations' | 'issues' | 'rates';
+// rejected and quarantined records first; warnings (e.g. stale samples) after
+const SEV_ORDER: Record<string, number> = { reject: 0, quarantine: 1, warning: 2 };
 
 export default function EvidencePage() {
   const { id } = useActive();
@@ -94,7 +96,7 @@ export default function EvidencePage() {
             <div className="table-wrap" style={{ maxHeight: 'calc(100vh - 330px)' }}>
               <table className="t">
                 <thead><tr><th>Severity</th><th>Code</th><th>Record</th><th>Message</th></tr></thead>
-                <tbody>{data.issues.map((i, k) => (
+                <tbody>{[...data.issues].sort((x, y) => (SEV_ORDER[x.severity] ?? 3) - (SEV_ORDER[y.severity] ?? 3)).map((i, k) => (
                   <tr key={k}>
                     <td><Chip tone={i.severity === 'reject' ? 'red' : i.severity === 'quarantine' ? 'amber' : 'muted'}>{i.severity}</Chip></td>
                     <td className="mono">{i.code}</td>

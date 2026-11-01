@@ -113,6 +113,13 @@ to a terminal state, and checks the following against the backend's own response
 The browser scripts need a local Chrome or Edge. They write PNGs; the committed images in `docs/` are a curated
 subset converted to WebP to keep the repository small.
 
+## Demo video (reproducible)
+
+`scripts/demo/` records the narrated walkthrough against the live app: `tts.ps1` (offline Windows voice) →
+`record-demo.mjs` (drives the real UI, burns in subtitles, logs timings) → `build-video.mjs` (narration mix, H.264 MP4
+with an embedded subtitle track, `.srt`). The narration text is in `scripts/demo/narration.json`; subtitles of the
+recorded cut: [docs/demo/NetCoop-AI-demo.srt](docs/demo/NetCoop-AI-demo.srt).
+
 ## Limitations
 
 - The accessibility check is a scripted basic check (names, labels, headings, focus), not a full WCAG/axe audit.

@@ -1,0 +1,167 @@
+1
+00:00:00,002 --> 00:00:08,573
+This is NetCoop AI: an evidence-seeking, multi-agent system that diagnoses network faults and explains why.
+
+2
+00:00:08,630 --> 00:00:21,476
+Built for the IIT Bhubaneswar Agentic AI challenge: specialist agents analyse telemetry, exchange structured findings, and agree on one evidence-backed diagnosis.
+
+3
+00:00:21,530 --> 00:00:29,884
+Network faults are distributed and ambiguous: a dead access point and a failed switch port can raise exactly the same alarms.
+
+4
+00:00:29,938 --> 00:00:40,498
+NetCoop gives each domain its own agent, tests every explanation against the topology and timeline, and asks for missing evidence when two explanations tie.
+
+5
+00:00:40,552 --> 00:00:51,885
+One investigation: validate the telemetry, analyse it in parallel, build competing hypotheses, request the deciding observation, then report.
+
+6
+00:00:51,940 --> 00:01:05,835
+On 60 held-out synthetic scenarios, 59 had an acceptable outcome versus 22 for a threshold baseline. These are internally generated scenarios, not real-world accuracy.
+
+7
+00:01:05,886 --> 00:01:08,871
+Let's open the Command Center.
+
+8
+00:01:08,924 --> 00:01:19,075
+The sidebar holds navigation, a scenario launcher, and live status of the coordinator and the three specialist agents, each a separate process.
+
+9
+00:01:19,128 --> 00:01:27,269
+We start with the organizer's own sample-generator data: a hardware failure on switch SW_CAMPUS_3.
+
+10
+00:01:27,321 --> 00:01:36,825
+Run diagnosis creates an incident, ingests the records, and starts the three agents over the A2A protocol.
+
+11
+00:01:36,883 --> 00:01:46,109
+The data source is labelled truthfully: organizer data from the problem statement's sample generator, mapped by a declared source profile.
+
+12
+00:01:46,164 --> 00:01:55,272
+Fields the generator never defines, such as queue drops and status, are reported and not used. Nothing is guessed.
+
+13
+00:01:55,326 --> 00:02:02,365
+This diagram is the heart of the system: the incident fans out to three specialists working in parallel.
+
+14
+00:02:02,421 --> 00:02:15,474
+Performance found high latency and loss, Infrastructure found CPU at 99.9 percent, and Connectivity found nothing abnormal in its domain.
+
+15
+00:02:15,528 --> 00:02:23,373
+Their findings flow into the STEaR reasoner. The evidence was decisive, so no verification was needed.
+
+16
+00:02:23,427 --> 00:02:33,615
+Conclusion: device CPU overload at SW_CAMPUS_3, with moderate support, because all evidence comes from a single source.
+
+17
+00:02:33,669 --> 00:02:45,377
+Confidence 0.88 is calibrated: conclusions of this kind were correct in 14 of 15 held-out cases. It is not a guessed percentage.
+
+18
+00:02:45,431 --> 00:02:54,729
+The topology marks the faulted switch in red. The generator provides no topology, so this star layout is a labelled assumption.
+
+19
+00:02:54,784 --> 00:03:04,058
+Below: the persisted timeline, the competing hypotheses with why the leader wins, and a plain summary with actions for an operator.
+
+20
+00:03:04,112 --> 00:03:12,382
+Now evidence seeking: an access point is down, and the deciding data exists only in a wireless-controller archive.
+
+21
+00:03:12,436 --> 00:03:36,769
+We run it, and all three agents start in parallel again.
+
+22
+00:03:36,823 --> 00:03:44,646
+In round one STEaR was stuck: an access-point failure and a failed switch port predicted the same symptoms.
+
+23
+00:03:44,701 --> 00:03:54,591
+Instead of guessing, it sent a targeted A2A verification task to the Infrastructure agent, asking only for the device status of AP-2-1.
+
+24
+00:03:54,645 --> 00:04:05,968
+Twenty recorded observations came back, and round two concluded: device down at AP-2-1, high support, confidence 0.97.
+
+25
+00:04:06,022 --> 00:04:12,356
+The topology now marks AP-2-1 as the root cause, with its impact scope highlighted.
+
+26
+00:04:12,416 --> 00:04:20,787
+The specialists are discovered live over A2A, with their skills, metrics and loopback-only endpoints.
+
+27
+00:04:20,842 --> 00:04:31,350
+Every exchange is persisted. Opening one shows the raw NDEP artifact exactly as the agent returned it, citing observation IDs.
+
+28
+00:04:31,402 --> 00:04:38,315
+The reasoning page shows the decision basis, the ranking rule, and what changed round by round.
+
+29
+00:04:38,369 --> 00:04:48,193
+Every hypothesis is listed as confirmed, plausible, or ruled out by observed evidence, with its contradictions and missing discriminators.
+
+30
+00:04:48,247 --> 00:04:55,506
+The Evidence Explorer shows validated observations with explicit units, freshness and quality flags.
+
+31
+00:04:55,559 --> 00:05:03,025
+Each one traces back to the immutable raw record it came from, so every number in a report is auditable.
+
+32
+00:05:03,078 --> 00:05:11,938
+Datasets and Upload accepts NDEP JSON, vendor CSV through declared profiles, and the organizer's format.
+
+33
+00:05:11,990 --> 00:05:24,845
+This organizer scenario has deliberately corrupted records: a renamed field with the wrong unit, a missing device ID, a bad timestamp, an impossible value and a duplicate.
+
+34
+00:05:24,899 --> 00:05:35,307
+Each problem is reported record by record and never silently coerced. The diagnosis continues on the valid data and honestly reports an unknown fault.
+
+35
+00:05:35,361 --> 00:05:48,236
+The report is the schema-validated JSON the problem statement asks for: cause, evidence, affected devices, alternatives, confidence, actions and limitations.
+
+36
+00:05:48,290 --> 00:05:54,666
+Limitations are stated in every report, including the scope of the confidence calibration.
+
+37
+00:05:54,720 --> 00:06:01,295
+The same report can be viewed as JSON and exported; a text version is available too.
+
+38
+00:06:01,349 --> 00:06:11,727
+Evaluation compares four methods on the held-out set, with the caveats first: synthetic data, same authors, not root-cause accuracy.
+
+39
+00:06:11,781 --> 00:06:21,504
+Full NetCoop has the most acceptable outcomes and no high-support mistakes; verification is what turns ambiguous cases into identified ones.
+
+40
+00:06:21,558 --> 00:06:29,466
+Settings shows the backend connection and readiness. A clearly labelled recorded preview works even without a backend.
+
+41
+00:06:29,521 --> 00:06:41,745
+Everything runs locally with one command, start.sh or start.ps1 on Windows. A verified release ZIP and a single-container Render image are included.
+
+42
+00:06:41,800 --> 00:06:53,606
+No LLM is required: the diagnosis is deterministic and tested, and every claim links to real evidence. Thank you for watching.
