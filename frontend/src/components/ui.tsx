@@ -123,6 +123,26 @@ const TONE_VAR: Record<Tone, string> = {
 };
 export const toneVar = (t: Tone) => TONE_VAR[t];
 
+/** Calibrated confidence (report 1.2.0) with its basis; renders nothing for older reports. */
+export function Confidence({ r, variant = 'inline' }: { r: { confidence?: number | null; confidence_basis?: import('@/api/types').ConfidenceBasis }; variant?: 'inline' | 'block' }) {
+  const b = r.confidence_basis;
+  if (r.confidence === undefined && !b) return null;
+  const has = r.confidence != null;
+  const title = has
+    ? `Calibrated on held-out set ${b?.set}: this conclusion was correct ${b?.correct}/${b?.n} times. ${b?.estimator ?? ''}. ${(b?.caveats ?? []).join(' ')}`
+    : `No calibrated confidence: ${b?.reason ?? 'not available'}`;
+  if (variant === 'inline') {
+    return <Chip tone={has ? 'blue' : 'muted'} title={title}>{has ? `Confidence ${r.confidence!.toFixed(2)}` : 'Confidence n/a'}</Chip>;
+  }
+  return (
+    <div className="conf-block" title={title}>
+      <div className="conf-value">{has ? r.confidence!.toFixed(2) : '—'}</div>
+      <div className="conf-label">calibrated confidence</div>
+      <div className="conf-note">{has ? <>correct {b?.correct}/{b?.n} on held-out {b?.set} · 95%: {b?.wilson_95?.[0].toFixed(2)}–{b?.wilson_95?.[1].toFixed(2)}</> : b?.reason}</div>
+    </div>
+  );
+}
+
 /** Qualitative support meter: ordered categories, never a percentage. */
 export function SupportMeter({ category }: { category: SupportCategory }) {
   const idx = SUPPORT_STEPS.indexOf(category);

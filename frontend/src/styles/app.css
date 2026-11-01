@@ -335,6 +335,10 @@ button.fnode:hover { border-color: var(--border-strong); box-shadow: var(--shado
 .final-box .label { font-size: 12.5px; color: var(--success-ink); font-weight: 650; }
 .final-box.amb .label { color: #a15c00; }
 .final-box .title { font-size: 19px; font-weight: 780; letter-spacing: -0.015em; line-height: 1.2; }
+.conf-block { margin-top: 10px; padding: 10px; border-radius: 14px; background: #f3f7fe; border: 1px solid rgba(26, 115, 232, 0.25); text-align: center; }
+.conf-value { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; line-height: 1.1; }
+.conf-label { font-size: 12px; font-weight: 650; color: var(--text); }
+.conf-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .kv { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; font-size: 13.5px; }
 .kv dt { color: var(--text-muted); font-weight: 560; }
 .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }

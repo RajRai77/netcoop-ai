@@ -96,20 +96,27 @@ function layout(topo: TopologySnapshot) {
   const order = new Map<string, number>();
   levels.forEach((lvl, d) => {
     lvl.sort((a, b) => {
-      if (d === 0) return a.localeCompare(b);
+      const nat = (x: string, y: string) => x.localeCompare(y, undefined, { numeric: true });
+      if (d === 0) return nat(a, b);
       const pa = order.get(parent.get(a) ?? '') ?? 0;
       const pb = order.get(parent.get(b) ?? '') ?? 0;
-      return pa - pb || a.localeCompare(b);
+      return pa - pb || nat(a, b);
     });
     lvl.forEach((id, i) => order.set(id, i));
   });
-  const width = Math.max(...levels.map((l) => l?.length ?? 0), 1);
+  // A level wider than MAX_ROW (e.g. a flat star of switches) is wrapped into several rows.
+  const MAX_ROW = topo.nodes.length > 18 ? 9 : 6;
+  const rows: string[][] = [];
+  for (const lvl of levels) {
+    if (!lvl) continue;
+    for (let i = 0; i < lvl.length; i += MAX_ROW) rows.push(lvl.slice(i, i + MAX_ROW));
+  }
+  const width = Math.max(...rows.map((l) => l.length), 1);
   const gapX = topo.nodes.length <= 18 ? 128 : 112;
   const pos = new Map<string, { x: number; y: number }>();
-  levels.forEach((lvl, d) => {
-    if (!lvl) return;
-    const off = ((width - lvl.length) * gapX) / 2;
-    lvl.forEach((id, i) => pos.set(id, { x: off + i * gapX, y: d * 118 }));
+  rows.forEach((row, r) => {
+    const off = ((width - row.length) * gapX) / 2;
+    row.forEach((id, i) => pos.set(id, { x: off + i * gapX, y: r * 118 }));
   });
   return pos;
 }

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Activity, Cpu, Download, FileText, Globe2, Radio, ServerCrash, ShieldQuestion, Unplug, Waves, Wifi } from 'lucide-react';
 import type { Finding, Hypothesis, Report } from '@/api/types';
 import { claimLabel, downloadBlob, faultLabel, fmtValue, HYP_LABEL, HYP_TONE, STATUS_LABEL, subjectText } from '@/lib/format';
-import { Chip, Drawer, Json, StatusChip, SupportMeter } from './ui';
+import { Chip, Confidence, Drawer, Json, StatusChip, SupportMeter } from './ui';
 
 const FAULT_ICON: Record<string, typeof Activity> = {
   LINK_CONGESTION: Activity, INTERFACE_DEGRADATION: Waves, LINK_OR_PATH_FAILURE: Unplug, DEVICE_CPU_OVERLOAD: Cpu,
@@ -106,7 +106,7 @@ export function ReportVerdict({ r, compact = false }: { r: Report; compact?: boo
   return (
     <div className="stack" style={{ gap: 14 }}>
       <div className="verdict">
-        <SupportMeter category={r.confidence_category} />
+        <div><SupportMeter category={r.confidence_category} /><Confidence r={r} variant="block" /></div>
         <div style={{ minWidth: 0 }}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6, flexWrap: 'wrap' }}>
             <StatusChip status={r.status} />

@@ -25,7 +25,7 @@ export const useApp = create<AppState>()(
       preview: false,
       reducedMotion: false,
       activeIncidentId: null,
-      selectedScenarioId: 'S19-ap-down-status-in-archive',
+      selectedScenarioId: 'ORG-03-hardware-failure',
       set: (p) => set(p),
     }),
     { name: 'netcoop-ui-v2' },

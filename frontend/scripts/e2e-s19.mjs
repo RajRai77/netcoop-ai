@@ -80,7 +80,7 @@ try {
   await page.screenshot({ path: `${outDir}/2-command-center.png`, fullPage: true });
   const ccText = await page.evaluate(() => document.querySelector('.flow')?.textContent ?? '');
   check('Command Center flow shows the verification request to the infrastructure agent',
-    ccText.includes('ASKED TO VERIFY') && ccText.includes('device_status') && ccText.includes('AP-2-1') && ccText.includes('DEVICE_DOWN'));
+    ccText.includes('ASKED TO VERIFY') && ccText.includes('device_status') && ccText.includes('AP-2-1') && ccText.includes('Device down'));
 
   // 4. Initial ambiguity + verification challenge (backend truth), and that the UI shows it
   const rounds = tl.events.filter((e) => e.state === 'CORRELATING' && e.run_id === inc.workflow?.run_id);

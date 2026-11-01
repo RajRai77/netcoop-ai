@@ -138,9 +138,10 @@ export function downloadBlob(name: string, content: string, type: string) {
 }
 
 /** Honest data-source label. Only backend facts are used; nothing is called "organizer" or "live" unless it is. */
-export function dataSourceLabel(inc: { data_mode: string; scenario_id: string | null }, preview: boolean): string {
+export function dataSourceLabel(inc: { data_mode: string; scenario_id: string | null }, preview: boolean, split?: string | null): string {
   if (preview) return 'Recorded investigation (preview)';
-  if (inc.scenario_id) return inc.data_mode === 'synthetic' ? 'Synthetic scenario' : `Scenario (${inc.data_mode})`;
+  if (inc.scenario_id && split === 'organizer') return "Organizer data · PS sample generator";
+  if (inc.scenario_id) return inc.data_mode === 'synthetic' ? 'Synthetic scenario (NetCoop generator)' : `Scenario (${inc.data_mode})`;
   return ({ recorded: 'Uploaded telemetry (recorded)', emulated: 'Uploaded telemetry (emulated)', synthetic: 'Uploaded telemetry (synthetic)', live: 'Live telemetry' } as Record<string, string>)[inc.data_mode] ?? inc.data_mode;
 }
 

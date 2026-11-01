@@ -1,7 +1,7 @@
 {
   "scenario": "S19-ap-down-status-in-archive",
-  "incident_id": "INC-69e4beeca3774e6a",
-  "ran_at": "2026-11-01T01:26:17.475Z",
+  "incident_id": "INC-937efd2aa1194ce1",
+  "ran_at": "2026-11-01T02:17:51.312Z",
   "ui": "http://127.0.0.1:5173",
   "passed": true,
   "steps": [
@@ -23,7 +23,7 @@
     {
       "name": "Run diagnosis created a new S19 incident on the backend",
       "ok": true,
-      "detail": "INC-69e4beeca3774e6a"
+      "detail": "INC-937efd2aa1194ce1"
     },
     {
       "name": "UI opened the SSE stream for the incident",
@@ -43,7 +43,7 @@
     {
       "name": "Backend: challenge to infrastructure-agent for device_status of AP-2-1",
       "ok": true,
-      "detail": "CH-e1de9d2c34ec2718db242b2e {\"device_id\":\"AP-2-1\"}"
+      "detail": "CH-ff938ab2a53df8b62211540d {\"device_id\":\"AP-2-1\"}"
     },
     {
       "name": "Backend: challenge returned archived observations",
@@ -53,7 +53,7 @@
     {
       "name": "Backend: verify task went over A2A",
       "ok": true,
-      "detail": "2273978c-5369-4a4a-9535-8693a715ab2d"
+      "detail": "84b82643-b14e-4136-990b-3e2ac1d00aa9"
     },
     {
       "name": "UI timeline shows the QUERY to Infrastructure for device_status@AP-2-1",
@@ -88,7 +88,7 @@
     {
       "name": "Exported report JSON equals the backend report",
       "ok": true,
-      "detail": "INC-69e4beeca3774e6a-r1.json"
+      "detail": "INC-937efd2aa1194ce1-r1.json"
     },
     {
       "name": "No browser errors",

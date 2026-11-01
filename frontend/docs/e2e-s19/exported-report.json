@@ -4,137 +4,137 @@
   ],
   "agent_contributions": {
     "connectivity-agent": [
-      "F-0b674ef0b534f33ee97cad12",
-      "F-125640924e04d80d1d1ff13e",
-      "F-273b1b47c74d2b49c24d2658",
-      "F-31b1c901909ec952cc3f319e",
-      "F-3797c271e43259c3da8dff9d",
-      "F-49c804834334f21cc40e573d",
-      "F-4d41a3a176149ef9b6ef1ec4",
-      "F-5b8f51c8465aa032eb2f0301",
-      "F-5c8bf79604260f5431f77813",
-      "F-678ef6a4fd74b4bf9735f609",
-      "F-72214832f4a117b490dbab90",
-      "F-87bdc49ef869b5d2bbde37d3",
-      "F-8b84383d17b3f3999d921597",
-      "F-90b976437760f2511c9614da",
-      "F-9fec1f1dad317b4d87af3720",
-      "F-a7ad0b89e8b20f5df587d3af",
-      "F-b49ac555b4e740b2d6380d60",
-      "F-b7789ec65768eaa484880b3c",
-      "F-c642630ed2161f0f390c4af9",
-      "F-cc8af00a2975dd0aa7c069d1",
-      "F-cdf0d78bce1a5a86efc9df6c",
-      "F-d5ca71354760f79a7f8dccd1",
-      "F-d77e233cf253a69b68bc31d4",
-      "F-d7f941e5040b163d69586563",
-      "F-deafb216f9afc9de1fefeafb",
-      "F-df5b9e8c6f6ef374bcbaaabc",
-      "F-e09d36365ca0bd384f694a46",
-      "F-e6a0dd8e1dd671711b04af7c",
-      "F-f12713a054ff3a1cec431519"
+      "F-0482c1962afa34a1d534f902",
+      "F-092b1b6f5d65f1ea8b5c5a16",
+      "F-0de5aa59e19abcb5dea4291d",
+      "F-1bbc9673fe358bc02db0b045",
+      "F-38f23682a94aa1276ae49e23",
+      "F-400881684fd542106fc7a30e",
+      "F-55767113effb0d9984944044",
+      "F-6afbf990e629feeb1a49d6f7",
+      "F-6b3878e296d5c07df20d1501",
+      "F-6d250d1f525a655d7c6d64b0",
+      "F-6f6dfae446fffc52ea00ccd8",
+      "F-70dac0c97e63938a957a1086",
+      "F-783f1dc2c0b7deeb0e8a0351",
+      "F-7da066d42b000ede555fde62",
+      "F-7fdf3212b0e011557574915a",
+      "F-802c20da4bda4defad9fda68",
+      "F-80c54cc70bd94046a9477027",
+      "F-879cab52253fee6655f8bd1d",
+      "F-8ee7f59e898be3e1779d858b",
+      "F-923fb89a55295bd85e19d37b",
+      "F-a2d5e852426d2666ecd286ab",
+      "F-a53f910624e923d04f09e322",
+      "F-ac7625e4329ff4dd58d680a0",
+      "F-c010045162ee569b24c29d31",
+      "F-c6f5dd272a0759785e90fcb8",
+      "F-d6c7d2b3ee3a753f27338fc0",
+      "F-ebbca462cec453133261b05b",
+      "F-f01a0175f311c667a271bd6c",
+      "F-fe1ce224b49cc3422b46058a"
     ],
     "infrastructure-agent": [
-      "F-0b0949f30ac18df51e1591ae",
-      "F-10a6497af9058132389172c9",
-      "F-10cef237a1aefc0501eefd0b",
-      "F-11c0e3f0088a6a163dc908c9",
-      "F-13cd38458c581fc710bb310c",
-      "F-15da00865cd96ba6e074c13f",
-      "F-19efcd21a15259d96fbb81b2",
-      "F-1a852323f1af6ccc86939c08",
-      "F-1b48b051dad699cdcb8d7c6f",
-      "F-1c982007c86fed3cced37327",
-      "F-1ccead06d787ed7c5675f19c",
-      "F-2c763970cb74da747873b6d6",
-      "F-2e3185ec19e30e48abc2bfb0",
-      "F-3923bb1895c9d18660d0742f",
-      "F-3cb5e71b80c074440c9cf0a1",
-      "F-4b5bbcfcdcca478c2c683433",
-      "F-565c954c7c52612cec2b2923",
-      "F-5e048065468ea6b61da22084",
-      "F-5e80073374ee94246d53fc43",
-      "F-626343519f2e60af9c51fdaa",
-      "F-6505e7ef0fe9275bad4ff3d5",
-      "F-68df4b01a896a57ce18f6876",
-      "F-69af7efcb62d96c21ad0779f",
-      "F-7225fae875f62cd73ea404c2",
-      "F-7d05e5598779c4223a67c6a0",
-      "F-7dd295d271f2339b06abd631",
-      "F-7f0b9450accca5f8e1eaba57",
-      "F-8a5abfff84830df82d13b8c8",
-      "F-8a6f60eef6057f5a44c3c972",
-      "F-949f77d86658bf9aeb7f28ce",
-      "F-974e2b428c02ad3ca9334a39",
-      "F-975d4bbebe577e9fe1bbd072",
-      "F-989d67f10c89a9a5e1eea9e9",
-      "F-a1b607d01dab1c8f83383bb8",
-      "F-a8d4ecb862c2acdf60c5b585",
-      "F-aa34cf27aa2c526d5854a10b",
-      "F-abf9f4b4c955585d1bdbf27d",
-      "F-ae5d75059b19913c59ed7173",
-      "F-b418debe8a08f6e01911e2ec",
-      "F-b840ef2c47e2c1ebd286b8bb",
-      "F-bb31a3c19a9f8b8e1a53ef40",
-      "F-c5fcfe1f7b878db56a4f7842",
-      "F-d50a77a9f66cfe8b9c4c0cec",
-      "F-e04902f1d1f89413dbbe375f",
-      "F-e25745d72f83bb616fac8a16",
-      "F-eb3744671670189a828f513e",
-      "F-f32d19d69fa60bfdaabe1bf8",
-      "F-f9a3d4adbf047b0d5a8ee8b9",
-      "F-fdb989ffb4cf85ff127384fe",
-      "F-feecb3e3cb544728e974ecea"
+      "F-016fa432c8f6def7c80b7aa6",
+      "F-04be7896d97472c7614a7a69",
+      "F-17daca4e3ea12b7b9014d035",
+      "F-2f689afa66101fc99baca6a8",
+      "F-2f81f6dca82623b85d11238c",
+      "F-32f8c9d22578db4517d29653",
+      "F-3618fa285879e07580f3e428",
+      "F-36fb5675249362f24850e9ad",
+      "F-376f070c85029c4547bd84ad",
+      "F-483e1866a69d7e12f7e61637",
+      "F-53ef8a412d6a1c8131ff0e5d",
+      "F-5546fad2d9da44a362a45fc4",
+      "F-6064ed6e2d439e9dd9b05a4f",
+      "F-61cb2719959cb80a8f8afdb2",
+      "F-637104ba967f7dc34721a1e5",
+      "F-6f3dc5e19d3a5cb02763eced",
+      "F-763c53a1f93e1784310a892c",
+      "F-7bce197f17a07fb07a56e584",
+      "F-7fba413a7d975676f55c2eb0",
+      "F-819cf2807189442873f1c24d",
+      "F-974a22213d184eddc83637f1",
+      "F-994d5ea093ce6c8c6997b079",
+      "F-9aa137d7eef351108807ac19",
+      "F-9c6bd00cdfe2dd1b5a9aecd9",
+      "F-9e37f9563142b85d72a5ceec",
+      "F-9e4e0f2f6be66f9e7ba289c4",
+      "F-a42c6d3a35a33434e6ebf6b8",
+      "F-a7019761ff25eec25369fbc9",
+      "F-a7eb37247c86083363b848dd",
+      "F-aaabf023cdf2de2ae0bc576f",
+      "F-ab8ee0ed11f9257762489b21",
+      "F-b1270ccc0f8bc71565376c1b",
+      "F-b3b8584f2adac9a3a3db7354",
+      "F-ba8ccd1a4136e9076ad25956",
+      "F-bc00056d6e96a362bfdd29bd",
+      "F-c0d98986d7aff4d617a504c4",
+      "F-c1ad6738f87a696f937dedac",
+      "F-c3c8c7331fdf165eec8c2451",
+      "F-c4d67a75eab95161ac36dcaf",
+      "F-cf27abc39300cb96ff53d25c",
+      "F-d806f4c038181338fa1cfb0c",
+      "F-da53a5fda367cb758d90f6a3",
+      "F-dae913ece33a305cd8d86783",
+      "F-dd5a8e21f4e0e894a45716c2",
+      "F-de1c94d095f4dc490d5ee023",
+      "F-e25ccca9ceeed8ea9917e3a1",
+      "F-eba2be22b5a44c5f0ca6c14c",
+      "F-f20eb7873b5ecc8933b60911",
+      "F-f214185d4589d7c592991277",
+      "F-fc2d22e6831611d0719fd037"
     ],
     "performance-agent": [
-      "F-00b56dbdb5e0918136233b85",
-      "F-08188b194e26cdb21365ea4d",
-      "F-11a68393848ce4afef04e2b5",
-      "F-12a58494cc73da74f0cd2f2e",
-      "F-138390e8a35b86a08d967054",
-      "F-1da115f333c7d83de3ab875d",
-      "F-210cde45fe0961b1c416967a",
-      "F-2495bb1c3d08a842b712496b",
-      "F-311e38c47536f4696c2a7398",
-      "F-318e1e7f8f13ae0f21fe740b",
-      "F-3a8611ce5ad9bea985d3ad60",
-      "F-3b3dd205b88c3d5d5ae4d5b7",
-      "F-3e577784b3e3180d57d10d51",
-      "F-45f37f5c082338d20962f5d7",
-      "F-4d19bcfbd478671b1cda59b6",
-      "F-534ff02c591838d9d4dbf9a4",
-      "F-6454967e3bbdacae0a2b21df",
-      "F-66c4d6b037f820d15993fc6a",
-      "F-686019e247b60475721656e7",
-      "F-68d816d2cdacb69700bad138",
-      "F-6d2026d1688c387aeed009f5",
-      "F-792fb3b1f433058b0be64c62",
-      "F-7ede235ffb12fc4c7ba74962",
-      "F-828aca30e7d79012c3ca6a33",
-      "F-83ea85b4ed2b1d18b5320471",
-      "F-8b89ef774f0f85d614db0c67",
-      "F-9c2aa85973c453eaedd384c2",
-      "F-9c454049fdd840440805ab19",
-      "F-9d003289d56b480b6b0a284c",
-      "F-a55dd2be81919ea9502f8f7b",
-      "F-a9715d83bb96ec25dddb8441",
-      "F-b3a55d12c4f189278a9b8f99",
-      "F-b4a42ee1fa3e77f9a7fe347a",
-      "F-b4a47a82dc5f30bc1e3092f7",
-      "F-b4ec9ed21f5a20cdb19fd8ee",
-      "F-bff06943b85321751f6f6655",
-      "F-c361e83e3fb6d84663e98bfe",
-      "F-c44ec53e5fa54e0bcb024796",
-      "F-c81579c5e86a71b83d1d839a",
-      "F-d031c6d81d6aa4e903a7419c",
-      "F-d7bff74e1e6fef20b96fd2bd",
-      "F-dcdc44e2021627e2dd38dff0",
-      "F-dd0484ae65a524f960e61e53",
-      "F-e4801adde66d5acec1cbfad6",
-      "F-e7b7ad4c50404397bda06a38",
-      "F-eef75a57986ef1dcbd190e8f",
-      "F-ef2c406004ecafc8d4372fb2",
-      "F-fc3c87535fb84b62ad97b824"
+      "F-09c82ed4b4c1688e2d1b4435",
+      "F-0b0763a27c3081d3bb40b7b9",
+      "F-15c48f8669069b2e386352d2",
+      "F-1a759283da30c7d20a4d70cf",
+      "F-24667111d923974e11e1eaac",
+      "F-330ac52edce8b5564d143fcd",
+      "F-3d12daa51f954be6292bf6f9",
+      "F-558161296023331da65a181b",
+      "F-5e63fbfafb68905f9ba89743",
+      "F-6b5f39bbf19fef9f3f7239ad",
+      "F-6f033f45c55e9b206be0ac74",
+      "F-732912638822802125f46ffc",
+      "F-740723fb94b4d04a883e5276",
+      "F-7b6b97f770c1d966df00ae4e",
+      "F-80048a78c03740cc8e7749d9",
+      "F-8018c6c6e1407d0f76e6409f",
+      "F-826c5ca1b9dc211cb1112da0",
+      "F-88f004204095ab2fb1edce50",
+      "F-8a07bf9fdbe0fa81ba237971",
+      "F-8aa0f7f2e4a2970394e7b800",
+      "F-8bfcba871052dd5dad0b7599",
+      "F-902052a1a0fd68348e5d9cb8",
+      "F-932be196dd8a7c99ea45f766",
+      "F-9418a32b5034e54b5496b92b",
+      "F-9e7206ad79bbcfcd707877fd",
+      "F-9f4e6fc7e33880f65b317184",
+      "F-a02c1411c48b8d94960a1694",
+      "F-aed0d3664b4804c7057d90de",
+      "F-b36abe376dd8cb844a8b356f",
+      "F-b635a6178703d4c40bb31704",
+      "F-b7181b8c6c39baef979d10c2",
+      "F-c65c4239d2486607f79b7ff0",
+      "F-c6e346835a2b216dc5649c1c",
+      "F-c8466bbc174bf1bb6200a953",
+      "F-cbf9935b10661f72da4fc86b",
+      "F-cc8afe8d21840a9042cc6d91",
+      "F-cf4ddc63d3b44d7787646967",
+      "F-d46a3343587faa42018bec3c",
+      "F-d9bee5535f76d0a7575fb830",
+      "F-e2bb2e2cef9abc23439207d2",
+      "F-e3377756a4432e38d907b174",
+      "F-e73754fb79c44ea3cb4a7770",
+      "F-eac2de534c9d969c25d7ca30",
+      "F-eb48106e60003be79677f696",
+      "F-ee73eed2118fd4f9793329af",
+      "F-f3841ec59f6e277ae44cea4d",
+      "F-f634fcb3b2de36691692be51",
+      "F-fab68ade851cc43a3ad841fb"
     ]
   },
   "alternative_causes": [
@@ -147,6 +147,26 @@
     "LINK_CONGESTION at ACC-2-1:ge1/1 (ruled out: signature ['HIGH_LINK_UTILIZATION'] observed normal at ACC-2-1:ge1/1)",
     "DEVICE_CPU_OVERLOAD at ACC-2-1 (ruled out: signature ['HIGH_CPU'] observed normal at ACC-2-1)"
   ],
+  "confidence": 0.97,
+  "confidence_basis": {
+    "calibration_version": "confidence-calibration/1",
+    "caveats": [
+      "Measured on synthetic scenarios from the project's own generator (same authors as the engine); not validated on real networks or on other data sources",
+      "Small samples: see n and the 95 % interval for each category"
+    ],
+    "conclusion": "diagnosed|high_support",
+    "correct": 30,
+    "estimator": "laplace (k+1)/(n+2), interval: Wilson 95 %",
+    "evaluation_method": "D_full",
+    "meaning": "Probability that a conclusion of this status and support category is correct, estimated as (k+1)/(n+2) from how often the same conclusion was correct on a held-out evaluation set.",
+    "method": "empirical_heldout",
+    "n": 30,
+    "set": "heldout-v3",
+    "wilson_95": [
+      0.886,
+      1
+    ]
+  },
   "confidence_category": "high_support",
   "coverage": {
     "agents_available": [
@@ -233,25 +253,25 @@
   },
   "data_mode": "synthetic",
   "decision_basis": [
-    "H-DEVICE_DOWN-AP-2-1: signature observed (F-0b0949f30ac18df51e1591ae); explains 4 symptom finding(s) using 4 independent source(s) (20 sample lineage group(s))."
+    "H-DEVICE_DOWN-AP-2-1: signature observed (F-32f8c9d22578db4517d29653); explains 4 symptom finding(s) using 4 independent source(s) (20 sample lineage group(s))."
   ],
   "engine_version": "stear/0.1",
-  "evidence_snapshot_id": "SNAP-232c2df379f0d82ae328d63c1255dd16",
+  "evidence_snapshot_id": "SNAP-aca594c2210ba3a40c3fd3d7338211bd",
   "evidence_sources": [
     "connectivity-agent",
     "infrastructure-agent",
     "performance-agent"
   ],
   "explanation": "Probable root cause: DEVICE_DOWN at AP-2-1 (high support). Affected: AP-2-1. Based on 60 evidence item(s) from connectivity-agent, infrastructure-agent, performance-agent. Verification: 1 targeted check(s) requested, 1 returned new evidence. Alternatives considered: 8.",
-  "generated_at": "2026-11-01T01:26:06.388935Z",
+  "generated_at": "2026-11-01T02:17:40.618401Z",
   "hypotheses": [
     {
       "contradictions": [],
       "explained_findings": [
-        "F-0b0949f30ac18df51e1591ae",
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962",
-        "F-8a5abfff84830df82d13b8c8"
+        "F-32f8c9d22578db4517d29653",
+        "F-3d12daa51f954be6292bf6f9",
+        "F-bc00056d6e96a362bfdd29bd",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "DEVICE_DOWN",
       "hypothesis_id": "H-DEVICE_DOWN-AP-2-1",
@@ -268,7 +288,7 @@
       "rank": 1,
       "reasons": [],
       "signature_findings": [
-        "F-0b0949f30ac18df51e1591ae"
+        "F-32f8c9d22578db4517d29653"
       ],
       "status": "confirmed",
       "temporal_issues": []
@@ -276,9 +296,9 @@
     {
       "contradictions": [],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962",
-        "F-8a5abfff84830df82d13b8c8"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-bc00056d6e96a362bfdd29bd",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "LINK_OR_PATH_FAILURE",
       "hypothesis_id": "H-LINK_OR_PATH_FAILURE-ACC-2-1:ge1/1",
@@ -297,7 +317,7 @@
       "rank": 2,
       "reasons": [],
       "signature_findings": [
-        "F-8a5abfff84830df82d13b8c8"
+        "F-bc00056d6e96a362bfdd29bd"
       ],
       "status": "confirmed",
       "temporal_issues": []
@@ -305,7 +325,7 @@
     {
       "contradictions": [],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "DEVICE_CPU_OVERLOAD",
       "hypothesis_id": "H-DEVICE_CPU_OVERLOAD-AP-2-1",
@@ -335,7 +355,7 @@
     {
       "contradictions": [],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "WEAK_WIFI_SIGNAL",
       "hypothesis_id": "H-WEAK_WIFI_SIGNAL-AP-2-1",
@@ -365,7 +385,7 @@
     {
       "contradictions": [],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "WIRELESS_INTERFERENCE",
       "hypothesis_id": "H-WIRELESS_INTERFERENCE-AP-2-1",
@@ -401,12 +421,12 @@
     {
       "contradictions": [
         "signature ['DEVICE_DOWN_STATE'] observed normal at ACC-2-1",
-        "UNREACHABLE observed normal at ACC-2-1 (F-5b8f51c8465aa032eb2f0301) contradicts DEVICE_DOWN"
+        "UNREACHABLE observed normal at ACC-2-1 (F-092b1b6f5d65f1ea8b5c5a16) contradicts DEVICE_DOWN"
       ],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962",
-        "F-8a5abfff84830df82d13b8c8"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-bc00056d6e96a362bfdd29bd",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "DEVICE_DOWN",
       "hypothesis_id": "H-DEVICE_DOWN-ACC-2-1",
@@ -433,12 +453,12 @@
     {
       "contradictions": [
         "signature ['DEVICE_DOWN_STATE'] observed normal at DIST-2",
-        "UNREACHABLE observed normal at DIST-2 (F-31b1c901909ec952cc3f319e) contradicts DEVICE_DOWN"
+        "UNREACHABLE observed normal at DIST-2 (F-c010045162ee569b24c29d31) contradicts DEVICE_DOWN"
       ],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962",
-        "F-8a5abfff84830df82d13b8c8"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-bc00056d6e96a362bfdd29bd",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "DEVICE_DOWN",
       "hypothesis_id": "H-DEVICE_DOWN-DIST-2",
@@ -471,12 +491,12 @@
     {
       "contradictions": [
         "signature ['DEVICE_DOWN_STATE'] observed normal at CORE-1",
-        "UNREACHABLE observed normal at CORE-1 (F-deafb216f9afc9de1fefeafb) contradicts DEVICE_DOWN"
+        "UNREACHABLE observed normal at CORE-1 (F-c6f5dd272a0759785e90fcb8) contradicts DEVICE_DOWN"
       ],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962",
-        "F-8a5abfff84830df82d13b8c8"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-bc00056d6e96a362bfdd29bd",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "DEVICE_DOWN",
       "hypothesis_id": "H-DEVICE_DOWN-CORE-1",
@@ -525,8 +545,8 @@
         "signature ['INTERFACE_DOWN'] observed normal at DIST-2:ge0/1"
       ],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "LINK_OR_PATH_FAILURE",
       "hypothesis_id": "H-LINK_OR_PATH_FAILURE-DIST-2:ge0/1",
@@ -557,8 +577,8 @@
         "signature ['INTERFACE_DOWN'] observed normal at CORE-1:ge0/2"
       ],
       "explained_findings": [
-        "F-125640924e04d80d1d1ff13e",
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9",
+        "F-fe1ce224b49cc3422b46058a"
       ],
       "fault_type": "LINK_OR_PATH_FAILURE",
       "hypothesis_id": "H-LINK_OR_PATH_FAILURE-CORE-1:ge0/2",
@@ -595,7 +615,7 @@
         "signature ['CRC_ERRORS'] observed normal at ACC-2-1:ge1/1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "INTERFACE_DEGRADATION",
       "hypothesis_id": "H-INTERFACE_DEGRADATION-ACC-2-1:ge1/1",
@@ -622,7 +642,7 @@
         "signature ['HIGH_LINK_UTILIZATION'] observed normal at ACC-2-1:ge1/1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "LINK_CONGESTION",
       "hypothesis_id": "H-LINK_CONGESTION-ACC-2-1:ge1/1",
@@ -649,7 +669,7 @@
         "signature ['HIGH_CPU'] observed normal at ACC-2-1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "DEVICE_CPU_OVERLOAD",
       "hypothesis_id": "H-DEVICE_CPU_OVERLOAD-ACC-2-1",
@@ -678,7 +698,7 @@
         "signature ['CRC_ERRORS'] observed normal at DIST-2:ge0/1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "INTERFACE_DEGRADATION",
       "hypothesis_id": "H-INTERFACE_DEGRADATION-DIST-2:ge0/1",
@@ -709,7 +729,7 @@
         "signature ['HIGH_LINK_UTILIZATION'] observed normal at DIST-2:ge0/1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "LINK_CONGESTION",
       "hypothesis_id": "H-LINK_CONGESTION-DIST-2:ge0/1",
@@ -740,7 +760,7 @@
         "signature ['HIGH_CPU'] observed normal at DIST-2"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "DEVICE_CPU_OVERLOAD",
       "hypothesis_id": "H-DEVICE_CPU_OVERLOAD-DIST-2",
@@ -775,7 +795,7 @@
         "signature ['CRC_ERRORS'] observed normal at CORE-1:ge0/2"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "INTERFACE_DEGRADATION",
       "hypothesis_id": "H-INTERFACE_DEGRADATION-CORE-1:ge0/2",
@@ -812,7 +832,7 @@
         "signature ['HIGH_LINK_UTILIZATION'] observed normal at CORE-1:ge0/2"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "LINK_CONGESTION",
       "hypothesis_id": "H-LINK_CONGESTION-CORE-1:ge0/2",
@@ -849,7 +869,7 @@
         "signature ['HIGH_CPU'] observed normal at CORE-1"
       ],
       "explained_findings": [
-        "F-7ede235ffb12fc4c7ba74962"
+        "F-3d12daa51f954be6292bf6f9"
       ],
       "fault_type": "DEVICE_CPU_OVERLOAD",
       "hypothesis_id": "H-DEVICE_CPU_OVERLOAD-CORE-1",
@@ -894,13 +914,14 @@
       "temporal_issues": []
     }
   ],
-  "incident_id": "INC-69e4beeca3774e6a",
+  "incident_id": "INC-937efd2aa1194ce1",
   "knowledge_versions": {
     "detector_rules": "detector-rules/1",
     "fault_library": "fault-library/3"
   },
   "limitations": [
     "confidence_category is a documented support category, not a probability",
+    "confidence 0.97 = how often this conclusion (diagnosed, high_support) was correct on the synthetic held-out set heldout-v3 (30/30); not validated on other data sources",
     "756 stale observation(s) were kept but not used as current evidence.",
     "Data mode: synthetic; no live network was accessed"
   ],
@@ -920,489 +941,489 @@
       "support": "high_support"
     }
   ],
-  "run_id": "RUN-b4fdb0eb23bd4db9",
-  "schema_version": "1.1.0",
+  "run_id": "RUN-7231117d6cdc42da",
+  "schema_version": "1.2.0",
   "status": "diagnosed",
   "supporting_evidence": [
     {
-      "finding_id": "F-0b0949f30ac18df51e1591ae",
+      "finding_id": "F-32f8c9d22578db4517d29653",
       "interpretation": "DEVICE_DOWN_STATE observed by infrastructure-agent at device=AP-2-1",
       "metric": "device_status",
-      "observation_id": "OBS-0e729bef7f8e6c9007e0587e78fef9e4",
+      "observation_id": "OBS-1781606e09a9cf05cac3a0377fe5f73e",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-0b0949f30ac18df51e1591ae",
+      "finding_id": "F-32f8c9d22578db4517d29653",
       "interpretation": "DEVICE_DOWN_STATE observed by infrastructure-agent at device=AP-2-1",
       "metric": "device_status",
-      "observation_id": "OBS-1e6b36277dc851fb977e2f1e8cc2aa7c",
+      "observation_id": "OBS-343ae8e58bc4cdf3cfe10e29c9457238",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-0b0949f30ac18df51e1591ae",
+      "finding_id": "F-32f8c9d22578db4517d29653",
       "interpretation": "DEVICE_DOWN_STATE observed by infrastructure-agent at device=AP-2-1",
       "metric": "device_status",
-      "observation_id": "OBS-8d77f1b6356ac5d76a2bb0b0a767f84e",
+      "observation_id": "OBS-97a6a9e268608804ae1eb906a4ec1603",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-0b0949f30ac18df51e1591ae",
+      "finding_id": "F-32f8c9d22578db4517d29653",
       "interpretation": "DEVICE_DOWN_STATE observed by infrastructure-agent at device=AP-2-1",
       "metric": "device_status",
-      "observation_id": "OBS-9813e48b5a040b0e6777db7a2d906227",
+      "observation_id": "OBS-db7ce0851dc2ee562312af1c56ad963c",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-125640924e04d80d1d1ff13e",
-      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
-      "metric": "reachability",
-      "observation_id": "OBS-61fab2c89b4795fb1b331fce17ce4d2f",
-      "unit": "boolean",
-      "value": false
-    },
-    {
-      "finding_id": "F-125640924e04d80d1d1ff13e",
-      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
-      "metric": "reachability",
-      "observation_id": "OBS-7633e17200a8b2b8f2e5c35d656a95b2",
-      "unit": "boolean",
-      "value": false
-    },
-    {
-      "finding_id": "F-125640924e04d80d1d1ff13e",
-      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
-      "metric": "reachability",
-      "observation_id": "OBS-abdc10e65fdacb54e6ad59fa93fa308b",
-      "unit": "boolean",
-      "value": false
-    },
-    {
-      "finding_id": "F-125640924e04d80d1d1ff13e",
-      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
-      "metric": "reachability",
-      "observation_id": "OBS-cc9d9949814c6a2a7f1476478552a88c",
-      "unit": "boolean",
-      "value": false
-    },
-    {
-      "finding_id": "F-7ede235ffb12fc4c7ba74962",
+      "finding_id": "F-3d12daa51f954be6292bf6f9",
       "interpretation": "PACKET_LOSS observed by performance-agent at device=AP-2-1",
       "metric": "packet_loss",
-      "observation_id": "OBS-11277406a041c2f379b4a07336f9133d",
+      "observation_id": "OBS-1af5ef4e0c944f71ae04a7b084911793",
       "unit": "percent",
       "value": 100
     },
     {
-      "finding_id": "F-7ede235ffb12fc4c7ba74962",
+      "finding_id": "F-3d12daa51f954be6292bf6f9",
       "interpretation": "PACKET_LOSS observed by performance-agent at device=AP-2-1",
       "metric": "packet_loss",
-      "observation_id": "OBS-2cd4e4a8477a4d5952eebe11ecc6723a",
+      "observation_id": "OBS-44aa1e18ef242b91f7ad951f19d6696b",
       "unit": "percent",
       "value": 100
     },
     {
-      "finding_id": "F-7ede235ffb12fc4c7ba74962",
+      "finding_id": "F-3d12daa51f954be6292bf6f9",
       "interpretation": "PACKET_LOSS observed by performance-agent at device=AP-2-1",
       "metric": "packet_loss",
-      "observation_id": "OBS-4e130fd0633c08eef0e8e32e11ec0cb6",
+      "observation_id": "OBS-b84133c7972baeb481a98ef3220b5b01",
       "unit": "percent",
       "value": 100
     },
     {
-      "finding_id": "F-7ede235ffb12fc4c7ba74962",
+      "finding_id": "F-3d12daa51f954be6292bf6f9",
       "interpretation": "PACKET_LOSS observed by performance-agent at device=AP-2-1",
       "metric": "packet_loss",
-      "observation_id": "OBS-7f4bfdcc6d771d79afe1b44eca896591",
+      "observation_id": "OBS-c22809a6f1971e1e6e0dfdb3e03fda96",
       "unit": "percent",
       "value": 100
     },
     {
-      "finding_id": "F-8a5abfff84830df82d13b8c8",
+      "finding_id": "F-bc00056d6e96a362bfdd29bd",
       "interpretation": "INTERFACE_DOWN observed by infrastructure-agent at device=ACC-2-1|interface=ge1/1",
       "metric": "interface_status",
-      "observation_id": "OBS-6fd74b56343dc7a80ea6789c6b648f5b",
+      "observation_id": "OBS-21caf65b1785bc4e8f5059b2c70c5896",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-8a5abfff84830df82d13b8c8",
+      "finding_id": "F-bc00056d6e96a362bfdd29bd",
       "interpretation": "INTERFACE_DOWN observed by infrastructure-agent at device=ACC-2-1|interface=ge1/1",
       "metric": "interface_status",
-      "observation_id": "OBS-7dd0695c07d8def93651159158b520e6",
+      "observation_id": "OBS-21d57cee089dae790b94e83ccba2d4b9",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-8a5abfff84830df82d13b8c8",
+      "finding_id": "F-bc00056d6e96a362bfdd29bd",
       "interpretation": "INTERFACE_DOWN observed by infrastructure-agent at device=ACC-2-1|interface=ge1/1",
       "metric": "interface_status",
-      "observation_id": "OBS-8b4d7c59b51be2f27eb3df72461b5f3d",
+      "observation_id": "OBS-c1127453b5d25f63488bd7edc6eb0fa3",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-8a5abfff84830df82d13b8c8",
+      "finding_id": "F-bc00056d6e96a362bfdd29bd",
       "interpretation": "INTERFACE_DOWN observed by infrastructure-agent at device=ACC-2-1|interface=ge1/1",
       "metric": "interface_status",
-      "observation_id": "OBS-958c391b55bace859f0605dceb4cda6e",
+      "observation_id": "OBS-d041c3a76806284d6001726069929bed",
       "unit": "state",
       "value": "down"
     },
     {
-      "finding_id": "F-0b674ef0b534f33ee97cad12",
+      "finding_id": "F-fe1ce224b49cc3422b46058a",
+      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
+      "metric": "reachability",
+      "observation_id": "OBS-4701c89bb57bcc51a019e06c997dcf74",
+      "unit": "boolean",
+      "value": false
+    },
+    {
+      "finding_id": "F-fe1ce224b49cc3422b46058a",
+      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
+      "metric": "reachability",
+      "observation_id": "OBS-b812100f3b2a15e693453dddf6b34db6",
+      "unit": "boolean",
+      "value": false
+    },
+    {
+      "finding_id": "F-fe1ce224b49cc3422b46058a",
+      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
+      "metric": "reachability",
+      "observation_id": "OBS-f4daabe71131e7579abc714dfc632575",
+      "unit": "boolean",
+      "value": false
+    },
+    {
+      "finding_id": "F-fe1ce224b49cc3422b46058a",
+      "interpretation": "UNREACHABLE observed by connectivity-agent at device=AP-2-1",
+      "metric": "reachability",
+      "observation_id": "OBS-f526885fc4fd0b2a4bda4024a3af827c",
+      "unit": "boolean",
+      "value": false
+    },
+    {
+      "finding_id": "F-016fa432c8f6def7c80b7aa6",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-1",
+      "metric": "device_status",
+      "observation_id": "OBS-08c49bf0a65c08fc836bcc342ccdddc2",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-016fa432c8f6def7c80b7aa6",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-1",
+      "metric": "device_status",
+      "observation_id": "OBS-229fa4c766e4717b5891798567b82f11",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-016fa432c8f6def7c80b7aa6",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-1",
+      "metric": "device_status",
+      "observation_id": "OBS-3454ac664b947ad55c7af4fc0752f715",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-016fa432c8f6def7c80b7aa6",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-1",
+      "metric": "device_status",
+      "observation_id": "OBS-35bec87d55c07af0acbf5a23b9142d4b",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-0482c1962afa34a1d534f902",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-1",
       "metric": "reachability",
-      "observation_id": "OBS-11e8c0548e13d8469030e87ca8c18c82",
+      "observation_id": "OBS-0055938837a05752c0baa379c9db0f56",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-0b674ef0b534f33ee97cad12",
+      "finding_id": "F-0482c1962afa34a1d534f902",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-1",
       "metric": "reachability",
-      "observation_id": "OBS-6b4b8154c6ff548bf16af8eb2838fa0c",
+      "observation_id": "OBS-3cc7b3bd580b4cd460b9c033dfa73262",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-0b674ef0b534f33ee97cad12",
+      "finding_id": "F-0482c1962afa34a1d534f902",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-1",
       "metric": "reachability",
-      "observation_id": "OBS-75994a933fefe476dd96395b3740a997",
+      "observation_id": "OBS-4c698b2d8016030949690bd94ecc6122",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-0b674ef0b534f33ee97cad12",
+      "finding_id": "F-0482c1962afa34a1d534f902",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-1",
       "metric": "reachability",
-      "observation_id": "OBS-aa952f5ad7b739bbbcfdc591dc883f28",
+      "observation_id": "OBS-9bb330362d43fb48ea702e4844797514",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-10cef237a1aefc0501eefd0b",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
-      "metric": "device_status",
-      "observation_id": "OBS-256cb263963be7abc393be61d13c8167",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-10cef237a1aefc0501eefd0b",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
-      "metric": "device_status",
-      "observation_id": "OBS-35ac693db91edd7b6fdc84b990e9171e",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-10cef237a1aefc0501eefd0b",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
-      "metric": "device_status",
-      "observation_id": "OBS-3c994f482ed23cff995907f9e2c5a0b2",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-10cef237a1aefc0501eefd0b",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
-      "metric": "device_status",
-      "observation_id": "OBS-712509766e9e6c9c52e72abb78031690",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-1a852323f1af6ccc86939c08",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-1",
-      "metric": "device_status",
-      "observation_id": "OBS-034bafede7f1b5a929949b2d4fb6b03c",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-1a852323f1af6ccc86939c08",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-1",
-      "metric": "device_status",
-      "observation_id": "OBS-1b6347971ff4548b6475913c5e53d461",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-1a852323f1af6ccc86939c08",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-1",
-      "metric": "device_status",
-      "observation_id": "OBS-1c5a4449d2b1b37671b49f24b4081531",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-1a852323f1af6ccc86939c08",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-1",
-      "metric": "device_status",
-      "observation_id": "OBS-23c940519de2a3ce43afa3680a77111a",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-31b1c901909ec952cc3f319e",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-2",
-      "metric": "reachability",
-      "observation_id": "OBS-7d655353f8f03ff342048884a0437a6c",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-31b1c901909ec952cc3f319e",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-2",
-      "metric": "reachability",
-      "observation_id": "OBS-93d958ae61cadae1a721f1de06691b5b",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-31b1c901909ec952cc3f319e",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-2",
-      "metric": "reachability",
-      "observation_id": "OBS-a287f0d20c25044ef952e05de37aab90",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-31b1c901909ec952cc3f319e",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-2",
-      "metric": "reachability",
-      "observation_id": "OBS-b935a38c7ecfcfb5c764f96681c61e84",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-3797c271e43259c3da8dff9d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-1ce7e5c637c516523b9683117912f1e2",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-3797c271e43259c3da8dff9d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-40b5c05851b53358ce646d223e0c13cd",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-3797c271e43259c3da8dff9d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-44e99b4e4d83f59e9bc37a7ae413c810",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-3797c271e43259c3da8dff9d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-2-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-5364e9b14b285c7d9212d556f431c554",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-3923bb1895c9d18660d0742f",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-2",
-      "metric": "device_status",
-      "observation_id": "OBS-2aa775d626df48b9d9e955fb04656363",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-3923bb1895c9d18660d0742f",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-2",
-      "metric": "device_status",
-      "observation_id": "OBS-39da89d451b0d747be0ef82cbce92af6",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-3923bb1895c9d18660d0742f",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-2",
-      "metric": "device_status",
-      "observation_id": "OBS-3dabc53b541807243bfced1763b71888",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-3923bb1895c9d18660d0742f",
-      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=DIST-2",
-      "metric": "device_status",
-      "observation_id": "OBS-3dba6f733aeefbb41274a210435eee6e",
-      "unit": "state",
-      "value": "up"
-    },
-    {
-      "finding_id": "F-49c804834334f21cc40e573d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-803cd328d6830d869ec3a1461b159c64",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-49c804834334f21cc40e573d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-b723219a4037da9d8bce78c90a52f4d2",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-49c804834334f21cc40e573d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-d8e0cd3417a2e47175e8ffb8ed21776b",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-49c804834334f21cc40e573d",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
-      "metric": "reachability",
-      "observation_id": "OBS-db040a38ae5b026bbacb3a9300255401",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-4d41a3a176149ef9b6ef1ec4",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
-      "metric": "reachability",
-      "observation_id": "OBS-1b42b30e48a1732f3d3cc04382b1972d",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-4d41a3a176149ef9b6ef1ec4",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
-      "metric": "reachability",
-      "observation_id": "OBS-66ad14e7f8f5ed7670a18ef0ac12aa1a",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-4d41a3a176149ef9b6ef1ec4",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
-      "metric": "reachability",
-      "observation_id": "OBS-9b0b5283d7c2150ab5bd5fe658ec3ba7",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-4d41a3a176149ef9b6ef1ec4",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
-      "metric": "reachability",
-      "observation_id": "OBS-ac5bef1872cc274d3024de53e80bb9b8",
-      "unit": "boolean",
-      "value": true
-    },
-    {
-      "finding_id": "F-5b8f51c8465aa032eb2f0301",
+      "finding_id": "F-092b1b6f5d65f1ea8b5c5a16",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-2-1",
       "metric": "reachability",
-      "observation_id": "OBS-1f0c82005577244c70a22ed3c8dd94ab",
+      "observation_id": "OBS-1f9cadf928b5a9933ac4d5513da0f623",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5b8f51c8465aa032eb2f0301",
+      "finding_id": "F-092b1b6f5d65f1ea8b5c5a16",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-2-1",
       "metric": "reachability",
-      "observation_id": "OBS-44deb56eb91627cdd63bc18a0d243bce",
+      "observation_id": "OBS-2dacfc6c1e7aa454ef2a502e11d0c46d",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5b8f51c8465aa032eb2f0301",
+      "finding_id": "F-092b1b6f5d65f1ea8b5c5a16",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-2-1",
       "metric": "reachability",
-      "observation_id": "OBS-7f52a60ba4bf35d4995d4477bb964e60",
+      "observation_id": "OBS-98fb9222561fdebe250c0c6f5b56350f",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5b8f51c8465aa032eb2f0301",
+      "finding_id": "F-092b1b6f5d65f1ea8b5c5a16",
       "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-2-1",
       "metric": "reachability",
-      "observation_id": "OBS-a16cfde8e5a03ab88fd3bdd03dcf13c4",
+      "observation_id": "OBS-a2f46af6bac6b47cdec4f2ba44008b90",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5c8bf79604260f5431f77813",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=AP-2-2",
+      "finding_id": "F-0de5aa59e19abcb5dea4291d",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-2-2",
       "metric": "reachability",
-      "observation_id": "OBS-4443fabb370ec542ea80f737b4c782e9",
+      "observation_id": "OBS-6df11a189aa42973916fa2a6139a542a",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5c8bf79604260f5431f77813",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=AP-2-2",
+      "finding_id": "F-0de5aa59e19abcb5dea4291d",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-2-2",
       "metric": "reachability",
-      "observation_id": "OBS-673e4e1714def66448b2acff3e53efdc",
+      "observation_id": "OBS-902b8b7582c67f9a1a997c65f01878ef",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5c8bf79604260f5431f77813",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=AP-2-2",
+      "finding_id": "F-0de5aa59e19abcb5dea4291d",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-2-2",
       "metric": "reachability",
-      "observation_id": "OBS-90d4e9db0f19e90b4e86d47d09bf6cd0",
+      "observation_id": "OBS-93dfcb8dc94951da0516de86f98f0769",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5c8bf79604260f5431f77813",
-      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=AP-2-2",
+      "finding_id": "F-0de5aa59e19abcb5dea4291d",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-2-2",
       "metric": "reachability",
-      "observation_id": "OBS-a8af78debbd283c2450c72134e45473c",
+      "observation_id": "OBS-d999115c69ffcc227318e428a6f757b9",
       "unit": "boolean",
       "value": true
     },
     {
-      "finding_id": "F-5e048065468ea6b61da22084",
+      "finding_id": "F-376f070c85029c4547bd84ad",
       "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-2",
       "metric": "device_status",
-      "observation_id": "OBS-39effae8b0069ef55174613fd6c2cd21",
+      "observation_id": "OBS-05ab267f46ebf33d2a4486135ed4b99f",
       "unit": "state",
       "value": "up"
     },
     {
-      "finding_id": "F-5e048065468ea6b61da22084",
+      "finding_id": "F-376f070c85029c4547bd84ad",
       "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-2",
       "metric": "device_status",
-      "observation_id": "OBS-4d5ec55724973ed8cfaddda734d16fd5",
+      "observation_id": "OBS-1262259e95573e65a1cc60a08b046991",
       "unit": "state",
       "value": "up"
     },
     {
-      "finding_id": "F-5e048065468ea6b61da22084",
+      "finding_id": "F-376f070c85029c4547bd84ad",
       "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-2",
       "metric": "device_status",
-      "observation_id": "OBS-7057677d624079859e44e0b68a84455c",
+      "observation_id": "OBS-36897aa111370e7132c6927c4f6661e6",
       "unit": "state",
       "value": "up"
     },
     {
-      "finding_id": "F-5e048065468ea6b61da22084",
+      "finding_id": "F-376f070c85029c4547bd84ad",
       "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-2-2",
       "metric": "device_status",
-      "observation_id": "OBS-7e4de3ed1ed3f9a2fca5459fd54e3540",
+      "observation_id": "OBS-436d75a1a93fb223b3bd67b921888760",
       "unit": "state",
       "value": "up"
+    },
+    {
+      "finding_id": "F-38f23682a94aa1276ae49e23",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-08d1f9efad589fa1fc53af06923ee4c7",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-38f23682a94aa1276ae49e23",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-4a33d0ac757201d05248f3e82619e3d2",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-38f23682a94aa1276ae49e23",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-57d7c61e36f10ee4663f44531d421d6c",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-38f23682a94aa1276ae49e23",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-5a4129088c1011056e6039da2061ed80",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-5546fad2d9da44a362a45fc4",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
+      "metric": "device_status",
+      "observation_id": "OBS-1ad5bb4d7ca8410690ea7479b4fd948b",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-5546fad2d9da44a362a45fc4",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
+      "metric": "device_status",
+      "observation_id": "OBS-23fb40e70fbf0e4ce66d0c3f13789066",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-5546fad2d9da44a362a45fc4",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
+      "metric": "device_status",
+      "observation_id": "OBS-560e91b213d3ce62a02d78d52a38b065",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-5546fad2d9da44a362a45fc4",
+      "interpretation": "DEVICE_DOWN_STATE checked and NOT observed by infrastructure-agent at device=ACC-1-1",
+      "metric": "device_status",
+      "observation_id": "OBS-6458afd344792e7caaca60ccd396b615",
+      "unit": "state",
+      "value": "up"
+    },
+    {
+      "finding_id": "F-55767113effb0d9984944044",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-1280c435ff5c848e5b3c2abced4c1932",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-55767113effb0d9984944044",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-591dda197c011fa592f375b11ba07a0e",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-55767113effb0d9984944044",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-719de63b1f06dffc3cf39f2cf67e8294",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-55767113effb0d9984944044",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=H-1-1-1",
+      "metric": "reachability",
+      "observation_id": "OBS-d2644d8aa7d9e2ac945f195c7ca01468",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-6d250d1f525a655d7c6d64b0",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
+      "metric": "reachability",
+      "observation_id": "OBS-21a45c3c876a28bd16fc3881c8b02545",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-6d250d1f525a655d7c6d64b0",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
+      "metric": "reachability",
+      "observation_id": "OBS-3c2e1038937bc781820ff56213790403",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-6d250d1f525a655d7c6d64b0",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
+      "metric": "reachability",
+      "observation_id": "OBS-500d00a8a757d7f370ce3fa7222962ed",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-6d250d1f525a655d7c6d64b0",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=ACC-1-2",
+      "metric": "reachability",
+      "observation_id": "OBS-87257d4ce6007b0d540a44f60b54d533",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7da066d42b000ede555fde62",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
+      "metric": "reachability",
+      "observation_id": "OBS-041a972ea8930d7cd7f31fe3a6a44f7c",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7da066d42b000ede555fde62",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
+      "metric": "reachability",
+      "observation_id": "OBS-2f1c1d5706a3edc4aa18683e3aabb526",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7da066d42b000ede555fde62",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
+      "metric": "reachability",
+      "observation_id": "OBS-4877d7f81f357560f9198537ee0c81de",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7da066d42b000ede555fde62",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at service=DNS-1",
+      "metric": "reachability",
+      "observation_id": "OBS-5bd67564ddafca3559561c07e424fe53",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7fdf3212b0e011557574915a",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-1",
+      "metric": "reachability",
+      "observation_id": "OBS-32bfe1e898055635379084ee0976ee5a",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7fdf3212b0e011557574915a",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-1",
+      "metric": "reachability",
+      "observation_id": "OBS-413edfefcaebd15581a262727a28ab06",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7fdf3212b0e011557574915a",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-1",
+      "metric": "reachability",
+      "observation_id": "OBS-611d5c822aa9df345716983221c92ef4",
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "finding_id": "F-7fdf3212b0e011557574915a",
+      "interpretation": "UNREACHABLE checked and NOT observed by connectivity-agent at device=DIST-1",
+      "metric": "reachability",
+      "observation_id": "OBS-90932efc43dcf6ed7aa04a0ca36b7b47",
+      "unit": "boolean",
+      "value": true
     }
   ],
   "suspected_root_cause": "DEVICE_DOWN at AP-2-1",
@@ -1413,33 +1434,33 @@
     "budget": 6,
     "challenges": [
       {
-        "challenge_id": "CH-e1de9d2c34ec2718db242b2e",
+        "challenge_id": "CH-ff938ab2a53df8b62211540d",
         "claim": "DEVICE_DOWN_STATE",
         "decides": [
           "H-DEVICE_DOWN-AP-2-1"
         ],
         "metric": "device_status",
         "new_observation_ids": [
-          "OBS-f73bb7ddba6060e4e29f05f4f59cc8ee",
-          "OBS-ccddc0f4f8b24f7b6429010a3ac5c93f",
-          "OBS-4549ff100ed69696cf60bb1acdb9612c",
-          "OBS-83ab7768e5adc6ceb6f3e8f6f92ccda5",
-          "OBS-e8788f6029559bd69145fbd07a968567",
-          "OBS-fe87b6f9c4748316697b20278a26c44e",
-          "OBS-e21a15c5b030a5910c31301862274aa8",
-          "OBS-acd145b06a91d3233d5cce17d3a3fd40",
-          "OBS-6aa378c316f9fa3695df7e9175fdf435",
-          "OBS-b47a6a1f09f7030fccbe977b98afc83a",
-          "OBS-f83340a50ec667ff9d89929eac0e7491",
-          "OBS-6bfaa9f541f8196dc7ed3424a2710351",
-          "OBS-17944cbff69df9cd50b36fdcca4b3e13",
-          "OBS-37cd2a909646d4176d44a1c08a0fb71e",
-          "OBS-baf544214ae4fb1fac97dc29bc443891",
-          "OBS-1e6b36277dc851fb977e2f1e8cc2aa7c",
-          "OBS-9813e48b5a040b0e6777db7a2d906227",
-          "OBS-8d77f1b6356ac5d76a2bb0b0a767f84e",
-          "OBS-0e729bef7f8e6c9007e0587e78fef9e4",
-          "OBS-da52c8380373bba2104cd4378e4b64d7"
+          "OBS-470d7fba277a3a4cc62e57ed8b3748aa",
+          "OBS-14746902fff3ecde10f940c27d4ffbde",
+          "OBS-07945013d75f88d599d23669ec3e6b40",
+          "OBS-a0a83d52762a0f87116bf4b27f999ffc",
+          "OBS-9dd35239f96b0332747d3c9c9f49587f",
+          "OBS-2448ed53896a34559127033b172ed04c",
+          "OBS-d3ce57241a9995cf3397b64e1ccfa17a",
+          "OBS-0231187583828a59f0f6a5b1c9ee8490",
+          "OBS-36e687a69099be8cdda5d00920cbd989",
+          "OBS-df5cadce2fc39a8aaaed7eeab11b7978",
+          "OBS-48613228863b8d014bc9909934e9cd67",
+          "OBS-876bcfeae98f5e14192c42a1c68e4bba",
+          "OBS-10948a432e3ed9e99ea2ac3e71aaba34",
+          "OBS-e344393b26de251de0393e4a779b219f",
+          "OBS-d7b9e323747f5708693c51480dd09827",
+          "OBS-edd632ff58bcd9daa9ec512f7fbc0177",
+          "OBS-db7ce0851dc2ee562312af1c56ad963c",
+          "OBS-97a6a9e268608804ae1eb906a4ec1603",
+          "OBS-343ae8e58bc4cdf3cfe10e29c9457238",
+          "OBS-1781606e09a9cf05cac3a0377fe5f73e"
         ],
         "note": "Returned 11 recorded record(s) from archive scenario:S19-ap-down-status-in-archive; values are unmodified source records.",
         "outcome": "obtained",

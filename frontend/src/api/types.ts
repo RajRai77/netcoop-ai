@@ -259,13 +259,30 @@ export interface VerificationChallenge {
   note: string | null;
 }
 
+export interface ConfidenceBasis {
+  method: 'empirical_heldout' | 'none';
+  reason?: string;
+  calibration_version?: string;
+  conclusion?: string;
+  n?: number;
+  correct?: number;
+  wilson_95?: [number, number];
+  estimator?: string;
+  set?: string;
+  evaluation_method?: string;
+  meaning?: string;
+  caveats?: string[];
+}
 export interface Report {
   schema_version: string;
   incident_id: string;
   revision: number;
   status: ReportStatus;
   suspected_root_cause: string | null;
+  /** 1.2.0: calibrated on a held-out set for this (status, category); null when no calibration applies. */
+  confidence?: number | null;
   confidence_category: SupportCategory;
+  confidence_basis?: ConfidenceBasis;
   affected_devices: string[];
   supporting_evidence: { observation_id: string; finding_id: string; metric: string; value: number | string | boolean; unit: string; interpretation: string }[];
   alternative_causes: string[];

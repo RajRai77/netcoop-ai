@@ -71,8 +71,11 @@ with `?after=<last seq>` and exponential backoff, and refetches the affected que
 - **Topology node states:** *Root cause*, *Affected*, *Candidate* come from the report; *Symptom observed* from a present finding;
   *Checked · normal* means a specialist reported on the node without an anomaly; *No findings* means no specialist reported on it.
   The dashed ring is the backend's topology impact scope of the selected cause.
-- **Data source label:** all packaged scenarios are synthetic (generator `netcoop-scengen`), so they are labeled
-  "Synthetic scenario". Nothing is labeled "Organizer Scenario (PS)": no organizer-provided data is in the repository.
+- **Data source label:** `ORG-*` scenarios are built from the organizer's PS sample generator and labeled
+  "Organizer data · PS sample generator" (they are the default in the launcher and the landing demo). Other scenarios are
+  labeled "Synthetic scenario (NetCoop generator)".
+- **Confidence:** the number shown (e.g. "Confidence 0.88") is the report's calibrated `confidence`, with n, interval and
+  held-out set in the tooltip and on the report page. The support category is shown separately and never as a percentage.
 - **Preview:** a labeled recording of one real S19 run; no writes, no backend calls.
 - **Static text:** the landing page's explanations of the approach are descriptive copy, not data.
 
@@ -94,6 +97,7 @@ with `?after=<last seq>` and exponential backoff, and refetches the affected que
 | Lint | `npm run lint` (oxlint) | exit 0; only `only-export-components` / `set-state-in-effect` warnings remain |
 | Build | `npm run build` | OK |
 | S19 golden workflow, live backend | `node scripts/e2e-s19.mjs http://127.0.0.1:5173 docs/e2e-s19` | 18/18 checks passed ([result](docs/e2e-s19/result.json)) |
+| Organizer data workflow, live backend | `node scripts/e2e-organizer.mjs http://127.0.0.1:5173 docs/e2e-organizer` | 10/10 checks passed ([result](docs/e2e-organizer/result.json)) |
 | Preview and offline modes | `node scripts/e2e-modes.mjs http://127.0.0.1:5173 docs/e2e-modes` | 14/14 checks passed ([result](docs/e2e-modes/result.json)) |
 | Basic accessibility | `node scripts/a11y-check.mjs` | 11/11 routes passed |
 | Responsive screenshots | `node scripts/screenshots.mjs http://127.0.0.1:5173 <incident> docs/screenshots / /command /incidents …` | 1920×1080, 1536×960, 1366×768 and 390×844; no horizontal overflow |

@@ -26,7 +26,11 @@ const NAV = [
 
 // Curated launcher entries; only shown if the backend actually offers the scenario.
 const LAUNCHER = [
-  ['S19-ap-down-status-in-archive', 'AP down · needs verification'],
+  ['ORG-03-hardware-failure', 'Organizer · hardware failure'],
+  ['ORG-02-latency-spike', 'Organizer · latency spike'],
+  ['ORG-01-normal', 'Organizer · normal operation'],
+  ['ORG-04-schema-drift', 'Organizer · schema drift (bad records)'],
+  ['S19-ap-down-status-in-archive', 'Verification showcase · AP down'],
   ['S11-ambiguous-resolvable', 'Ambiguous · resolvable by verification'],
   ['S16-ambiguous-unresolvable', 'Ambiguous · cannot be resolved'],
   ['S09-upstream-outage', 'Upstream outage'],

@@ -5,6 +5,7 @@ import type { IncidentDetail, Report } from '@/api/types';
 import { AGENT_COLOR, AGENT_ROLE, agentLabel, claimLabel, faultLabel, subjectText, SUPPORT_LABEL } from '@/lib/format';
 import { splitHyp, type RunFacts } from '@/lib/run';
 import { verdictTitle } from './Reasoning';
+import { Confidence } from './ui';
 
 type Key = 'inc' | 'performance-agent' | 'infrastructure-agent' | 'connectivity-agent' | 'stear' | 'verify' | 'final';
 type Status = 'done' | 'active' | 'failed' | 'idle';
@@ -180,8 +181,8 @@ export function AgentFlow({ detail, facts, report, running }: { detail: Incident
               {running ? <div className="fnode-sub">Concluded only after the reasoning (and any verification) finishes</div>
                 : report ? (
                   <>
-                    <div className="verdict-mini">{report.root_causes?.length ? report.root_causes.map((r) => <div key={r.hypothesis_id}>{r.fault_type}<div className="mono" style={{ fontSize: 13 }}>@ {r.location}</div></div>) : verdictTitle(report)}</div>
-                    <div className="fnode-stat"><span className={`chip t-${report.confidence_category === 'high_support' ? 'green' : 'amber'}`}>{SUPPORT_LABEL[report.confidence_category]}</span></div>
+                    <div className="verdict-mini">{report.root_causes?.length ? report.root_causes.map((r) => <div key={r.hypothesis_id}>{faultLabel(r.fault_type)}<div className="mono" style={{ fontSize: 12.5, overflowWrap: 'anywhere' }}>@ {r.location}</div></div>) : verdictTitle(report)}</div>
+                    <div className="fnode-stat"><span className={`chip t-${report.confidence_category === 'high_support' ? 'green' : 'amber'}`}>{SUPPORT_LABEL[report.confidence_category]}</span><Confidence r={report} /></div>
                   </>
                 ) : <div className="fnode-sub">Not diagnosed yet</div>}
             </>

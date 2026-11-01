@@ -1,0 +1,59 @@
+{
+  "scenario": "ORG-03-hardware-failure",
+  "incident_id": "INC-c48a7d44dd4c4224",
+  "ran_at": "2026-11-01T02:16:18.793Z",
+  "ui": "http://127.0.0.1:5173",
+  "passed": true,
+  "steps": [
+    {
+      "name": "Backend lists the organizer scenario with its declared profile",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Organizer data is the first choice in the launcher",
+      "ok": true,
+      "detail": "ORG-03-hardware-failure"
+    },
+    {
+      "name": "UI labels the data source as organizer data",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Backend localizes the fault to SW_CAMPUS_3",
+      "ok": true,
+      "detail": "diagnosed DEVICE_CPU_OVERLOAD at SW_CAMPUS_3"
+    },
+    {
+      "name": "Report carries a calibrated confidence with its basis",
+      "ok": true,
+      "detail": "0.88 from 14/15 on heldout-v3"
+    },
+    {
+      "name": "UI shows exactly the report confidence",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Undefined generator fields are reported, not used",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Support category is never rendered as a percentage",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Report page shows the calibrated-confidence block",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "No browser errors",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

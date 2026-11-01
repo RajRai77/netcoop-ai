@@ -11,7 +11,8 @@ import { useApp } from '@/state/settings';
 import { agentLabel } from '@/lib/format';
 import { Logo } from '@/components/ui';
 
-const DEMO = 'S19-ap-down-status-in-archive';
+const DEMO = 'ORG-03-hardware-failure';
+const SHOWCASE = 'S19-ap-down-status-in-archive';
 
 export default function Landing() {
   const nav = useNavigate();
@@ -25,7 +26,7 @@ export default function Landing() {
   const live = health.isSuccess && !preview;
   const busy = create.isPending || diagnose.isPending;
 
-  const demo = async () => {
+  const demo = async (sid: string = DEMO) => {
     setErr(null);
     if (!live) {
       set({ preview: true, activeIncidentId: 'INC-b2e30992c4e04543' });
@@ -33,9 +34,9 @@ export default function Landing() {
       return;
     }
     try {
-      const r = await create.mutateAsync(DEMO);
+      const r = await create.mutateAsync(sid);
       await diagnose.mutateAsync({ id: r.incident.incident_id, verification: true });
-      set({ activeIncidentId: r.incident.incident_id, selectedScenarioId: DEMO });
+      set({ activeIncidentId: r.incident.incident_id, selectedScenarioId: sid });
       nav('/command');
     } catch (e) {
       setErr(errorText(e));
@@ -66,8 +67,8 @@ export default function Landing() {
                 explanations, and when the evidence is tied it asks for the one observation that decides — before it concludes.
               </p>
               <div className="l-ctas">
-                <button className="btn neon big" onClick={demo} disabled={busy}>
-                  <Play size={17} />{busy ? 'Starting investigation…' : live ? 'View demo incident (live run)' : 'View demo incident (recorded)'}
+                <button className="btn neon big" onClick={() => demo()} disabled={busy}>
+                  <Play size={17} />{busy ? 'Starting investigation…' : live ? 'Diagnose organizer data (live run)' : 'View demo incident (recorded)'}
                 </button>
                 <Link className="btn glassy big" to="/scenarios">Start investigation</Link>
                 <Link className="btn glassy big" to="/command">Explore Command Center</Link>
@@ -76,7 +77,8 @@ export default function Landing() {
               <div className="l-facts">
                 <span><b>3 specialists</b>independent A2A processes</span>
                 <span><b>No LLM in the loop</b>deterministic, testable rules</span>
-                <span><b>Evidence-linked</b>every finding cites raw records</span>
+                <span><b>Organizer data</b>PS sample generator, mapped by a declared profile</span>
+                <span><b>Calibrated confidence</b>measured on held-out cases</span>
               </div>
             </div>
 
@@ -189,9 +191,10 @@ export default function Landing() {
         <div className="l-wrap l-cta">
           <Logo size={64} />
           <h2 style={{ marginTop: 14 }}>See a full investigation</h2>
-          <p style={{ color: '#aebfe0', margin: '10px auto 0', maxWidth: 620 }}>Run the AP-down case: the evidence is first ambiguous, the system asks the infrastructure agent for the AP status, and concludes.</p>
+          <p style={{ color: '#aebfe0', margin: '10px auto 0', maxWidth: 660 }}>Diagnose the organizer's sample telemetry, or run the verification showcase: the evidence is first ambiguous, the system asks the infrastructure agent for the AP status, and concludes.</p>
           <div className="l-ctas" style={{ justifyContent: 'center' }}>
-            <button className="btn neon big" onClick={demo} disabled={busy}><Play size={17} />View demo incident</button>
+            <button className="btn neon big" onClick={() => demo()} disabled={busy}><Play size={17} />Diagnose organizer data</button>
+            <button className="btn glassy big" onClick={() => demo(SHOWCASE)} disabled={busy || !live}>Verification showcase</button>
             <Link className="btn glassy big" to="/command">Enter Command Center <ArrowRight size={16} /></Link>
           </div>
         </div>
