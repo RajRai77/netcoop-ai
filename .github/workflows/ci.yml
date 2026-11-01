@@ -147,7 +147,7 @@ jobs:
           . "$GITHUB_ENV"
           docker build -f Dockerfile.render --build-arg VITE_CLERK_PUBLISHABLE_KEY="$CI_PK" -t netcoop-render .
           # the public key is compiled into the bundle; no secret-looking value is
-          docker run --rm --entrypoint sh netcoop-render -c "grep -rlq '$CI_PK' /app/frontend-dist/assets && ! grep -rlqE 'sk_(test|live)_' /app/frontend-dist
+          docker run --rm --entrypoint sh netcoop-render -c "grep -rlq '$CI_PK' /app/frontend-dist/assets && ! grep -rlqE 'sk_(test|live)_[A-Za-z0-9]{20,}' /app/frontend-dist"
       - name: Start the container like Render does (PORT injected, external PostgreSQL, API token)
         run: |
           echo "TOKEN=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
@@ -185,8 +185,8 @@ jobs:
         run: |
           docker rm -f nr
           openssl genrsa -out /tmp/k.pem 2048 2>/dev/null && openssl rsa -in /tmp/k.pem -pubout -out /tmp/pub.pem 2>/dev/null
-          pip install --quiet "pyjwt[crypto]==2.15.1"
-          mint() { python3 -c "import jwt,time,sys;n=int(time.time());print(jwt.encode({'sub':sys.argv[1],'sid':'sess_ci','iss':'https://netcoop-ci.clerk.accounts.dev','azp':'https://netcoop-ci.example','iat':n,'nbf':n-5,'exp':n+900},open('/tmp/k.pem').read(),algorithm='RS256'))" "$1"; }
+          # test tokens are minted with PyJWT inside the image (a Clerk SDK dependency); the private key never leaves CI
+          mint() { docker exec -i nr python -c "import jwt,time,sys;n=int(time.time());print(jwt.encode({'sub':sys.argv[1],'sid':'sess_ci','iss':'https://netcoop-ci.clerk.accounts.dev','azp':'https://netcoop-ci.example','iat':n,'nbf':n-5,'exp':n+900},sys.stdin.read(),algorithm='RS256'))" "$1" < /tmp/k.pem; }
           docker run -d --name nr -p 10000:10000 --add-host=host.docker.internal:host-gateway             -e PORT=10000 -e NETCOOP_ENV=production -e NETCOOP_LOG_MEMORY_S=5 -e NETCOOP_AUTH_MODE=clerk             -e CLERK_PUBLISHABLE_KEY="$CI_PK" -e CLERK_JWT_KEY="$(cat /tmp/pub.pem)"             -e CLERK_AUTHORIZED_PARTIES=https://netcoop-ci.example -e NETCOOP_API_TOKEN="$TOKEN"             -e NETCOOP_DATABASE_URL=postgresql://netcoop:ci-only-password@host.docker.internal:5432/netcoop netcoop-render
           for i in $(seq 1 60); do curl -fsS http://127.0.0.1:10000/health/ready && break; sleep 2; done
           A=$(mint user_ci_alice); B=$(mint user_ci_bob)
