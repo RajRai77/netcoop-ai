@@ -1,0 +1,23 @@
+# Netlify: static build of the React app in frontend/.
+# Set VITE_API_BASE in the Netlify UI (Site configuration -> Environment variables) to the Render URL,
+# e.g. https://netcoop-ai.onrender.com . It is a public URL, not a secret; never put tokens in VITE_* variables.
+[build]
+  base = "frontend"
+  command = "npm ci --no-audit --no-fund && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Client-side routes (/command, /report, ...) all load index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

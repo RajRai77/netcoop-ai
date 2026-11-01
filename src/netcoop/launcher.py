@@ -155,15 +155,22 @@ class ManagedProcess:
 AGENT_IDS = ("performance-agent", "infrastructure-agent", "connectivity-agent")
 
 
+AGENT_HOST = "127.0.0.1"  # specialists are never exposed: loopback only, reached by the coordinator
+
+
+def _probe_host(host: str) -> str:
+    return "127.0.0.1" if host in ("0.0.0.0", "::", "") else host
+
+
 def services(host: str, port: int, database_url: str, agent_ports: dict[str, int], token: str,
              scenarios_dir: Path, uploads_dir: Path) -> list[ServiceSpec]:
-    """Three independent specialist A2A servers + the web/coordinator process."""
+    """Three independent specialist A2A servers (loopback) + the web/coordinator process (on `host`)."""
     specs = []
     for aid, ap in agent_ports.items():
         specs.append(ServiceSpec(
             name=aid,
-            argv=[sys.executable, "-m", "netcoop.agents.server", "--agent", aid, "--host", host, "--port", str(ap)],
-            health_url=f"http://{host}:{ap}/health",
+            argv=[sys.executable, "-m", "netcoop.agents.server", "--agent", aid, "--host", AGENT_HOST, "--port", str(ap)],
+            health_url=f"http://{AGENT_HOST}:{ap}/health",
             env={"NETCOOP_AGENT_TOKEN": token, "NETCOOP_SCENARIOS_DIR": str(scenarios_dir),
                  "NETCOOP_ARCHIVE_UPLOADS_DIR": str(uploads_dir)},
         ))
@@ -171,9 +178,9 @@ def services(host: str, port: int, database_url: str, agent_ports: dict[str, int
         name="web",
         argv=[sys.executable, "-m", "uvicorn", "netcoop.api.app:app", "--host", host, "--port", str(port),
               "--log-level", "info"],
-        health_url=f"http://{host}:{port}/health/ready",
+        health_url=f"http://{_probe_host(host)}:{port}/health/ready",
         env={"NETCOOP_DATABASE_URL": database_url, "NETCOOP_AGENT_TOKEN": token,
-             "NETCOOP_AGENTS": json.dumps({aid: f"http://{host}:{ap}/" for aid, ap in agent_ports.items()}),
+             "NETCOOP_AGENTS": json.dumps({aid: f"http://{AGENT_HOST}:{ap}/" for aid, ap in agent_ports.items()}),
              "NETCOOP_SCENARIOS_DIR": str(scenarios_dir), "NETCOOP_ARCHIVE_UPLOADS_DIR": str(uploads_dir)},
     ))
     return specs
@@ -236,13 +243,37 @@ def smoke(base: str, scenario: str = "S11-ambiguous-resolvable") -> list[tuple[s
     return out
 
 
+def _rss_mib(pid: int) -> float | None:
+    """Resident memory of a process from /proc (Linux only)."""
+    try:
+        for line in Path(f"/proc/{pid}/status").read_text().splitlines():
+            if line.startswith("VmRSS:"):
+                return int(line.split()[1]) / 1024
+    except OSError:
+        return None
+    return None
+
+
+def memory_line(procs) -> str:
+    parts = {mp.spec.name: _rss_mib(mp.proc.pid) for mp in procs}
+    parts["launcher"] = _rss_mib(os.getpid())
+    if any(v is None for v in parts.values()):
+        return "memory: RSS not available on this platform"
+    total = sum(parts.values())
+    return "memory RSS MiB: total=%.0f " % total + " ".join(f"{k}=%.0f" % v for k, v in parts.items())
+
+
 # -- entry point -----------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="run_local", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--host", default="127.0.0.1")
-    p.add_argument("--port", default="8000", help="port number or 'auto'")
-    p.add_argument("--data-dir", default=str(REPO_ROOT / "var"), help="local data directory (SQLite DB, logs)")
+    p.add_argument("--host", default=os.environ.get("NETCOOP_HOST", "127.0.0.1"),
+                   help="address of the web/API process (agents always bind 127.0.0.1)")
+    p.add_argument("--port", default=os.environ.get("PORT", "8000"), help="port number or 'auto' (default: $PORT or 8000)")
+    p.add_argument("--data-dir", default=os.environ.get("NETCOOP_DATA_DIR", str(REPO_ROOT / "var")),
+                   help="local data directory (SQLite DB, logs, uploaded archives)")
+    p.add_argument("--frontend-dist", default=os.environ.get("NETCOOP_FRONTEND_DIST"),
+                   help="serve this built React app at / (default: frontend/dist if it exists)")
     p.add_argument("--database-url", default=None,
                    help="override database (default: $NETCOOP_DATABASE_URL or SQLite in --data-dir)")
     p.add_argument("--check", action="store_true", help="start, run a smoke test, stop; exit 0 only if all pass")
@@ -275,35 +306,47 @@ def main(argv: list[str] | None = None) -> int:
         port = resolve_port(args.host, args.port)
         agent_ports: dict[str, int] = {}
         for aid in AGENT_IDS:
-            ap = free_port(args.host)
+            ap = free_port(AGENT_HOST)
             while ap == port or ap in agent_ports.values():
-                ap = free_port(args.host)
+                ap = free_port(AGENT_HOST)
             agent_ports[aid] = ap
         token = secrets.token_hex(24)  # per-run secret shared only with child processes
-        scenarios_dir = Path(args.scenarios_dir).resolve() if args.scenarios_dir else REPO_ROOT / "data" / "scenarios"
+        scenarios_dir = (Path(args.scenarios_dir).resolve() if args.scenarios_dir
+                         else Path(os.environ["NETCOOP_SCENARIOS_DIR"]) if os.environ.get("NETCOOP_SCENARIOS_DIR")
+                         else REPO_ROOT / "data" / "scenarios")
         uploads_dir = data_dir / "archives"
         uploads_dir.mkdir(parents=True, exist_ok=True)
         log_dir = data_dir / "logs"
         specs = services(args.host, port, url, agent_ports, token, scenarios_dir, uploads_dir)
         if args.cors_origin:
             specs[-1].env["NETCOOP_CORS_ORIGINS"] = ",".join(args.cors_origin)
+        dist = Path(args.frontend_dist) if args.frontend_dist else REPO_ROOT / "frontend" / "dist"
+        if (dist / "index.html").is_file():
+            specs[-1].env["NETCOOP_FRONTEND_DIST"] = str(dist.resolve())
+            print(f"[netcoop] serving the React app from {dist}")
         for spec in specs:
             mp = ManagedProcess(spec, log_dir / f"{spec.name}.log" if args.check else None).start()
             procs.append(mp)
             mp.wait_ready()
             print(f"[netcoop] {spec.name} ready (pid {mp.proc.pid}, {spec.health_url.rsplit('/', 1)[0]})")
-        base = f"http://{args.host}:{port}"
+        base = f"http://{_probe_host(args.host)}:{port}"
 
         if args.check:
             results = smoke(base)
             for name, ok, detail in results:
                 print(f"[netcoop] {'PASS' if ok else 'FAIL'} {name} ({detail})")
+            print(f"[netcoop] after smoke test: {memory_line(procs)}")
             return 0 if results and all(ok for _, ok, _ in results) else 1
 
         print(f"[netcoop] open {base}/  (API docs {base}/docs). Press Ctrl+C to stop.")
         if not IS_WINDOWS:
             signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+        mem_every = int(os.environ.get("NETCOOP_LOG_MEMORY_S", "0") or 0)
+        next_mem = time.monotonic()
         while all(mp.proc.poll() is None for mp in procs):
+            if mem_every and time.monotonic() >= next_mem:
+                print(f"[netcoop] {memory_line(procs)}", flush=True)
+                next_mem = time.monotonic() + mem_every
             time.sleep(0.5)
         dead = [mp.spec.name for mp in procs if mp.proc.poll() is not None]
         print(f"[netcoop] service(s) exited unexpectedly: {dead}", file=sys.stderr)

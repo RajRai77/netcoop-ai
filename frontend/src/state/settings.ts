@@ -20,7 +20,8 @@ interface AppState extends Settings {
 export const useApp = create<AppState>()(
   persist(
     (set) => ({
-      apiBase: '',
+      // Build-time default for a separately hosted frontend (e.g. Netlify -> Render). Never a secret.
+      apiBase: (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/+$/, '') ?? '',
       apiToken: '',
       preview: false,
       reducedMotion: false,

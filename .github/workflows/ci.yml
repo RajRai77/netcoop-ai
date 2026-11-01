@@ -125,3 +125,53 @@ jobs:
         run: docker compose logs --no-color
       - run: docker compose down -v
         if: always()
+
+  render-image:
+    # Single-container image for Render: API on 0.0.0.0:$PORT, three A2A agents on loopback, React app served.
+    runs-on: ubuntu-24.04
+    needs: [test-linux]
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: netcoop
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: netcoop
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U netcoop" --health-interval 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f Dockerfile.render -t netcoop-render .
+      - name: Start the container like Render does (PORT injected, external PostgreSQL, API token)
+        run: |
+          echo "TOKEN=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          . "$GITHUB_ENV"
+          docker run -d --name nr -p 10000:10000 --add-host=host.docker.internal:host-gateway \
+            -e PORT=10000 -e NETCOOP_ENV=production -e NETCOOP_LOG_MEMORY_S=5 \
+            -e NETCOOP_DATABASE_URL=postgresql://netcoop:ci-only-password@host.docker.internal:5432/netcoop \
+            -e NETCOOP_API_TOKEN="$TOKEN" netcoop-render
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:10000/health/ready && break; sleep 2; done
+          curl -fsS http://127.0.0.1:10000/health/ready
+      - name: Only $PORT listens on 0.0.0.0; agents are loopback-only
+        run: |
+          docker exec nr python -c "
+          import sys
+          rows=[l.split() for l in open('/proc/net/tcp').read().splitlines()[1:]]
+          listen=[(r[1].split(':')[0], int(r[1].split(':')[1],16)) for r in rows if r[3]=='0A']
+          print('listening:', listen)
+          public=[p for a,p in listen if a!='0100007F']
+          sys.exit(0 if public==[10000] and len(listen)>=4 else 1)"
+      - name: Auth enforced, React app served on the same origin
+        run: |
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/api/agents)" = 401
+          curl -fsS http://127.0.0.1:10000/ | grep -q "NetCoop AI"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:10000/command)" = 200
+      - run: NETCOOP_API_TOKEN="$TOKEN" BASE_URL=http://127.0.0.1:10000 sh scripts/smoke.sh
+      - name: Memory of the four processes on Linux (Render free = 512 MB)
+        run: |
+          sleep 6
+          docker logs nr 2>&1 | grep "memory RSS" | tail -3
+          docker stats --no-stream --format "container {{.Name}}: {{.MemUsage}}" nr
+      - name: Logs on failure
+        if: failure()
+        run: docker logs nr

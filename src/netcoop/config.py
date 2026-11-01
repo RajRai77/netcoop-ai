@@ -62,6 +62,8 @@ class Settings:
     cors_origins: tuple[str, ...] = ()
     # Directory with generated evaluation results (eval/results-*/results.json), served read-only.
     eval_dir: str | None = None
+    # Optional built React app (frontend/dist). When set, it is served at / and the minimal UI moves to /legacy.
+    frontend_dist: str | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -81,4 +83,5 @@ class Settings:
             task_timeout_s=_int("NETCOOP_TASK_TIMEOUT_S", 20),
             eval_dir=os.environ.get("NETCOOP_EVAL_DIR") or (str(REPO_ROOT / "eval") if (REPO_ROOT / "eval").is_dir() else None),
             cors_origins=tuple(o.strip() for o in os.environ.get("NETCOOP_CORS_ORIGINS", "").split(",") if o.strip()),
+            frontend_dist=os.environ.get("NETCOOP_FRONTEND_DIST") or None,
         )

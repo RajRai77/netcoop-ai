@@ -7,5 +7,7 @@
 docs
 references
 tests
-frontend
+frontend/node_modules
+frontend/dist
+frontend/docs
 **/node_modules

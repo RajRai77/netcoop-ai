@@ -1,0 +1,27 @@
+# Render Blueprint: one free web service running the single-container image (Dockerfile.render).
+# Secrets are NOT in this file: values marked sync:false are entered in the Render dashboard.
+# Database: an external PostgreSQL (e.g. Neon); Render's free PostgreSQL expires, so it is not used.
+services:
+  - type: web
+    name: netcoop-ai
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: gate0-skeleton
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    healthCheckPath: /health/ready
+    autoDeploy: true
+    envVars:
+      - key: NETCOOP_ENV
+        value: production
+      - key: NETCOOP_DATABASE_URL        # postgresql://USER:PASSWORD@HOST/DB?sslmode=require (Neon "pooled" or direct)
+        sync: false
+      - key: NETCOOP_API_TOKEN           # optional: if set, /api/* needs "Authorization: Bearer <token>"
+        sync: false
+      - key: NETCOOP_CORS_ORIGINS        # the Netlify site origin, e.g. https://netcoop-ai.netlify.app
+        sync: false
+      - key: NETCOOP_TASK_TIMEOUT_S      # free instances have a small CPU share
+        value: "60"
+      - key: NETCOOP_LOG_MEMORY_S        # prints RSS of all four processes to the log
+        value: "300"

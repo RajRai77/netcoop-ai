@@ -475,10 +475,27 @@ def create_app(settings: Settings | None = None, db_check: Callable[[], CheckRes
     # -- UI --------------------------------------------------------------------------------
     if WEB_DIR.is_dir():
         app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+    dist = Path(settings.frontend_dist).resolve() if settings.frontend_dist else None
+    spa = dist is not None and (dist / "index.html").is_file()
 
-    @app.get("/", include_in_schema=False)
+    @app.get("/legacy" if spa else "/", include_in_schema=False)
     def index():
         return FileResponse(WEB_DIR / "index.html")
+
+    if spa:
+        # Built React app (single-origin deployment). API, health and docs routes above take precedence;
+        # unknown /api/* and /health/* paths stay 404 instead of returning the app.
+        if (dist / "assets").is_dir():
+            app.mount("/assets", StaticFiles(directory=dist / "assets"), name="spa-assets")
+
+        @app.get("/{path:path}", include_in_schema=False)
+        def spa_route(path: str):
+            if path.split("/", 1)[0] in ("api", "health", "static", "docs", "redoc", "openapi.json"):
+                raise HTTPException(status_code=404, detail="Not Found")
+            f = (dist / path).resolve()
+            if path and f.is_file() and dist in f.parents:
+                return FileResponse(f)
+            return FileResponse(dist / "index.html")
 
     # -- crash recovery: resume runs that were interrupted (e.g. process killed) ------------------
     def resume() -> None:
